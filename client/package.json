@@ -1,0 +1,14 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "description": "AI Agent Competition Platform Client",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "electron . --no-sandbox"
+  },
+  "private": true,
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^20.0.2"
+  }
+}
