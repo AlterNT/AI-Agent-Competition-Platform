@@ -1,4 +1,27 @@
 # Installation
+## Dependencies
+- [npm](https://phoenixnap.com/kb/install-node-js-npm-on-windows)
+- [neo4j](https://neo4j.com/)
+
+## Configuring neo4j
+After installing neo4j you must change the default password
+```bash
+neo4j-admin set-initial-password # possibly requiring root permissions
+```
+
+@TODO: set username/password into env var?
+
+## Running the Server
+```bash
+# in the server folder:
+# possibly requiring root permissions for neo4j start
+neo4j start && node .
+```
+
+---
+
+# Old instructions (for example code)
+# Installation
 ## Install Dependencies (if not already)
 - [python3](https://www.python.org/downloads/)
 - [npm](https://phoenixnap.com/kb/install-node-js-npm-on-windows)
