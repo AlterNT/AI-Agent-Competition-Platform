@@ -8,7 +8,6 @@ class Server {
     }
 
     async handleClose() {
-
     }
 
     async run() {

@@ -12,4 +12,9 @@ export default {
         required: true,
         unique: true,
     },
+    controls: {
+        type: 'relationship',
+        relationship: 'CONTROLS',
+        direction: 'out',
+    },
 };

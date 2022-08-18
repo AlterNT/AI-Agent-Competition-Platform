@@ -8,4 +8,20 @@ export default {
         required: true,
         unique: true,
     }, // potential URI to a tar file on the server?
+    controls: {
+        type: 'relationship',
+        relationship: 'CONTROLS',
+        direction: 'in',
+    },
+    playedIn: {
+        type: 'relationship',
+        relationship: 'PLAYED_IN',
+        direction: 'out',
+        properties: {
+            score: {
+                type: 'float', // don't use abstract supertype 'number'
+                default: 0.0
+            }
+        }
+    },
 };
