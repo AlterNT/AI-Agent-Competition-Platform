@@ -10,5 +10,8 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^20.0.2"
+  },
+  "dependencies": {
+    "prompt-sync": "^4.2.0"
   }
 }
