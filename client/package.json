@@ -10,5 +10,8 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^20.0.2"
+  },
+  "dependencies": {
+    "node-fetch": "^3.2.10"
   }
 }
