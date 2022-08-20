@@ -14,7 +14,7 @@
   "dependencies": {
     "colors": "^1.4.0",
     "esm": "^3.2.25",
-    "ora": "^5.4.1",
+    "node-fetch": "^2.6.7",
     "prompt-sync": "^4.2.0"
   }
 }

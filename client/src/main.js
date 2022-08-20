@@ -1,7 +1,7 @@
 import AgentIO from './agent-io';
-import ora from 'ora';
 import { app, BrowserWindow } from 'electron';
-import { helpMessage, loadingPromise, log, status } from './messages';
+import { helpMessage, log, status } from './messages';
+import ServerHandler from './server-handler';
 
 export class Client {
 
@@ -10,6 +10,8 @@ export class Client {
 
     /** @type {AgentIO} */
     agentIO = new AgentIO();
+    /** @type {ServerHandler} */
+    serverHandler = new ServerHandler();
 
     /** @type {Boolean} */
     isCLI = false;
@@ -135,9 +137,12 @@ export class Client {
                     break;
             }
         }
-
         status();
+
+        await this.serverHandler.connect();
+
+        await this.serverHandler.lobbyWait();
     }
 }
 
-(async () => {new Client().init()})();
+(async () => { new Client().init() })();

@@ -1,5 +1,4 @@
 import colors from 'colors/safe';
-import ora from 'ora';
 import { Client } from './main';
 
 /**
@@ -39,9 +38,7 @@ ${colors.green('--tournament')}
 `);
 
 const logErrorText = (message, err) =>`${colors.yellow('[Client]')} ${colors.red('Error: ' + message)}
-
 ${colors.yellow('[Client]')} Error Message:
-
 ${err}
 `;
 
@@ -68,7 +65,7 @@ export const status = () => {
     ${colors.green('server:')}\t${Client.instance.serverAddress}:${Client.instance.port}
     ${colors.green('agent:')}\t${Client.instance.agent}`;
     if (Client.instance.tournamentMode) {
-        msg += `\n    ${colors.green('tournament-mode:')}\ttrue\n`;
+        msg += `\n    ${colors.green('tournament-mode:')}\ttrue`;
     } else {
         msg += `\n    ${colors.green('lobby:')}\t`
         if (Client.instance.lobby === -1) {
@@ -76,7 +73,7 @@ export const status = () => {
         } else {
             msg += Client.instance.lobby;
         }
-        msg += `\n    ${colors.green('trials:')}\t${Client.instance.trials}\n`;
+        msg += `\n    ${colors.green('trials:')}\t${Client.instance.trials}`;
     }
     console.log(msg);
 };
@@ -86,18 +83,3 @@ export const status = () => {
  * @param {*} msg Message to log.
  */
 export const log = msg => console.log(`${colors.yellow('[Client]')} ${msg}`);
-
-/**
- * Prints a loading spinner to stdout while a promise is being fufilled.
- * @param {Promise} action Promise to execute.
- * @param {String} text Text to show while loading.
- * @param {*} successText Text to show on success.
- * @param {*} failText Text to show on failiure.
- * @returns {Promise} the promise executed.
- */
-export const loadingPromise = async (action, text, successText, failText) => ora.promise(action, {
-    prefixText: colors.yellow('[Client]'),
-    text: text,
-    successText: successText,
-    failText: err => logErrorText(failText, err)
-});
