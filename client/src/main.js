@@ -1,10 +1,18 @@
+import AgentIO from './agent-io';
+import ora from 'ora';
 import { app, BrowserWindow } from 'electron';
-import colors from 'colors/safe';
+import { helpMessage, loadingPromise, log, status } from './messages';
 
-class Client {
+export class Client {
+
+    /** @type {Client} */
+    static instance;
+
+    /** @type {AgentIO} */
+    agentIO = new AgentIO();
 
     /** @type {Boolean} */
-    CLIMode = false;
+    isCLI = false;
     /** @type {String} */
     serverAddress = 'localhost';
     /** @type {Number} */
@@ -14,45 +22,18 @@ class Client {
     /** @type {String} */
     token = require('./config.json').token;
     /** @type {Number} */
-    lobby = 0;
+    lobby = -1;
     /** @type {Number} */
     trials = 1;
     /** @type {Boolean} */
     tournamentMode = false;
 
-    /** @type {String} */
-    static #HELPTEXT = `${colors.yellow.underline('Usage:')}
-    client ${colors.blue('[options]')}
-
-${colors.yellow.underline('Options:')}
-    ${colors.green('--server=')}${colors.blue('SERVER')}
-        Specifies the server address to connect to.
-        Defaults to 'localhost'
-        ${colors.blue('SERVER')} must specify a valid IP address.
-        Optionally, a port can also be provided, separated with ':'.
-    ${colors.green('--port=')}${colors.blue('PORT')}
-        Specifies the port to connect to the server with.
-        Defaults to ''
-        ${colors.blue('PORT')} must be a valid port number.
-    ${colors.green('--agent=\"')}${colors.blue('AGENT')}${colors.green('\"')}
-        The launch command for your agent.
-        ${colors.blue('AGENT')} must be enclosed in quotation marks.
-    ${colors.green('--test')} | ${colors.green('-t')}
-        Indicates this as a testing run to the server to prevent
-        history logging.
-    ${colors.green('--lobby=')}${colors.blue('LOBBY')}
-        Specifies a lobby to attempt to join.
-        If this lobby does not exist,
-        one will be created with this number.
-        ${colors.blue('LOBBY')} must be an integer.
-        This is mutually-exclusive with ${colors.green('--tournament')}.
-    ${colors.green('--trials=')}${colors.blue('TRIALS')}
-        If a new lobby is to be created,
-        this is the number of trials the lobby is set to.
-    ${colors.green('--tournament')}
-        Attempts to join a tournament if one is running.
-        This is mutually-exclusive with ${colors.green('--lobby')}.
-    `;
+    /**
+     * Creates a new Client.
+     */
+    constructor() {
+        Client.instance = this;
+    }
 
     /**
      * Initializes the application.
@@ -69,11 +50,12 @@ ${colors.yellow.underline('Options:')}
 
         // If --cli flag provided, run in CLI mode.
         if (process.argv.some(a => a.match(/--cli/i))) {
+            this.isCLI = true;
             // Help command.
             if (process.argv.some(a => a.match(/--help/i))) {
-                console.log(Client.#HELPTEXT);
+                helpMessage();
             } else {
-                this.cliRun();
+                await this.cliRun();
             }
             process.exit();
         }
@@ -114,7 +96,7 @@ ${colors.yellow.underline('Options:')}
     /**
      * Executes the application in CLI.
      */
-    cliRun() {
+    async cliRun() {
         // Parse flags.
         for (const flag of process.argv) {
             let value;
@@ -126,7 +108,7 @@ ${colors.yellow.underline('Options:')}
                     break;
                 // Port flag.
                 case /--port=\d+/.test(flag):
-                    this.port = flag.split('=')[1];
+                    this.port = parseInt(flag.split('=')[1]);
                     break;
                 // Agent flag.
                 case /--agent=.+/i.test(flag):
@@ -139,11 +121,11 @@ ${colors.yellow.underline('Options:')}
                     this.token = 'TEST';
                 // Lobby flag.
                 case /--lobby=\d+/i.test(flag):
-                    this.lobby = flag.split('=')[1];
+                    this.lobby = parseInt(flag.split('=')[1]);
                     break;
                 // Trials flag.
                 case /--trials=\d+/i.test(flag):
-                    this.trials = flag.split('=')[1];
+                    this.trials = parseInt(flag.split('=')[1]);
                     break;
                 // Tournament flag.
                 case /--tournament/i.test(flag):
@@ -153,7 +135,9 @@ ${colors.yellow.underline('Options:')}
                     break;
             }
         }
+
+        status();
     }
 }
 
-new Client().init();
+(async () => {new Client().init()})();
