@@ -1,13 +1,15 @@
-const path = require('path')
-const prompt = require('prompt-sync')({ sigint: true })
-const fs = require('fs')
-const child_process = require('child_process')
+import { Client } from './main';
+import child_process from 'child_process';
+import { logError, error } from './messages';
 
-const ACCEPTED_FILETYPES = ['py', 'java']
-class AgentIO {
-    constructor() {
+export default class AgentIO {
 
-    }
+    /** @type {child_process.ChildProcess} */
+    agent;
+
+    /* Deprecated?
+        Maybe we could add an autodetect specifically for python and java.
+
 
     loadAgent() {
         const agentsDIR = path.resolve(__dirname + '/agents')
@@ -31,32 +33,43 @@ class AgentIO {
 
         this.executeAgent(agentFilepath)
     }
+    */
+    
+    /**
+     * Initializes the agent to be run and registers relevant events.
+     * @param {String} agentCommand 
+     */
+    createAgent(agentCommand) {
+        agent = child_process.spawn(agentCommand);
 
-    executeAgent(agentFilepath) {
-        let agent = null
-
-        if (agentFilepath.endsWith('py')) {
-            agent = child_process.spawn('python', [agentFilepath])
-
-        } else if (agentFilepath.endsWith('java')) {
-            child_process.exec('javac', [agentFilepath])
-            agent = child_process.spawn('java', [agentFilepath])
-        }
+        subprocess.on('error', (err) => {
+            console.error(logError('Agent exception occurred.', err));
+            if (Client.instance.isCLI) process.exit(1);
+        });
 
         agent.stdout.on('data', (data) => {
-            console.log(`${data}`)
-        })
-
-        agent.stderr.on('data', (data) => {
-            console.log(`${data}`)
-        })
+            this.agentOut(data);
+        });
     }
 
-    run() {
-        this.loadAgent()
+    /**
+     * Recieves data from the agent.
+     * @param {String} raw Data recieved.
+     */
+    agentOut(raw) {
+        let data = JSON.parse(raw);
+        // TODO: Send to server-handler.
+    }
+
+    /**
+     * Sends data to the agent.
+     * @param {{*}} data Data to be sent.
+     */
+    agentIn(data) {
+        if (agent === undefined) {
+            error('Agent is undefined!');
+        }
+
+        this.agent.stdin.write(data);
     }
 }
-
-const agentIO = new AgentIO()
-agentIO.run()
-
