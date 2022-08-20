@@ -1,4 +1,5 @@
 import { app, BrowserWindow } from 'electron';
+import colors from 'colors/safe';
 
 class Client {
 
@@ -20,9 +21,37 @@ class Client {
     tournamentMode = false;
 
     /** @type {String} */
-    HELPTEXT = `Usage: client [options]
-    --server=SERVER
-    
+    static #HELPTEXT = `${colors.yellow.underline('Usage:')}
+    client ${colors.blue('[options]')}
+
+${colors.yellow.underline('Options:')}
+    ${colors.green('--server=')}${colors.blue('SERVER')}
+        Specifies the server address to connect to.
+        Defaults to 'localhost'
+        ${colors.blue('SERVER')} must specify a valid IP address.
+        Optionally, a port can also be provided, separated with ':'.
+    ${colors.green('--port=')}${colors.blue('PORT')}
+        Specifies the port to connect to the server with.
+        Defaults to ''
+        ${colors.blue('PORT')} must be a valid port number.
+    ${colors.green('--agent=\"')}${colors.blue('AGENT')}${colors.green('\"')}
+        The launch command for your agent.
+        ${colors.blue('AGENT')} must be enclosed in quotation marks.
+    ${colors.green('--test')} | ${colors.green('-t')}
+        Indicates this as a testing run to the server to prevent
+        history logging.
+    ${colors.green('--lobby=')}${colors.blue('LOBBY')}
+        Specifies a lobby to attempt to join.
+        If this lobby does not exist,
+        one will be created with this number.
+        ${colors.blue('LOBBY')} must be an integer.
+        This is mutually-exclusive with ${colors.green('--tournament')}.
+    ${colors.green('--trials=')}${colors.blue('TRIALS')}
+        If a new lobby is to be created,
+        this is the number of trials the lobby is set to.
+    ${colors.green('--tournament')}
+        Attempts to join a tournament if one is running.
+        This is mutually-exclusive with ${colors.green('--lobby')}.
     `;
 
     /**
@@ -41,8 +70,8 @@ class Client {
         // If --cli flag provided, run in CLI mode.
         if (process.argv.some(a => a.match(/--cli/i))) {
             // Help command.
-            if (process.argv.some(a => a.match(/--help|-h/i))) {
-                console.log(this.HELPTEXT);
+            if (process.argv.some(a => a.match(/--help/i))) {
+                console.log(Client.#HELPTEXT);
             } else {
                 this.cliRun();
             }
@@ -87,7 +116,7 @@ class Client {
      */
     cliRun() {
         // Parse flags.
-        for (let flag of process.argv) {
+        for (const flag of process.argv) {
             let value;
             switch (true) {
                 // Server flag.
@@ -117,7 +146,7 @@ class Client {
                     this.trials = flag.split('=')[1];
                     break;
                 // Tournament flag.
-                case /--tourney/i.test(flag):
+                case /--tournament/i.test(flag):
                     this.tournamentMode = true;
                     break;
                 default:
