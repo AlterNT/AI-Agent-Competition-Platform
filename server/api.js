@@ -23,4 +23,18 @@ app.post('api/game', (req, res) => {
     const { agentToken } = req.params
 })
 
+app.get('api/getLobby', (req, res) => {
+    // check if there is active waiting lobbys.
 
+    // add player to joinable lobbys through the lobbys manager if possible.
+
+    // if no joinable lobbys.
+
+    // generate psuedo random 8 character string.
+
+    // create new api route string.
+
+    // create new route. 
+
+    // redirect user to the new route that will be managed by the lobby manager.
+})
