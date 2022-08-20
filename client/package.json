@@ -12,6 +12,7 @@
     "electron": "^20.0.2"
   },
   "dependencies": {
+    "esm": "^3.2.25",
     "prompt-sync": "^4.2.0"
   }
 }
