@@ -16,26 +16,22 @@ export default class ServerHandler {
      * @returns {} a list of available games
      */
     games() {
-        const response = await fetch(`${this.serverAPI}/games`) 
+        const response = await fetch(`${this.serverAPI}/games`)
         const games = JSON.parse(response)
         return games
     }
 
     /**
-     * posts a request to join a lobby
-     * @param {string} gameID id of game to be played
+     * posts a request to join a lobby.
+     * @param {String} gameID id of game to be played.
+     * @param {Number} lobbyID id of lobby to join. -1 indicates automatic allocation.
      */
-    joinLobby(gameID) {
-        const response = await fetch(`${this.serverAPI}/join-lobby`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: {
-                agentToken: agentToken,
-                gameID: gameID
-            }
-        })
+    joinLobby(gameID, lobbyID = -1) {
+        const response = await fetch(`${this.serverAPI}/join-lobby` + new URLSearchParams({
+            agentToken: agentToken,
+            gameID: gameID,
+            lobbyID: lobbyID,
+        }));
     }
 
     /**
@@ -51,7 +47,7 @@ export default class ServerHandler {
             body: {
                 agentToken: agentToken,
             }
-        }) 
+        })
         const turn = JSON.parse(response)
         return turn
     }
