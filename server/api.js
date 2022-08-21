@@ -10,6 +10,27 @@ app.get('/api/games', (req, res) => {
     res.json()
 })
 
+// return gamestate view for agent
+app.get('/api/game', (req, res) => {
+    const { agentToken } = req.query
+
+    res.json()
+})
+
+// receive action made by agent
+app.post('/api/game', (req, res) => {
+    const { agentToken, action } = req.body
+
+    res.json()
+})
+
+// receive join-lobby request
+app.post('/api/join-lobby', (req, res) => {
+    const { agentToken, gameID } = req.body
+
+    res.json()
+})
+
 // Create server variable to be stored and notify user of API activation.
 const server = app.listen(8080, () => {
     const host = server.address().address
