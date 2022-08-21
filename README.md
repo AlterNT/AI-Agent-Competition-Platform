@@ -9,13 +9,38 @@ After installing neo4j you must change the default password
 neo4j-admin set-initial-password # possibly requiring root permissions
 ```
 
-@TODO: set username/password into env var?
-
 ## Running the Server
 ```bash
 # in the server folder:
 # possibly requiring root permissions for neo4j start
 neo4j start && node .
+```
+
+# Developer Documentation
+## Database
+Most databasing operations are asynchronous and return a promise, await them in order to wait for their execution and retrieve the result (i.e. multiple consecutive transactions should be awaited).
+
+###
+To get a property called `propName` from `node`:
+```js
+node.get('propName');
+```
+
+
+### Insertion
+```js
+let created_node = await this.db_instance.create('ModelName', {
+    prop1: 'value1',
+    prop2: 'value2',
+    ...
+});
+```
+
+### Reading
+```js
+let result = await this.db_instance.find(
+    'ModelName', 'PrimaryKeyValue'
+);
 ```
 
 ---
