@@ -11,7 +11,7 @@ export default class ServerHandler {
      * requests a list of games to be played
      * @returns {} a list of available games
      */
-    games() {
+    async games() {
         const response = await fetch(`${ServerHandler.serverAPI}/games`, {
             method: 'GET',
             headers: {
@@ -45,7 +45,7 @@ export default class ServerHandler {
      * requests the agentToken of current agents turn 
      * @returns {} agentToken of current agents turn
      */
-    turn() {
+    async turn() {
         const response = await fetch(`${ServerHandler.serverAPI}/turn`, {
             method: 'POST',
             headers: {
@@ -62,7 +62,7 @@ export default class ServerHandler {
     /**
      * requests the current game state for the agent
      */
-    gameState() {
+    async gameState() {
         const response = await fetch(`${ServerHandler.serverAPI}/game-state`, {
             method: 'GET',
             headers: {
