@@ -7,10 +7,6 @@ export default class ServerHandler {
 
     static serverAPI = 'http://localhost:8080/api';
 
-    constuctor(agentToken) {
-        this.agentToken = agentToken;
-    }
-
     /**
      * requests a list of games to be played
      * @returns {} a list of available games
@@ -28,7 +24,7 @@ export default class ServerHandler {
      */
     joinLobby(gameID, lobbyID = -1) {
         const response = await fetch(`${ServerHandler.serverAPI}/join-lobby?` + new URLSearchParams({
-            agentToken: agentToken,
+            agentToken: Client.instance.token,
             gameID: gameID,
             lobbyID: lobbyID,
         }));
@@ -45,7 +41,7 @@ export default class ServerHandler {
                 'Content-Type': 'application/json',
             },
             body: {
-                agentToken: agentToken,
+                agentToken: Client.instance.token,
             }
         });
         const turn = JSON.parse(response);
@@ -62,7 +58,7 @@ export default class ServerHandler {
                 'Content-Type': 'application/json',
             },
             body: {
-                agentToken: agentToken
+                agentToken: Client.instance.token
             }
         });
         const gameState = JSON.parse(response);
@@ -80,7 +76,7 @@ export default class ServerHandler {
                 'Content-Type': 'application/json',
             },
             body: {
-                agentToken: agentToken,
+                agentToken: Client.instance.token,
                 action: action
             }
         });
