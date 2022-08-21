@@ -3,12 +3,13 @@ import { error, log } from "./messages"
 import fetch from 'node-fetch'
 import readline from 'readline'
 
-const SERVER_API_ENDPOINT = 'http://localhost:8080/api'
 
 export default class ServerHandler {
+
+    static serverAPI = 'http://localhost:8080/api';
+
     constuctor(agentToken) {
-        this.serverAPI = SERVER_API_ENDPOINT
-        this.agentToken = agentToken
+        this.agentToken = agentToken;
     }
 
     /**
@@ -16,9 +17,9 @@ export default class ServerHandler {
      * @returns {} a list of available games
      */
     games() {
-        const response = await fetch(`${this.serverAPI}/games`)
-        const games = JSON.parse(response)
-        return games
+        const response = await fetch(`${this.serverAPI}/games`);
+        const games = JSON.parse(response);
+        return games;
     }
 
     /**
@@ -27,7 +28,7 @@ export default class ServerHandler {
      * @param {Number} lobbyID id of lobby to join. -1 indicates automatic allocation.
      */
     joinLobby(gameID, lobbyID = -1) {
-        const response = await fetch(`${this.serverAPI}/join-lobby` + new URLSearchParams({
+        const response = await fetch(`${this.serverAPI}/join-lobby?` + new URLSearchParams({
             agentToken: agentToken,
             gameID: gameID,
             lobbyID: lobbyID,
@@ -47,9 +48,9 @@ export default class ServerHandler {
             body: {
                 agentToken: agentToken,
             }
-        })
-        const turn = JSON.parse(response)
-        return turn
+        });
+        const turn = JSON.parse(response);
+        return turn;
     }
 
     /**
@@ -64,9 +65,9 @@ export default class ServerHandler {
             body: {
                 agentToken: agentToken
             }
-        })
-        const gameState = JSON.parse(response)
-        return gameState
+        });
+        const gameState = JSON.parse(response);
+        return gameState;
     }
 
     /**
@@ -83,6 +84,6 @@ export default class ServerHandler {
                 agentToken: agentToken,
                 action: action
             }
-        })
+        });
     }
 }
