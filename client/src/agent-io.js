@@ -4,13 +4,15 @@ const fs = require('fs')
 const child_process = require('child_process')
 
 const ACCEPTED_FILETYPES = ['py', 'java']
-const SERVER_API_ENDPOINT = 'http://localhost:8080/api'
-class AgentIO {
+export default class AgentIO {
     constructor() {
         this.agent = null
-        this.serverAPI = SERVER_API_ENDPOINT
     }
 
+    /**
+     * displays a list of agents in ./agents
+     * user selects the agent they wish to use
+     */
     loadAgent() {
         const agentsDIR = path.resolve(__dirname + '/agents')
         const agentFilenames = []
@@ -34,32 +36,52 @@ class AgentIO {
         this.executeAgent(agentFilepath)
     }
 
+    /**
+     * executes the agent that was select in loadAgent()
+     * @param {String} agentFilepath 
+     */
     executeAgent(agentFilepath) {
-        let agent = null
-
         if (agentFilepath.endsWith('py')) {
-            agent = child_process.spawn('python', [agentFilepath])
+            this.agent = child_process.spawn('python', [agentFilepath])
 
         } else if (agentFilepath.endsWith('java')) {
             child_process.exec('javac', [agentFilepath])
-            agent = child_process.spawn('java', [agentFilepath])
+            this.agent = child_process.spawn('java', [agentFilepath])
+        }
+    }
+
+    /**
+     * recieves data from the agent
+     * @param {String} raw data recieved
+     */
+    agentOut(raw) {
+        const data = JSON.parse(raw);
+        // TODO: Send to server-handler.
+    }
+
+    /**
+     * sends data to the agent
+     * @param {String} data data to be sent
+     */
+    agentIn(data) {
+        if (agent === undefined) {
+            error('Agent is undefined!');
         }
 
-        this.agent = agent
-
-        agent.stdout.on('data', (data) => {
-            console.log(`${data}`)
-        })
-
-        agent.stderr.on('data', (data) => {
-            console.log(`${data}`)
-        })
+        this.agent.stdin.write(data);
     }
 
     run() {
         this.loadAgent()
+
+        // handle agent messages
+        this.agent.stdout.on('data', (data) => {
+            this.agentOut(data)
+        })
+
+        // handle agent errors
+        this.agent.stderr.on('data', (data) => {
+            console.log(`${data}`)
+        })
     }
 }
-
-const agentIO = new AgentIO()
-agentIO.run()
