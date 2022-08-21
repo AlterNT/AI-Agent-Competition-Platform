@@ -20,15 +20,11 @@ app.get('/api/game-state', (req, res) => {
 // receive action made by agent
 app.post('/api/action', (req, res) => {
     const { agentToken, action } = req.body
-
-    res.json()
 })
 
 // receive join-lobby request
 app.post('/api/join-lobby', (req, res) => {
-    const { agentToken, gameID } = req.body
-
-    res.json()
+    const { agentToken, gameID, lobbyID } = req.body
 })
 
 // Create server variable to be stored and notify user of API activation.

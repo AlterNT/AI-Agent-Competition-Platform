@@ -10,27 +10,10 @@ export default class AgentIO {
     agent;
 
     /**
-     * Initializes the agent to be run and registers relevant events.
-     * @param {String} agentCommand 
-     */
-    createAgent(agentCommand) {
-        agent = child_process.spawn(agentCommand);
-
-        subprocess.on('error', (err) => {
-            console.error(logError('Agent exception occurred.', err));
-            if (Client.instance.isCLI) process.exit(1);
-        });
-
-        agent.stdout.on('data', (data) => {
-            this.agentOut(data);
-        });
-    }
-
-    /**
      * displays a list of agents in ./agents
      * user selects the agent they wish to use
      */
-     loadAgent() {
+    loadAgent() {
         const agentsDIR = path.resolve(__dirname + '/agents')
         const agentFilenames = []
 
