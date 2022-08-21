@@ -12,6 +12,8 @@ export default {
         type: 'relationship',
         relationship: 'CONTROLS',
         direction: 'in',
+        unique: true,
+        eager: true,
     },
     playedIn: {
         type: 'relationship',
@@ -22,6 +24,7 @@ export default {
                 type: 'float', // don't use abstract supertype 'number'
                 default: 0.0
             }
-        }
+        },
+        eager: true,
     },
 };

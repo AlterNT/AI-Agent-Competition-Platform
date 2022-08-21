@@ -17,6 +17,7 @@ export default {
                 type: 'float', // don't use abstract supertype 'number'
                 default: 0.0
             }
-        }
+        },
+        eager: true,
     },
 };
