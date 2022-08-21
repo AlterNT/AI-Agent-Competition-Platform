@@ -80,7 +80,7 @@ export default class ServerHandler {
      * posts an action made by the agent
      * @param {String} action action made by agent
      */
-    sendAction(action) {
+    async sendAction(action) {
         const response = await fetch(`${ServerHandler.serverAPI}/action`, {
             method: 'POST',
             headers: {
@@ -93,14 +93,3 @@ export default class ServerHandler {
         })
     }
 }
-
-async function main() {
-    const sh = new ServerHandler()
-    await sh.games()
-    await sh.joinLobby("GAME_ID")
-    await sh.turn()
-    await sh.sendAction("ACTION")
-    await sh.gameState()
-}
-
-main()
