@@ -11,14 +11,14 @@ app.get('/api/games', (req, res) => {
 })
 
 // return gamestate view for agent
-app.get('/api/game', (req, res) => {
+app.get('/api/game-state', (req, res) => {
     const { agentToken } = req.query
 
     res.json()
 })
 
 // receive action made by agent
-app.post('/api/game', (req, res) => {
+app.post('/api/action', (req, res) => {
     const { agentToken, action } = req.body
 
     res.json()
