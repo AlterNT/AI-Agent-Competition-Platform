@@ -1,6 +1,8 @@
-import('node-fetch')
+import { Client } from "./main";
+import { error, log } from "./messages";
+import fetch from 'node-fetch';
+const readline = require('readline');
 
-const SERVER_API_ENDPOINT = 'http://localhost:8080/api'
 export default class ServerHandler {
 
     async connect() {

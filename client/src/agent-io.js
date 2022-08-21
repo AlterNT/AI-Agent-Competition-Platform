@@ -1,13 +1,11 @@
-const path = require('path')
-const prompt = require('prompt-sync')({ sigint: true })
-const fs = require('fs')
-const child_process = require('child_process')
+import { Client } from './main';
+import child_process from 'child_process';
+import { logError, error } from './messages';
 
-const ACCEPTED_FILETYPES = ['py', 'java']
 export default class AgentIO {
-    constructor() {
-        this.agent = null
-    }
+
+    /** @type {child_process.ChildProcess} */
+    agent;
 
     /**
      * displays a list of agents in ./agents
@@ -24,12 +22,12 @@ export default class AgentIO {
                 }
             }
         }
-        
+
         console.log('AGENTS: ')
         for (const i in agentFilenames) {
             console.log(`${i}. ${agentFilenames[i]}`)
         }
-        
+
         const agentIndex = parseInt(prompt('SELECT AGENT NUMBER: '))
         const agentFilepath = path.resolve(agentsDIR + '/' + agentFilenames[agentIndex])
 
@@ -51,17 +49,34 @@ export default class AgentIO {
     }
 
     /**
-     * recieves data from the agent
-     * @param {String} raw data recieved
+     * Initializes the agent to be run and registers relevant events.
+     * @param {String} agentCommand 
+     */
+    createAgent(agentCommand) {
+        agent = child_process.spawn(agentCommand);
+
+        subprocess.on('error', (err) => {
+            console.error(logError('Agent exception occurred.', err));
+            if (Client.instance.isCLI) process.exit(1);
+        });
+
+        agent.stdout.on('data', (data) => {
+            this.agentOut(data);
+        });
+    }
+
+    /**
+     * Recieves data from the agent.
+     * @param {String} raw Data recieved.
      */
     agentOut(raw) {
-        const data = JSON.parse(raw);
+        let data = JSON.parse(raw);
         // TODO: Send to server-handler.
     }
 
     /**
-     * sends data to the agent
-     * @param {String} data data to be sent
+     * Sends data to the agent.
+     * @param {{*}} data Data to be sent.
      */
     agentIn(data) {
         if (agent === undefined) {
@@ -69,19 +84,5 @@ export default class AgentIO {
         }
 
         this.agent.stdin.write(data);
-    }
-
-    run() {
-        this.loadAgent()
-
-        // handle agent messages
-        this.agent.stdout.on('data', (data) => {
-            this.agentOut(data)
-        })
-
-        // handle agent errors
-        this.agent.stderr.on('data', (data) => {
-            console.log(`${data}`)
-        })
     }
 }
