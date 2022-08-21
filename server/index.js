@@ -23,13 +23,23 @@ class Server {
     /**
      * @TODO: Test
      * @param {String} userToken
+     * @return {Model} Agent model
      */
-    async getAgentGameState(userToken) {
+    async getUserAgent(userToken) {
         const user = await this.db_instance.find(
             'User', userToken
         );
 
         const agent = user.get('controls').endNode();
+        return agent;
+    }
+
+    /**
+     * @TODO: Test
+     * @param {String} userToken
+     */
+    async getUserGameState(userToken) {
+        const agent = await this.getUserAgent(userToken);
         const game = agent.get('currentGame').endNode();
         const gameJson = await game.toJson();
 
@@ -40,11 +50,22 @@ class Server {
      * @TODO: Test
      * @param {String} gameId
      */
-    async addAgentToLobby(gameId) {
+    async addUserToLobby(userToken, gameId) {
+        const agent = await this.getUserAgent(userToken);
+        const game = await this.db_instance.find('Game', gameId);
+
+        // Might need score to be set
+        await Promise.all([
+            agent.relateTo(game, 'playedIn'),
+            agent.relateTo(game, currentGame),
+            game.relateTo(agent, 'playedIn'),
+        ])
     }
 
     /**
-     * @TODO: Test
+     * @TODO: Use query builder to get all agents then detach currentGame
+     * Maybe also delete the game node or just label it or something?
+     * I think the best solution is to label all completed games instead
      * @param {String} gameId
      */
     async closeLobby(gameId) {
