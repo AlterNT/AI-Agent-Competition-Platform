@@ -28,7 +28,7 @@ export default class ServerHandler {
      * @param {Number} lobbyID id of lobby to join. -1 indicates automatic allocation.
      */
     async joinLobby(gameID, lobbyID = -1) {
-        const response = await fetch(`${this.serverAPI}/join-lobby`, {
+        const response = await fetch(`${ServerHandler.serverAPI}/join-lobby`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ export default class ServerHandler {
      * @returns {} agentToken of current agents turn
      */
     turn() {
-        const response = await fetch(`${this.serverAPI}/turn`, {
+        const response = await fetch(`${ServerHandler.serverAPI}/turn`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ export default class ServerHandler {
      * requests the current game state for the agent
      */
     gameState() {
-        const response = await fetch(`${this.serverAPI}/game-state`, {
+        const response = await fetch(`${ServerHandler.serverAPI}/game-state`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
