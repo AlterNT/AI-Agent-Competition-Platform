@@ -3,7 +3,6 @@ import { error, log } from "./messages"
 import fetch from 'node-fetch'
 import readline from 'readline'
 
-
 export default class ServerHandler {
 
     static serverAPI = 'http://localhost:8080/api';
@@ -17,7 +16,7 @@ export default class ServerHandler {
      * @returns {} a list of available games
      */
     games() {
-        const response = await fetch(`${this.serverAPI}/games`);
+        const response = await fetch(`${ServerHandler.serverAPI}/games`);
         const games = JSON.parse(response);
         return games;
     }
@@ -28,7 +27,7 @@ export default class ServerHandler {
      * @param {Number} lobbyID id of lobby to join. -1 indicates automatic allocation.
      */
     joinLobby(gameID, lobbyID = -1) {
-        const response = await fetch(`${this.serverAPI}/join-lobby?` + new URLSearchParams({
+        const response = await fetch(`${ServerHandler.serverAPI}/join-lobby?` + new URLSearchParams({
             agentToken: agentToken,
             gameID: gameID,
             lobbyID: lobbyID,
@@ -40,7 +39,7 @@ export default class ServerHandler {
      * @returns {} agentToken of current agents turn
      */
     turn() {
-        const response = await fetch(`${this.serverAPI}/turn`, {
+        const response = await fetch(`${ServerHandler.serverAPI}/turn`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -57,7 +56,7 @@ export default class ServerHandler {
      * requests the current game state for the agent
      */
     gameState() {
-        const response = await fetch(`${this.serverAPI}/game-state`, {
+        const response = await fetch(`${ServerHandler.serverAPI}/game-state`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -75,7 +74,7 @@ export default class ServerHandler {
      * @param {String} action action made by agent
      */
     sendAction(action) {
-        const response = await fetch(`${this.serverAPI}/action`, {
+        const response = await fetch(`${ServerHandler.serverAPI}/action`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
