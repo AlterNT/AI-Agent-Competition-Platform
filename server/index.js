@@ -17,7 +17,7 @@ class Server {
         );
 
         const agent = user.get('controls').endNode();
-        const game = agent.get('playedIn').endNode();
+        const game = agent.get('currentGame').endNode();
         const gameJson = await game.toJson();
 
         return gameJson;

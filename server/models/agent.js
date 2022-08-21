@@ -25,6 +25,12 @@ export default {
                 default: 0.0
             }
         },
+    },
+    currentGame: {
+        type: 'relationship',
+        relationship: 'PLAYED_IN',
+        direction: 'out',
         eager: true,
+        unique: true,
     },
 };
