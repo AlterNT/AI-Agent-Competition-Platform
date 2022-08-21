@@ -9,11 +9,24 @@ class Server {
 
     /**
      * @TODO: Test
-     * @param {String} agentToken
+     * @param {String} userToken
+     * @param {String | Number} studentNumber
      */
-    async getAgentGameState(agentToken) {
+    async createUser(userToken, studentNumber) {
+        await this.db_instance.create(
+            'User', {
+                studentNumberString: String(studentNumber), // dont know if this is legal?
+                authenticationTokenString: userToken,
+        });
+    }
+
+    /**
+     * @TODO: Test
+     * @param {String} userToken
+     */
+    async getAgentGameState(userToken) {
         const user = await this.db_instance.find(
-            'User', agentToken
+            'User', userToken
         );
 
         const agent = user.get('controls').endNode();
@@ -23,10 +36,32 @@ class Server {
         return gameJson;
     }
 
+    /**
+     * @TODO: Test
+     * @param {String} gameId
+     */
+    async addAgentToLobby(gameId) {
+    }
+
+    /**
+     * @TODO: Test
+     * @param {String} gameId
+     */
+    async closeLobby(gameId) {
+    }
+
     async handleClose() {
+        this.db_instance.close();
     }
 
     async run() {
+        try {
+            // @TODO
+        } catch (exception) {
+            // @TODO
+        } finally {
+            this.handleClose();
+        }
     }
 }
 
