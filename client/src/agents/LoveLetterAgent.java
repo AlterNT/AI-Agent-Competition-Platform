@@ -9,7 +9,7 @@ public class LoveLetterAgent {
     private int myIndex;
 
     // 0 place default constructor
-    public RandomAgent(){
+    public RandomAgent() {
         rand = new Random();
     }
 
