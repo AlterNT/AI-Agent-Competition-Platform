@@ -30,9 +30,6 @@ class LobbyManager {
         this.queue = [];
 
         /** @type {Number} array of user tokens */
-        this.numLobbies = 10;
-
-        /** @type {Number} array of user tokens */
         this.numPlayers = numPlayers;
     }
 
@@ -46,7 +43,9 @@ class LobbyManager {
     }
 
     async startLobby() {
-        // TODO: Dispatch game
+        const players = this.lobby.players;
+        const numBots = this.lobby.playerCapacity - players.length;
+        this.startGame(players, numBots);
         this.createLobby();
     }
 

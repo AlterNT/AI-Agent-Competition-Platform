@@ -1,6 +1,7 @@
 import Neode from 'neode';
 import Models from './models/index.js';
 import LobbyManager from './lobby-manager.js';
+import GameManager from './game-manager.js';
 import 'process';
 
 class Server {
