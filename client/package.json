@@ -4,11 +4,17 @@
   "description": "AI Agent Competition Platform Client",
   "main": "src/index.js",
   "scripts": {
-    "start": "electron . --no-sandbox"
+    "start": "electron . --no-sandbox --cli"
   },
   "private": true,
   "license": "MIT",
   "devDependencies": {
     "electron": "^20.0.2"
+  },
+  "dependencies": {
+    "colors": "^1.4.0",
+    "esm": "^3.2.25",
+    "node-fetch": "^2.6.7",
+    "prompt-sync": "^4.2.0"
   }
 }
