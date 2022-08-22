@@ -6,14 +6,21 @@
 ## Configuring neo4j
 After installing neo4j you must change the default password
 ```bash
-neo4j-admin set-initial-password # possibly requiring root permissions
+neo4j-admin set-initial-password <insert-password-here> # possibly requiring root permissions
 ```
+
+Go to the server dir and make a dotenv file
+```bash
+cd server && cp .env_example .env
+```
+
+Fille in the correct details into the dotenv file
 
 ## Running the Server
 ```bash
 # in the server folder:
 # possibly requiring root permissions for neo4j start
-neo4j start && node .
+neo4j start && sleep 60 && node .
 ```
 
 ---
