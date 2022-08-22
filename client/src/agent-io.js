@@ -1,16 +1,18 @@
-import { Client } from './main';
-import child_process from 'child_process';
-import { logError, error } from './messages';
+import { Client } from './main'
+import child_process from 'child_process'
+import { logError, error } from './messages'
+import fetch from 'node-fetch'
+
+const ACCEPTED_FILETYPES = ['py', 'java']
 
 export default class AgentIO {
-
     /** @type {child_process.ChildProcess} */
     agent;
 
-    /* Deprecated?
-        Maybe we could add an autodetect specifically for python and java.
-
-
+    /**
+     * displays a list of agents in ./agents
+     * user selects the agent they wish to use
+     */
     loadAgent() {
         const agentsDIR = path.resolve(__dirname + '/agents')
         const agentFilenames = []
@@ -33,37 +35,43 @@ export default class AgentIO {
 
         this.executeAgent(agentFilepath)
     }
-    */
-    
+
     /**
-     * Initializes the agent to be run and registers relevant events.
-     * @param {String} agentCommand 
+     * executes the agent that was select in loadAgent()
+     * @param {String} agentFilepath 
      */
-    createAgent(agentCommand) {
-        agent = child_process.spawn(agentCommand);
+    executeAgent(agentFilepath) {
+        if (agentFilepath.endsWith('py')) {
+            this.agent = child_process.spawn('python', [agentFilepath])
 
-        subprocess.on('error', (err) => {
-            console.error(logError('Agent exception occurred.', err));
-            if (Client.instance.isCLI) process.exit(1);
-        });
+        } else if (agentFilepath.endsWith('java')) {
+            child_process.exec('javac', [agentFilepath])
+            this.agent = child_process.spawn('java', [agentFilepath])
+        }
 
-        agent.stdout.on('data', (data) => {
-            this.agentOut(data);
-        });
+        // handle agent messages
+        this.agent.stdout.on('data', (data) => {
+            this.agentOut(data)
+        })
+
+        // handle agent errors
+        this.agent.stderr.on('data', (data) => {
+            console.log(`${data}`)
+        })
     }
 
     /**
-     * Recieves data from the agent.
-     * @param {String} raw Data recieved.
+     * recieves data from the agent
+     * @param {String} raw data recieved
      */
     agentOut(raw) {
-        let data = JSON.parse(raw);
+        const data = JSON.parse(raw);
         // TODO: Send to server-handler.
     }
 
     /**
-     * Sends data to the agent.
-     * @param {{*}} data Data to be sent.
+     * sends data to the agent
+     * @param {String} data data to be sent
      */
     agentIn(data) {
         if (agent === undefined) {
