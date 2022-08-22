@@ -139,9 +139,7 @@ export class Client {
         }
         status();
 
-        await this.serverHandler.connect();
-
-        await this.serverHandler.lobbyWait();
+        await this.serverHandler.joinLobby();
     }
 }
 

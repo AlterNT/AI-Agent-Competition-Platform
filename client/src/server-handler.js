@@ -23,11 +23,10 @@ export default class ServerHandler {
     }
 
     /**
-     * posts a request to join a lobby.
-     * @param {String} gameID id of game to be played.
-     * @param {Number} lobbyID id of lobby to join. -1 indicates automatic allocation.
+     * WIP, bound to change.
+     * @param {{}} options.
      */
-    async joinLobby(gameID, lobbyID = -1) {
+    async joinLobby(options) {
         const response = await fetch(`${ServerHandler.serverAPI}/join-lobby`, {
             method: 'POST',
             headers: {
@@ -35,8 +34,7 @@ export default class ServerHandler {
             },
             body: JSON.stringify({
                 agentToken: Client.instance.token,
-                gameID: gameID,
-                lobbyID: lobbyID
+                lobbyID: Client.instance.lobby,
             })
         })
     }

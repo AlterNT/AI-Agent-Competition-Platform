@@ -22,6 +22,8 @@ export default class AgentIO {
         const agentsDIR = path.resolve(__dirname + '/agents')
         const agentFilenames = []
 
+        /* TODO: This needs reworking as the agents folder is deprecated.
+
         for (const filename of fs.readdirSync('./agents')) {
             for (const filetype of ACCEPTED_FILETYPES) {
                 if (filename.endsWith(filetype)) {
@@ -29,6 +31,7 @@ export default class AgentIO {
                 }
             }
         }
+        
         
         console.log('AGENTS: ')
         for (const i in agentFilenames) {
@@ -40,6 +43,7 @@ export default class AgentIO {
         console.log(agentFilepath)
 
         this.executeAgent(agentFilepath)
+        */
     }
 
     /**
