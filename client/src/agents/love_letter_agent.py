@@ -1,8 +1,9 @@
+from random import random 
+
 class LoveLetterAgent:
     def __init__(self, player_index, state):
         self.player_index = player_index
-        self.state = state
-        
+        self.state = state 
     
     def play_card(self):
         cards = self.state.cards()
