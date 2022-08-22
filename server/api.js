@@ -1,35 +1,42 @@
-import express from 'express'
-import bodyParser from 'body-parser'
+import express from 'express';
+import Server from './server.js';
 
-const app = express();
-app.use(bodyParser.json())
+const runAPI = async () => {
+    // TODO: Not sure about having the server not being the first thing initialized.
+    // Refactor?
+    const server = new Server();
+    const app = express()
+    // TODO: Config would probably be a good idea for port.
+    const PORT_NUMBER = 31415;
 
-// return list of available games to be played
-app.get('/api/games', (req, res) => {
-    // would ideally be able to do this dynamically (not have to use a json file that must be editted)
-    res.json()
-})
+    app.listen(
+        PORT_NUMBER,
+        () => { console.log(`listening at http://localhost:${PORT_NUMBER}`) }
+    )
 
-// return gamestate view for agent
-app.get('/api/game-state', (req, res) => {
-    const { agentToken } = req.query
+    // return list of available games to be played
+    app.get('/api/games', (req, res) => {
+        res.json()
+    })
 
-    res.json()
-})
+    // return gamestate view for agent
+    app.get('/client/game', (req, res) => {
+        const { agentToken } = req.params
 
-// receive action made by agent
-app.post('/api/action', (req, res) => {
-    const { agentToken, action } = req.body
-})
+        res.json()
+    })
 
-// receive join-lobby request
-app.post('/api/join-lobby', (req, res) => {
-    const { agentToken, gameID, lobbyID } = req.body
-})
+    app.get('/client/join/:lobby', (req, res) => {
+        const lobbyId = parseInt(req.params.lobby);
+        const {token, ...options} = req.query;
+        console.log(`Agent ${token} attempting to join lobby ${lobbyId === -1 ? '(auto)' : lobbyId}`);
+        server.lobbyManager.joinLobby(lobbyId, token, options);
+    })
 
-// Create server variable to be stored and notify user of API activation.
-const server = app.listen(8080, () => {
-    const host = server.address().address
-    const port = server.address().port
-    console.log("REST API Listening at http://%s:%s", host, port)
-})
+    // receive move played by an agent
+    app.post('/client/action', (req, res) => {
+        const { agentToken, action } = req.params;
+    })
+}
+
+export default runAPI;

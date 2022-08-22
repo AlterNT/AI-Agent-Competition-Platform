@@ -1,13 +1,8 @@
+import { Client } from './main'
 import child_process from 'child_process'
+import { logError, error } from './messages'
 import fetch from 'node-fetch'
-import fs from 'fs'
-import prompt from 'prompt-sync'
-import path from 'path'
-import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
-const input = prompt({ sigint: true });
 const ACCEPTED_FILETYPES = ['py', 'java']
 
 export default class AgentIO {
@@ -61,7 +56,7 @@ export default class AgentIO {
 
         // handle agent messages
         this.agent.stdout.on('data', (data) => {
-            console.log(`${data}`)
+            this.agentOut(data)
         })
 
         // handle agent errors

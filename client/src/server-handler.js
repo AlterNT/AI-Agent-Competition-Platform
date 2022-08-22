@@ -1,76 +1,61 @@
-import { Client } from "./main"
-import { error, log } from "./messages"
+import { Client } from "./main.js"
 import fetch from 'node-fetch'
-import readline from 'readline'
 
 
+>>>>>>> lobby-management
+
+
+<<<<<<< HEAD
 export default class ServerHandler {
 
-    static serverAPI = 'http://localhost:8080/api';
+    /** @type {String} */
+    serverAddress = 'localhost';
+    /** @type {Number} */
+    port = 31415;
+
+    serverAPI = `http://${this.serverAddress}:${this.port}/`;
     /**
      * requests a list of games to be played
      * @returns {} a list of available games
      */
     async games() {
-        const response = await fetch(`${ServerHandler.serverAPI}/games`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        });
+        const response = await fetch(`${this.serverAPI}api/games`);
         const games = JSON.parse(response);
         return games;
     }
 
     /**
-     * WIP, bound to change.
-     * @param {{}} options.
+     * Joins a lobby on the server.
+     * @param {{
+     *  maxAgents: Number,
+     *  bots: Number,
+     *  private: Boolean
+     * }} options Lobby options in the event that a new one is created.
+     * @param {Number} lobbyId Lobby to be joined.
+     * @returns {Number} The lobby joined.
      */
-    async joinLobby(options) {
-        const response = await fetch(`${ServerHandler.serverAPI}/join-lobby`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                agentToken: Client.instance.token,
-                lobbyID: Client.instance.lobby,
-            })
-        })
-    }
-
-    /**
-     * requests the agentToken of current agents turn 
-     * @returns {} agentToken of current agents turn
-     */
-    async turn() {
-        const response = await fetch(`${ServerHandler.serverAPI}/turn`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                agentToken: Client.instance.token,
-            })
-        });
-        const turn = JSON.parse(response);
-        return turn;
+    async joinLobby(lobbyId = -1, options = {}) {
+        const response = await fetch(`${this.serverAPI}client/join/${lobbyId}?${new URLSearchParams({
+            token: Client.instance.token,
+            ...options
+        })}`);
+        return parseInt(await response.text());
     }
 
     /**
      * requests the current game state for the agent
      */
     async gameState() {
-        const response = await fetch(`${ServerHandler.serverAPI}/game-state`, {
+        const response = await fetch(`${this.serverAPI}client/game`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                agentToken: Client.instance.token
+                token: Client.instance.token
             })
         });
-        const gameState = JSON.parse(response);
+        const gameState = JSON.parse(await response.json());
         return gameState;
     }
 
@@ -79,13 +64,13 @@ export default class ServerHandler {
      * @param {String} action action made by agent
      */
     async sendAction(action) {
-        const response = await fetch(`${ServerHandler.serverAPI}/action`, {
+        const response = await fetch(`${this.serverAPI}client/action`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                agentToken: Client.instance.token,
+                token: Client.instance.token,
                 action: action
             })
         })
