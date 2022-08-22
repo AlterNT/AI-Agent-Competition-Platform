@@ -13,4 +13,8 @@ class ClientIO {
     void clientOut(String data) {
         console.log(data);
     }
+
+    void playMove(String move) {
+        clientOut(move);
+    }
 }
