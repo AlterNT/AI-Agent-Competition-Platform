@@ -1,3 +1,5 @@
+import Lobby from './lobby.js';
+
 // LobbyManager contains instances of Lobby classes which contain instances of player classes.
 
 // - = Client interaction 
@@ -21,35 +23,59 @@
 //	      if so add player to lobby through lobby manager function 
 //	      if not request new lobby from lobby manager.
 
-class LobbyManager {
-    constructor(lobbyAddress){
-        //this.name = "Lobby Manager";
-        this.lobbyAddress = lobbyAddress;
-        this.lobby = new Lobby();
-    }    
-    async startLobby(){
-        // !!!!!ADD call back function to time out after given time and and start game with random agents
-        while (this.lobby.isFull() != true){
-            // add sleep function
-            console.log("Game: %s\n Is waiting for a game to start, current player count: %s", this.lobbyAddress,this.queue.length);
+export default class LobbyManager {
+
+    /** @type {Map<Number, Lobby>} */
+    lobbies = new Map();
+
+    constructor() {
+    }
+
+    /**
+     * 
+     * @param {Number} id Lobby id. If this does not exist, one will be created. If this is -1, one will be auto-assigned.
+     * 
+     * @returns {Lobby} Allocated lobby.
+     */
+    getLobby(id) {
+        let lobby;
+
+        if (id === -1) {
+            // Automatic allocation.
+            // Join the first not-full lobby.
+            for (let l of this.lobbies.values()) {
+                if (!l.isFull()) {
+                    lobby = l;
+                    break;
+                }
+            }
+            // If all lobbies are full.
+            if (lobby === undefined) {
+                lobby = new Lobby();
+                let newId = 0;
+                // Find the first unused id.
+                while (this.lobbies.has(newId)) newId++;
+                this.lobbies.set(newId, lobby);
+            }
+        } else {
+            // Join lobby if it exists, otherwise create a new one.
+            if (this.lobbies.has(id)) {
+                lobby = this.lobbies.get(id);
+            } else {
+                lobby = new Lobby();
+                this.lobbies.set(id, lobby);
+            }
         }
-        // lobby has been filled 
-        // hand lobby over to game handler 
+
+        return lobby;
     }
 
     // end lobby 
-
-    async addPlayer(id){
-        this.lobby.registerPlayer(id);
-    }
 
     // notify lobby address of updates 
 
     // remove player 
 
     // handle and monitor disconnection
-    
-}
 
-  var Lobby = new LobbyManager("/api/a");
-  Lobby.startLobby();
+}
