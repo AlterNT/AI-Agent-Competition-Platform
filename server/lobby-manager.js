@@ -40,6 +40,7 @@
 //	      if not request new lobby from lobby manager.
 
 import Lobby from './lobby.js';
+import Server from './server.js';
 
 export default class LobbyManager {
 
@@ -47,48 +48,64 @@ export default class LobbyManager {
     lobbies = new Map();
 
     /**
-     * @param {Number} id Lobby id. If this does not exist, one will be created. If this is -1, one will be auto-assigned.
-     * @returns {Lobby} Allocated lobby.
+     * Adds a player to a lobby.
+     * @param {Number} lobbyId The requested lobby id. -1 for automatic allocation.
+     * @param {String} token The player's token.
+     * @param {
+     *  maxAgents: Number,
+     *  bots: Number,
+     *  private: Boolean
+     * } options The options to be used if a new lobby is created.
+     * @returns {Number} The assigned lobby id.
      */
-    getLobby(id) {
-        let lobby;
+    joinLobby(lobbyId, token, options) {
+        let id;
 
-        if (id === -1) {
+        if (lobbyId === -1) {
             // Automatic allocation.
-            // Join the first not-full lobby.
-            for (let l of this.lobbies.values()) {
-                if (!l.isFull()) {
-                    lobby = l;
+            // Join the first not-full, not-private lobby.
+            for (let [i, l] of this.lobbies) {
+                if (!l.isFull() && !l.private) {
+                    id = i;
+                    l.addPlayer(token);
                     break;
                 }
             }
-            // If all lobbies are full.
-            if (lobby === undefined) {
-                lobby = new Lobby();
-                let newId = 0;
+            // If all lobbies are full or there are none.
+            if (id === undefined) {
+                id = 0;
                 // Find the first unused id.
-                while (this.lobbies.has(newId)) newId++;
-                this.lobbies.set(newId, lobby);
+                while (this.lobbies.has(id)) id++;
+                let lobby = new Lobby(id, options);
+                lobby.addPlayer(token);
+                this.lobbies.set(id, lobby);
             }
         } else {
+            id = lobbyId;
             // Join lobby if it exists, otherwise create a new one.
-            if (this.lobbies.has(id)) {
-                lobby = this.lobbies.get(id);
+            if (this.lobbies.has(lobbyId)) {
+                let lobby = this.lobbies.get(lobbyId);
+                lobby.addPlayer(token);
             } else {
-                lobby = new Lobby();
+                let lobby = new Lobby(id, options);
+                lobby.addPlayer(token);
                 this.lobbies.set(id, lobby);
             }
         }
 
-        return lobby;
+        return id;
     }
 
-    // end lobby 
+    /**
+     * Starts the game in a lobby.
+     * @param {Number} lobbyId 
+     * @param {String[]} players List of player tokens.
+     * @param {Number} bots Number of bots to be added.
+     */
+    startLobby(lobbyId, players, bots) {
 
-    // notify lobby address of updates 
-
-    // remove player 
-
-    // handle and monitor disconnection
+        Server.instance.gameManager.createGame()
+        this.lobbies.delete(lobbyId);
+    }
 
 }

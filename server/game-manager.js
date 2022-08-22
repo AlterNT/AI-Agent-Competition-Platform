@@ -1,18 +1,13 @@
 import GameInstance from './game-instance.js';
 
-class GameManager {
-    constructor(recordGame) {
-        /** @type {GameInstance[]} */
-        this.games = [];
-        this.recordGame = recordGame;
-    }
+export default class GameManager {
 
-    async createGame(userTokens, numPlayers) {
-        const numCurrent = userTokens.length;
-        const numBots = numPlayers - numCurrent;
+    /** @type {GameInstance[]} */
+    games = [];
+
+    async createGame(userTokens, numBots) {
         const game = new GameInstance(userTokens, numBots);
-
-        this.games.push(games)
+        this.games.push(game);
     }
 
     async closeFinishedGames() {
@@ -27,5 +22,3 @@ class GameManager {
             });
     }
 }
-
-export default GameManager;

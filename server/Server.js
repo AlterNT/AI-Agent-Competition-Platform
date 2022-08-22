@@ -2,15 +2,21 @@ import Neode from 'neode';
 import Models from './models/index.js';
 import LobbyManager from './lobby-manager.js';
 import GameManager from './game-manager.js';
+import Game from './game/game.js';
 import PaperScissorsRock from './game/psr.js';
-import 'process';
+
 export default class Server {
     /** @type {Server} */
     static instance;
 
+    /** @type {Neode} */
+    //dbInstance = Neode.fromEnv().with(Models);
     /** @type {LobbyManager} */
-    lobbyManager;
+    lobbyManager = new LobbyManager();
+    /** @type {GameManager} */
+    gameManager = new GameManager();
 
+    //TODO? How will this work. Config file?
     /** @type {[String]} */
     games;
 
@@ -20,13 +26,6 @@ export default class Server {
     constructor() {
         // TODO: Singleton maybe?
         Server.instance = this;
-
-        this.dbInstance = Neode.fromEnv().with(Models);
-        this.lobbyManagers = {
-            2: new LobbyManager(2, () => {}), // TODO: game manager and lobby start
-            3: new LobbyManager(3, () => {}),
-            4: new LobbyManager(4, () => {}),
-        }
     }
 
     /**
@@ -91,11 +90,6 @@ export default class Server {
                 game.relateTo(agent, 'playedIn'),
             ]);
         }
-    }
-
-    async assignPlayerToLobby(userToken, numPlayers) {
-        const lobbyManager = this.lobbyManagers[numPlayers]; // Check numPlayers exists in obj;
-        lobbyManager.addPlayed(userToken);
     }
 
     async close() {

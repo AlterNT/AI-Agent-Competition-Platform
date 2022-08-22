@@ -1,10 +1,13 @@
 import express from 'express';
-import Server from './Server.js';
+import Server from './server.js';
 
 const runAPI = async () => {
+    // TODO: Not sure about having the server not being the first thing initialized.
+    // Refactor?
     const server = new Server();
     const app = express()
-    const PORT_NUMBER = 8080;
+    // TODO: Config would probably be a good idea for port.
+    const PORT_NUMBER = 31415;
 
     app.listen(
         PORT_NUMBER,
@@ -17,20 +20,22 @@ const runAPI = async () => {
     })
 
     // return gamestate view for agent
-    app.get('api/game', (req, res) => {
+    app.get('/client/game', (req, res) => {
         const { agentToken } = req.params
 
         res.json()
     })
 
-    app.get('join', (req, res) => {
-        const { agentToken } = req.params
-        server.assignPlayerToLobby(agentToken, 4);
+    app.get('/client/join/:lobby', (req, res) => {
+        const lobbyId = parseInt(req.params.lobby);
+        const {token, ...options} = req.query;
+        console.log(`Agent ${token} attempting to join lobby ${lobbyId === -1 ? '(auto)' : lobbyId}`);
+        server.lobbyManager.joinLobby(lobbyId, token, options);
     })
 
     // receive move played by an agent
-    app.post('api/game', (req, res) => {
-        const { agentToken } = req.params
+    app.post('/client/action', (req, res) => {
+        const { agentToken, action } = req.params;
     })
 }
 

@@ -15,10 +15,6 @@ export class Client {
 
     /** @type {Boolean} */
     isCLI = false;
-    /** @type {String} */
-    serverAddress = 'localhost';
-    /** @type {Number} */
-    port = 31415;
     /** @type {Agent} */
     agent;
     /** @type {String} */
@@ -106,7 +102,7 @@ export class Client {
                 // Server flag.
                 case /--server=.+/i.test(flag):
                     value = flag.split('=')[1];
-                    [this.serverAddress, this.port = this.port] = flag.split(':');
+                    [this.serverHandler.serverAddress, this.serverHandler.port = this.serverHandler.port] = flag.split(':');
                     break;
                 // Port flag.
                 case /--port=\d+/.test(flag):
@@ -139,7 +135,11 @@ export class Client {
         }
         status();
 
-        await this.serverHandler.joinLobby('loveletter', this.lobby);
+        //TODO:
+        let options = {};
+
+        this.lobby = await this.serverHandler.joinLobby(this.lobby, options);
+        log(`Successfully joined Lobby #${this.lobby}`)
     }
 }
 
