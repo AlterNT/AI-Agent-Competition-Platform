@@ -10,7 +10,7 @@ export default {
     },
     gameState: {
         type: 'string',
-        default: '',
+        default: '{}',
         required: true,
     }, // to be stored as a JSON string
     playedIn: {
@@ -20,7 +20,7 @@ export default {
         properties: {
             score: {
                 type: 'float', // don't use abstract supertype 'number'
-                default: 0.0
+                default: 0.0,
             }
         },
         eager: true,
