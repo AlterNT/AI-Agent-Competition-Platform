@@ -1,8 +1,13 @@
-import { Client } from './main'
 import child_process from 'child_process'
-import { logError, error } from './messages'
 import fetch from 'node-fetch'
+import fs from 'fs'
+import prompt from 'prompt-sync'
+import path from 'path'
+import { fileURLToPath } from 'url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+const input = prompt({ sigint: true });
 const ACCEPTED_FILETYPES = ['py', 'java']
 
 export default class AgentIO {
@@ -17,7 +22,7 @@ export default class AgentIO {
         const agentsDIR = path.resolve(__dirname + '/agents')
         const agentFilenames = []
 
-        for (const filename of fs.readdirSync(agentsDIR)) {
+        for (const filename of fs.readdirSync('./agents')) {
             for (const filetype of ACCEPTED_FILETYPES) {
                 if (filename.endsWith(filetype)) {
                     agentFilenames.push(filename)
@@ -30,8 +35,9 @@ export default class AgentIO {
             console.log(`${i}. ${agentFilenames[i]}`)
         }
         
-        const agentIndex = parseInt(prompt('SELECT AGENT NUMBER: '))
+        const agentIndex = parseInt(input('SELECT AGENT NUMBER: '))
         const agentFilepath = path.resolve(agentsDIR + '/' + agentFilenames[agentIndex])
+        console.log(agentFilepath)
 
         this.executeAgent(agentFilepath)
     }
@@ -51,7 +57,7 @@ export default class AgentIO {
 
         // handle agent messages
         this.agent.stdout.on('data', (data) => {
-            this.agentOut(data)
+            console.log(`${data}`)
         })
 
         // handle agent errors
@@ -80,4 +86,11 @@ export default class AgentIO {
 
         this.agent.stdin.write(data);
     }
+
+    run() {
+        this.loadAgent()
+    }
 }
+
+const agentIO = new AgentIO()
+agentIO.run()
