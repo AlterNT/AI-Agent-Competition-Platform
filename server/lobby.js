@@ -1,4 +1,4 @@
-class Lobby {
+export default class Lobby {
     constructor(playerCapacity, minCapacity, startLobby) {
         /** @type {String[]} */
         this.players = [];

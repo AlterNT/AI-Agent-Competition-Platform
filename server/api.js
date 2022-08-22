@@ -6,9 +6,6 @@ const runAPI = async () => {
     const app = express()
     const PORT_NUMBER = 8080;
 
-    let game = await server.createGame();
-    console.log(game);
-
     app.listen(
         PORT_NUMBER,
         () => { console.log(`listening at http://localhost:${PORT_NUMBER}`) }
