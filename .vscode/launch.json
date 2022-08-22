@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Server",
+      "program": "${workspaceFolder}/server/index.js",
+      "request": "launch",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node",
+      "outputCapture": "std",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Run Client",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/client",
+      "runtimeExecutable": "${cwd}/client/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${cwd}/client/node_modules/.bin/electron.cmd"
+      },
+      "args": [
+        ".",
+        "--cli"
+      ],
+      "outputCapture": "std",
+      "console": "integratedTerminal"
+    },
+
+  ]
+}
