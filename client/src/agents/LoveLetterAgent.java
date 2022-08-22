@@ -4,20 +4,12 @@ import java.util.Random;
 
 public class LoveLetterAgent {
 
-    private Random rand;
-    private State current;
-    private int myIndex;
+    private Random random;
+    private Object state;
 
     // 0 place default constructor
-    public RandomAgent() {
-        rand = new Random();
-    }
-
-    /**
-     * Reports the agents name
-     */
-    public String toString() {
-        return "Rando";
+    public LoveLetterAgent() {
+        random = new Random();
     }
 
     /**
@@ -25,9 +17,8 @@ public class LoveLetterAgent {
      * 
      * @param start the starting state of the round
      **/
-    public void newRound(State start) {
-        current = start;
-        myIndex = current.getPlayerIndex();
+    public void newRound(Object start) {
+        state = start;
     }
 
     /**
@@ -36,8 +27,8 @@ public class LoveLetterAgent {
      * @param act     the action an agent performs
      * @param results the state of play the agent is able to observe.
      **/
-    public void see(Action act, State results) {
-        current = results;
+    public void see(Object action, Object results) {
+        state = results;
     }
 
     /**
@@ -47,44 +38,34 @@ public class LoveLetterAgent {
      * @return the action the agent chooses to perform
      * @throws IllegalActionException when the Action produced is not legal.
      */
-    public Action playCard(Card c) {
-        Action act = null;
-        Card play;
-        while (!current.legalAction(act, c)) {
-            if (rand.nextDouble() < 0.5)
-                play = c;
-            else
-                play = current.getCard(myIndex);
-            int target = rand.nextInt(current.numPlayers());
-            try {
-                switch (play) {
-                    case GUARD:
-                        act = Action.playGuard(myIndex, target, Card.values()[rand.nextInt(7) + 1]);
-                        break;
-                    case PRIEST:
-                        act = Action.playPriest(myIndex, target);
-                        break;
-                    case BARON:
-                        act = Action.playBaron(myIndex, target);
-                        break;
-                    case HANDMAID:
-                        act = Action.playHandmaid(myIndex);
-                        break;
-                    case PRINCE:
-                        act = Action.playPrince(myIndex, target);
-                        break;
-                    case KING:
-                        act = Action.playKing(myIndex, target);
-                        break;
-                    case COUNTESS:
-                        act = Action.playCountess(myIndex);
-                        break;
-                    default:
-                        act = null;// never play princess
-                }
-            } catch (IllegalActionException e) {
-                /* do nothing */}
+    public Object playCard(String card) {
+        Object action = null;
+
+        switch (card) {
+            case "GUARD":
+                break;
+            case "PRIEST":
+                
+                break;
+            case "BARON":
+                
+                break;
+            case "HANDMAID":
+                
+                break;
+            case "PRINCE":
+                
+                break;
+            case "KING":
+                
+                break;
+            case "COUNTESS":
+                
+                break;
+            default:
+                action = null;// never play princess
         }
-        return act;
+
+        return action;
     }
 }
