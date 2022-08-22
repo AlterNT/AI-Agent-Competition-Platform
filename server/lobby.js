@@ -1,5 +1,5 @@
 class Lobby {
-    constructor(playerCapacity, minCapacity) {
+    constructor(playerCapacity, minCapacity, dispatchGame) {
         /** @type {String[]} */
         this.players = [];
 
@@ -10,10 +10,13 @@ class Lobby {
         this.minCapacity = minCapacity;
 
         /** @type {Number} */
-        this.timeoutPeriod = 5000; // ms
+        this.timeoutDuration = 5000;
 
-        /** @type {undefined | Date} */
-        this.timeoutStart;
+        this.dispatchGame = dispatchGame;
+    }
+
+    startLobby() {
+        // TODO
     }
 
     isFull() {
@@ -22,18 +25,17 @@ class Lobby {
 
     registerPlayer(token) {
         this.players.push(token);
-        if (this.playerCapacity === this.minCapacity) {
+        if (this.players.length === this.minCapacity) {
             this.timeoutStart = new Date();
+            setTimeout(() => {
+                if (this.players.length !== this.playerCapacity) {
+                    this.dispatchGame()
+                }
+            }, this.timeoutDuration);
         }
-    }
 
-    timedOut() {
-        if (this.playerCapacity >= this.minCapacity && this.timeoutStart) {
-            const now = new Date();
-            const durationElapsed = now - timeoutStart;
-            return durationElapsed > this.timeoutPeriod
-        } {
-            return false;
+        if (this.players.length === this.playerCapacity) {
+            this.
         }
     }
 }

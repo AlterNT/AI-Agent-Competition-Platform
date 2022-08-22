@@ -1,17 +1,23 @@
 import Neode from 'neode';
 import Models from './models/index.js';
+import LobbyManager from './lobby-manager.js';
 import 'process';
 
 class Server {
     constructor() {
-        this.db_instance = Neode.fromEnv().with(Models);
+        this.dbInstance = Neode.fromEnv().with(Models);
+        this.lobbyManagers = {
+            2: new LobbyManager(2),
+            3: new LobbyManager(3),
+            4: new LobbyManager(4),
+        }
     }
 
     /**
      * @return {Model} Game model
      */
     async createGame() {
-        return await this.db_instance.create('Game', {});
+        return await this.dbInstance.create('Game', {});
     }
 
     /**
@@ -20,7 +26,7 @@ class Server {
      * @param {String | Number} studentNumber
      */
     async createUser(userToken, studentNumber) {
-        await this.db_instance.create('User', {
+        await this.dbInstance.create('User', {
                 studentNumberString: String(studentNumber), // dont know if this is legal?
                 authenticationTokenString: userToken,
         });
@@ -34,7 +40,7 @@ class Server {
      * @return {Model} Agent model
      */
     async getUserAgent(userToken) {
-        const user = await this.db_instance.find(
+        const user = await this.dbInstance.find(
             'User', userToken
         );
 
@@ -71,8 +77,13 @@ class Server {
         }
     }
 
+    async assignPlayerToLobby(userToken, numPlayers) {
+        const lobbyManager = this.lobbyManagers[numPlayers]; // Check numPlayers exists in obj;
+        lobbyManager.addPlayed(userToken);
+    }
+
     async close() {
-        this.db_instance.close();
+        this.dbInstance.close();
     }
 }
 

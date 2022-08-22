@@ -22,12 +22,10 @@
 //	      if not request new lobby from lobby manager.
 
 class LobbyManager {
-    constructor(lobbyAddress){
-        //this.name = "Lobby Manager";
+    constructor(lobbyAddress, numPlayers){
+        this.numPlayers = numPlayers
         this.lobbyAddress = lobbyAddress;
-
-        /** @type {Lobby[]} array of available lobbies */
-        this.lobby = new Lobby();
+        this.createLobby();
 
         /** @type {String[]} array of user tokens */
         this.queue = [];
@@ -36,32 +34,31 @@ class LobbyManager {
         this.numLobbies = 10;
     }
 
+    async createLobby() {
+        /** @type {Lobby[]} array of available lobbies */
+        this.lobby = new Lobby(this.numPlayers, 2, this.startLobby);
+    }
+
     async connectPlayer() {
         this.lobby.registerPlayer();
     }
 
-    async startLobby(){
+    async startLobby() {
         // !!!!!ADD call back function to time out after given time and and start game with random agents
-        while (this.lobby.isFull() != true){
-            // add sleep function
-            console.log("Game: %s\n Is waiting for a game to start, current player count: %s", this.lobbyAddress,this.queue.length);
-        }
-        // lobby has been filled 
+        // while (this.lobby.isFull()) {
+        //     // add sleep function
+        //     console.log("Game: %s\n Is waiting for a game to start, current player count: %s", this.lobbyAddress,this.queue.length);
+        // }
+        // lobby has been filled
         // hand lobby over to game handler 
-    }
 
-    // end lobby
+        // TODO: Dispatch game
+        this.createLobby();
+    }
 
     async addPlayer(id){
         this.lobby.registerPlayer(id);
     }
-
-    // notify lobby address of updates
-
-    // remove player 
-
-    // handle and monitor disconnection
-    
 }
 
   var lobby = new LobbyManager("/api/a");
