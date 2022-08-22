@@ -20,6 +20,10 @@ export default class Server {
     /** @type {typeof Game}} */
     Game = PaperScissorsRock;
 
+    constructor() {
+        Server.instance = this;
+    }
+
     async handleClose() {
     }
 

@@ -28,13 +28,8 @@ export default class LobbyManager {
     /** @type {Map<Number, Lobby>} */
     lobbies = new Map();
 
-    constructor() {
-    }
-
     /**
-     * 
      * @param {Number} id Lobby id. If this does not exist, one will be created. If this is -1, one will be auto-assigned.
-     * 
      * @returns {Lobby} Allocated lobby.
      */
     getLobby(id) {
