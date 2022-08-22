@@ -1,6 +1,6 @@
 import GameInstance from './game-instance.js';
 
-class GameManager {
+export default class GameManager {
     constructor(recordGame) {
         /** @type {GameInstance[]} */
         this.games = [];
@@ -12,20 +12,19 @@ class GameManager {
         const numBots = numPlayers - numCurrent;
         const game = new GameInstance(userTokens, numBots);
 
-        this.games.push(games)
+        this.games.push(game)
     }
 
     async closeFinishedGames() {
-        this.games
+        const finishedIndices = this.games
             .map((i, game) => {
                 return game.finished() ? i : -1;
             }).filter((i, _) => i !== -1)
-            .reverse()
-            .forEach((index) => {
-                const game = this.games.pop(index);
-                this.recordGame(game);
-            });
+            .reverse();
+
+        for (let index of finishedIndices) {
+            const game = this.games.pop(index);
+            await this.recordGame(game);
+        }
     }
 }
-
-export default GameManager;

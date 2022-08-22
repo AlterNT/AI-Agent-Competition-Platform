@@ -8,6 +8,9 @@ export default class Server {
     /** @type {Server} */
     static instance;
 
+    /** @type {String} */
+    static defaultAgentToken = 'defaultAgentToken';
+
     /** @type {LobbyManager} */
     lobbyManager;
 
@@ -18,9 +21,11 @@ export default class Server {
     Game = PaperScissorsRock;
 
     constructor() {
-        // TODO: Singleton maybe?
-        Server.instance = this;
+        if (Server.instance) {
+            return Server.instance;
+        }
 
+        Server.instance = this;
         this.dbInstance = Neode.fromEnv().with(Models);
         this.lobbyManagers = {
             2: new LobbyManager(2, () => {}), // TODO: game manager and lobby start
@@ -30,7 +35,33 @@ export default class Server {
     }
 
     /**
-     * @return {Model} Game model
+     * @returns {Neode.Node<Models.User>}
+     */
+    async getDefaultAgent() {
+        const defaultAgent = await this.dbInstance.find('User', Server.defaultAgentToken);
+        if (defaultAgent) {
+            return defaultAgent;
+        }
+
+        let user = await this.dbInstance.create('User', {
+            studentNumberString: '00000000',
+            authenticationTokenString: Server.defaultAgentToken,
+        });
+
+        let agent = await this.dbInstance.create('Agent', {
+            srcPath: '???',
+        });
+
+        const a = await Promise.all([
+            user.relateTo(agent, 'controls'),
+            agent.relateTo(user, 'controls'),
+        ]);
+
+        return agent;
+    }
+
+    /**
+     * @returns {Neode.Node<Models.Game>}
      */
     async createGameNode() {
         return await this.dbInstance.create('Game', {});
@@ -46,8 +77,18 @@ export default class Server {
                 studentNumberString: String(studentNumber), // dont know if this is legal?
                 authenticationTokenString: userToken,
         });
+    }
 
-        // TODO: create Agent
+    async createAgent(userToken, srcPath) {
+        let user = await this.dbInstance.find('User', userToken)
+        let agent = await this.dbInstance.create('Agent', {
+            srcPath: srcPath,
+        });
+
+        await Promise.all([
+            user.relateTo(agent, 'controls'),
+            agent.relateTo(user, 'controls'),
+        ]);
     }
 
     /**
@@ -77,8 +118,7 @@ export default class Server {
     }
 
     /**
-     * @TODO Test
-     * @param {String} gameId
+     * @param {String[]} userTokens
      */
     async recordGame(userTokens) {
         const game = await this.createGameNode();
