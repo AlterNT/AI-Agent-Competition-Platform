@@ -7,9 +7,9 @@ class Server {
     constructor() {
         this.dbInstance = Neode.fromEnv().with(Models);
         this.lobbyManagers = {
-            2: new LobbyManager(2),
-            3: new LobbyManager(3),
-            4: new LobbyManager(4),
+            2: new LobbyManager(2, () => {}), // TODO: game manager and lobby start
+            3: new LobbyManager(3, () => {}),
+            4: new LobbyManager(4, () => {}),
         }
     }
 

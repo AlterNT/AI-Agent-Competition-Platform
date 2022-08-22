@@ -1,5 +1,5 @@
 class Lobby {
-    constructor(playerCapacity, minCapacity, dispatchGame) {
+    constructor(playerCapacity, minCapacity, startLobby) {
         /** @type {String[]} */
         this.players = [];
 
@@ -12,11 +12,11 @@ class Lobby {
         /** @type {Number} */
         this.timeoutDuration = 5000;
 
-        this.dispatchGame = dispatchGame;
+        this.startLobby = startLobby;
     }
 
-    startLobby() {
-        // TODO
+    fillLobby() {
+        // TODO: Pad lobby with random agents
     }
 
     isFull() {
@@ -29,7 +29,7 @@ class Lobby {
             this.timeoutStart = new Date();
             setTimeout(() => {
                 if (this.players.length !== this.playerCapacity) {
-                    this.dispatchGame()
+                    this.startLobby()
                 }
             }, this.timeoutDuration);
         }
