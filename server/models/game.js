@@ -1,12 +1,17 @@
 export default {
     id: {
       type: 'uuid',
-      primary: true
+      primary: true,
     },
-    timePlayed: 'datetime',
+    timePlayed: {
+        type: 'datetime',
+        default: () => new Date(),
+        required: true,
+    },
     gameState: {
         type: 'string',
-        required: 'true',
+        default: '',
+        required: true,
     }, // to be stored as a JSON string
     playedIn: {
         type: 'relationship',
