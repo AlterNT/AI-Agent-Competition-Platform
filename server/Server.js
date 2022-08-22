@@ -34,10 +34,11 @@ export default class Server {
         }
     }
 
+    /**
+     * Drops every instance of every label from the db
+     */
     async deleteAll() {
-        for (let label of Object.keys(Models)) {
-            await this.dbInstance.deleteAll(label);
-        }
+        await Promise.all(Object.keys(Models).map((label) => this.dbInstance.deleteAll(label)));
     }
 
     /**
@@ -64,6 +65,7 @@ export default class Server {
     }
 
     /**
+     * Creates the default user if they do not exist
      * @returns {Neode.Node<Models.Agent>}
      */
     async getDefaultAgent() {
@@ -83,7 +85,7 @@ export default class Server {
      * @TODO Test
      * @param {String} userToken
      * @param {String | Number} studentNumber
-     * @returns {Neode.Node<Models.Agent>}
+     * @returns {Neode.Node<Models.User>}
      */
     async createUser(userToken, studentNumber) {
         return await this.dbInstance.create('User', {
@@ -92,8 +94,12 @@ export default class Server {
         });
     }
 
-    async createAgent(userToken, srcPath) {
-        let user = await this.dbInstance.find('User', userToken)
+    /**
+     * @param {Neode.Node<Models.User>} user
+     * @param {String} srcPath
+     * @returns {Neode.Node<Models.Agent>}
+     */
+    async createAgent(user, srcPath) {
         let agent = await this.dbInstance.create('Agent', {
             srcPath: srcPath,
         });
@@ -102,26 +108,33 @@ export default class Server {
             user.relateTo(agent, 'controls'),
             agent.relateTo(user, 'controls'),
         ]);
+
+        return await this.dbInstance.find('Agent', agent.id());
     }
 
     /**
      * @TODO Test
      * @param {String} userToken
-     * @return {Model} Agent model
+     * @return {Neode.Node<Models.Agent> | null} Agent model
      */
     async getUserAgent(userToken) {
         const user = await this.dbInstance.find(
             'User', userToken
         );
 
-        const agent = user.get('controls').endNode();
+        const edge = user.get('controls');
+        if (!edge) {
+            return null;
+        }
+
+        const agent = edge.endNode();
         return agent;
     }
 
     /**
      * @TODO Test
      * @param {String} userToken
-     * @return {Model[]} Game models
+     * @return {Neode.Node<Models.Game>[]}
      */
     async getUserGames(userToken) {
         const agent = await this.getUserAgent(userToken);
@@ -131,6 +144,17 @@ export default class Server {
     }
 
     /**
+     * Only a user with a valid agent can play
+     * Returns whether they have a valid agent
+     * @param {String} userToken
+     * @return {Boolean}
+     */
+    async isUserEligibleToPlay(userToken) {
+        return !!await this.getUserAgent(userToken);
+    }
+
+    /**
+     * Creates agent <-> game edges in the db
      * @param {String[]} userTokens
      */
     async recordGame(userTokens) {
@@ -146,6 +170,9 @@ export default class Server {
         }
     }
 
+    /**
+     * @TODO Nathan will overwrite this ig
+     */
     async assignPlayerToLobby(userToken, numPlayers) {
         const lobbyManager = this.lobbyManagers[numPlayers]; // Check numPlayers exists in obj;
         lobbyManager.addPlayed(userToken);
