@@ -3,9 +3,23 @@ import Models from './models/index.js';
 import LobbyManager from './lobby-manager.js';
 import GameManager from './game-manager.js';
 import 'process';
+export default class Server {
+    /** @type {Server} */
+    static instance;
 
-class Server {
+    /** @type {LobbyManager} */
+    lobbyManager;
+
+    /** @type {[String]} */
+    games;
+
+    /** @type {typeof Game}} */
+    Game = PaperScissorsRock;
+
     constructor() {
+        // TODO: Singleton maybe?
+        Server.instance = this;
+
         this.dbInstance = Neode.fromEnv().with(Models);
         this.lobbyManagers = {
             2: new LobbyManager(2, () => {}), // TODO: game manager and lobby start
@@ -87,5 +101,3 @@ class Server {
         this.dbInstance.close();
     }
 }
-
-export default Server;
