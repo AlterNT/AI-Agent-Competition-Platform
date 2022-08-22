@@ -17,7 +17,7 @@ class Server {
     /**
      * @return {Model} Game model
      */
-    async createGame() {
+    async createGameNode() {
         return await this.dbInstance.create('Game', {});
     }
 
@@ -66,7 +66,7 @@ class Server {
      * @param {String} gameId
      */
     async recordGame(userTokens) {
-        const game = await this.createGame();
+        const game = await this.createGameNode();
 
         for (let userToken of userTokens) {
             // Might need score to be set

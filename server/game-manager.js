@@ -4,10 +4,6 @@ class GameManager {
     constructor(recordGame) {
         /** @type {GameInstance[]} */
         this.games = [];
-
-        /** @type {Number} max concurrent games */
-        this.maxGames = 10;
-
         this.recordGame = recordGame;
     }
 
@@ -15,6 +11,7 @@ class GameManager {
         const numCurrent = userTokens.length;
         const numBots = numPlayers - numCurrent;
         const game = new GameInstance(userTokens, numBots);
+
         this.games.push(games)
     }
 

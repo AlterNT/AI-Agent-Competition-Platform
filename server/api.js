@@ -26,6 +26,11 @@ const runAPI = async () => {
         res.json()
     })
 
+    app.get('join', (req, res) => {
+        const { agentToken } = req.params
+        server.assignPlayerToLobby(agentToken, 4);
+    })
+
     // receive move played by an agent
     app.post('api/game', (req, res) => {
         const { agentToken } = req.params

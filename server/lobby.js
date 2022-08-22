@@ -35,7 +35,7 @@ class Lobby {
         }
 
         if (this.players.length === this.playerCapacity) {
-            this.
+            this.startLobby();
         }
     }
 }
