@@ -34,29 +34,41 @@ export default class Server {
         }
     }
 
+    async deleteAll() {
+        for (let label of Object.keys(Models)) {
+            await this.dbInstance.deleteAll(label);
+        }
+    }
+
     /**
      * @returns {Neode.Node<Models.User>}
      */
-    async getDefaultAgent() {
+    async getDefaultUser() {
         const defaultAgent = await this.dbInstance.find('User', Server.defaultAgentToken);
         if (defaultAgent) {
             return defaultAgent;
         }
 
-        let user = await this.dbInstance.create('User', {
-            studentNumberString: '00000000',
-            authenticationTokenString: Server.defaultAgentToken,
-        });
-
-        let agent = await this.dbInstance.create('Agent', {
+        const user = await this.createUser(Server.defaultAgentToken, '000000');
+        const agent = await this.dbInstance.create('Agent', {
             srcPath: '???',
         });
 
-        const a = await Promise.all([
+
+        await Promise.all([
             user.relateTo(agent, 'controls'),
             agent.relateTo(user, 'controls'),
         ]);
 
+        return await this.dbInstance.find('User', Server.defaultAgentToken);
+    }
+
+    /**
+     * @returns {Neode.Node<Models.Agent>}
+     */
+    async getDefaultAgent() {
+        const user = await this.getDefaultUser();
+        const agent = user.get('controls').endNode();
         return agent;
     }
 
@@ -71,10 +83,11 @@ export default class Server {
      * @TODO Test
      * @param {String} userToken
      * @param {String | Number} studentNumber
+     * @returns {Neode.Node<Models.Agent>}
      */
     async createUser(userToken, studentNumber) {
-        await this.dbInstance.create('User', {
-                studentNumberString: String(studentNumber), // dont know if this is legal?
+        return await this.dbInstance.create('User', {
+                studentNumberString: String(studentNumber),
                 authenticationTokenString: userToken,
         });
     }
