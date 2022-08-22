@@ -26,11 +26,4 @@ export default {
             }
         },
     },
-    currentGame: {
-        type: 'relationship',
-        relationship: 'PLAYED_IN',
-        direction: 'out',
-        eager: true,
-        unique: true,
-    },
 };

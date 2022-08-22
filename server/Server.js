@@ -24,6 +24,8 @@ class Server {
                 studentNumberString: String(studentNumber), // dont know if this is legal?
                 authenticationTokenString: userToken,
         });
+
+        // TODO: create Agent
     }
 
     /**
@@ -43,55 +45,35 @@ class Server {
     /**
      * @TODO Test
      * @param {String} userToken
+     * @return {Model[]} Game models
      */
-    async getUserGameState(userToken) {
+    async getUserGames(userToken) {
         const agent = await this.getUserAgent(userToken);
-        const game = agent.get('currentGame').endNode();
-        const gameJson = await game.toJson();
+        const games = agent.get('playedIn').endNode();
 
-        return gameJson;
+        return games;
     }
 
     /**
      * @TODO Test
      * @param {String} gameId
      */
-    async addUserToLobby(userToken, gameId) {
-        const agent = await this.getUserAgent(userToken);
-        const game = await this.db_instance.find('Game', gameId);
+    async recordGame(userTokens) {
+        const game = await this.createGame();
 
-        // Might need score to be set
-        await Promise.all([
-            agent.relateTo(game, 'playedIn'),
-            agent.relateTo(game, currentGame),
-            game.relateTo(agent, 'playedIn'),
-        ])
-    }
-
-    /**
-     * @TODO Use query builder to get all agents then detach currentGame
-     * Maybe also delete the game node or just label it or something?
-     * I think the best solution is to label all completed games instead
-     * @param {String} gameId
-     */
-    async closeLobby(gameId) {
-    }
-
-    async handleClose() {
-        this.db_instance.close();
-    }
-
-    async run() {
-        try {
-            // @TODO
-        } catch (exception) {
-            // @TODO
-        } finally {
-            this.handleClose();
+        for (let userToken of userTokens) {
+            // Might need score to be set
+            const agent = await this.getUserAgent(userToken);
+            await Promise.all([
+                agent.relateTo(game, 'playedIn'),
+                game.relateTo(agent, 'playedIn'),
+            ]);
         }
+    }
+
+    async close() {
+        this.db_instance.close();
     }
 }
 
-const server = new Server();
-await server.run();
-process.exit(0);
+export default Server;

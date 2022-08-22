@@ -1,26 +1,35 @@
-import express from 'express'
+import express from 'express';
+import Server from './Server.js';
 
-const app = express()
-app.listen(
-    8080,
-    () => { console.log('listening at http://localhost:8080') }
-)
+const runAPI = async () => {
+    const server = new Server();
+    const app = express()
+    const PORT_NUMBER = 8080;
 
-// return list of available games to be played
-app.get('/api/games', (req, res) => {
-    res.json()
-})
+    let game = await server.createGame();
+    console.log(game);
 
-// return gamestate view for agent
-app.get('api/game', (req, res) => {
-    const { agentToken } = req.params
-    
-    res.json()
-})
+    app.listen(
+        PORT_NUMBER,
+        () => { console.log(`listening at http://localhost:${PORT_NUMBER}`) }
+    )
 
-// receive move played by an agent
-app.post('api/game', (req, res) => {
-    const { agentToken } = req.params
-})
+    // return list of available games to be played
+    app.get('/api/games', (req, res) => {
+        res.json()
+    })
 
+    // return gamestate view for agent
+    app.get('api/game', (req, res) => {
+        const { agentToken } = req.params
 
+        res.json()
+    })
+
+    // receive move played by an agent
+    app.post('api/game', (req, res) => {
+        const { agentToken } = req.params
+    })
+}
+
+export default runAPI;
