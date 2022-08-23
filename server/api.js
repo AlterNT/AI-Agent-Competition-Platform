@@ -1,8 +1,9 @@
 import express from 'express';
-import Server from './Server.js';
 
-const runAPI = async () => {
-    const server = new Server();
+/**
+ * @param {Server} server
+ */
+const runAPI = async (server) => {
     const app = express()
     const PORT_NUMBER = 8080;
 

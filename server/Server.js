@@ -1,9 +1,13 @@
+import 'process';
+import fs from 'fs';
 import Neode from 'neode';
+
 import Models from './models/index.js';
 import LobbyManager from './lobby-manager.js';
 import GameManager from './game-manager.js';
 import PaperScissorsRock from './game/psr.js';
-import 'process';
+import TokenGenerator from './token-generator.js';
+
 export default class Server {
     /** @type {Server} */
     static instance;
@@ -168,6 +172,30 @@ export default class Server {
                 game.relateTo(agent, 'playedIn'),
             ]);
         }
+    }
+
+    /**
+     * Generates and assigns a token for each student number in the file
+     * One student number should be present on each line
+     * @param {String} studentNumbersFilePath string containing the file path of the student numbers file
+     * @returns {{studentNumber: String, authToken: String}[]} an array of objects with the last token generated at the last index
+     */
+    generateUserTokens(studentNumbersFilePath) {
+        let studentNumbersFileContent;
+        try {
+            studentNumbersFileContent = fs.readFileSync(studentNumbersFilePath)
+                .toString();
+        } catch (exception) {
+            console.error(`Cannot read specified file, please check permission and location\n${exception}`);
+            return [];
+        }
+
+        const studentNumbers = studentNumbersFileContent
+            .trim()
+            .split('\n');
+
+        const tokengen = new TokenGenerator();
+        return tokengen.generateStudentTokens(studentNumbers);
     }
 
     /**
