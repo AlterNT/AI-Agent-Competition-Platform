@@ -1,13 +1,8 @@
+import { Client } from './main'
 import child_process from 'child_process'
+import { logError, error } from './messages'
 import fetch from 'node-fetch'
-import fs from 'fs'
-import prompt from 'prompt-sync'
-import path from 'path'
-import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
-const input = prompt({ sigint: true });
 const ACCEPTED_FILETYPES = ['py', 'java']
 
 export default class AgentIO {
@@ -22,6 +17,8 @@ export default class AgentIO {
         const agentsDIR = path.resolve(__dirname + '/agents')
         const agentFilenames = []
 
+        /* TODO: This needs reworking as the agents folder is deprecated.
+
         for (const filename of fs.readdirSync('./agents')) {
             for (const filetype of ACCEPTED_FILETYPES) {
                 if (filename.endsWith(filetype)) {
@@ -29,6 +26,7 @@ export default class AgentIO {
                 }
             }
         }
+        
         
         console.log('AGENTS: ')
         for (const i in agentFilenames) {
@@ -40,6 +38,7 @@ export default class AgentIO {
         console.log(agentFilepath)
 
         this.executeAgent(agentFilepath)
+        */
     }
 
     /**
@@ -57,7 +56,7 @@ export default class AgentIO {
 
         // handle agent messages
         this.agent.stdout.on('data', (data) => {
-            console.log(`${data}`)
+            this.agentOut(data)
         })
 
         // handle agent errors

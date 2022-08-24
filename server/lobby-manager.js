@@ -1,10 +1,28 @@
 // LobbyManager contains instances of Lobby classes which contain instances of player classes.
 
+// - = Client interaction
+// LobbyManager contains instances of Lobby classes which contain instances of player classes.
+
 // - = Client interaction 
 // -> = server side interaction
 
 // - CLient requests game
 // -> API Redirect to pseudo random game lobby (/game/7xdE4f)
+//			LobbyManager instance started
+//			creates lobby instances
+//			creates player instance
+//			keeps queue of active games
+
+//-> Lobby manager sets call back for timeout
+//			hand over to game client with random agnets of occurs
+
+//-> Lobby manager waits and checks lobby to see if they have 4x player instances
+
+
+// - client request game
+// -> API check to see if there is active waiting lobbys
+//	      if so add player to lobby through lobby manager function
+//	      if not request new lobby from lobby manager.
 //			LobbyManager instance started 
 //			creates lobby instances 
 //			creates player instance 
@@ -21,35 +39,73 @@
 //	      if so add player to lobby through lobby manager function 
 //	      if not request new lobby from lobby manager.
 
-class LobbyManager {
-    constructor(lobbyAddress){
-        //this.name = "Lobby Manager";
-        this.lobbyAddress = lobbyAddress;
-        this.lobby = new Lobby();
-    }    
-    async startLobby(){
-        // !!!!!ADD call back function to time out after given time and and start game with random agents
-        while (this.lobby.isFull() != true){
-            // add sleep function
-            console.log("Game: %s\n Is waiting for a game to start, current player count: %s", this.lobbyAddress,this.queue.length);
+import Lobby from './lobby.js';
+import Server from './server.js';
+
+export default class LobbyManager {
+
+    /** @type {Map<Number, Lobby>} */
+    lobbies = new Map();
+
+    /**
+     * Adds a player to a lobby.
+     * @param {Number} lobbyId The requested lobby id. -1 for automatic allocation.
+     * @param {String} token The player's token.
+     * @param {
+     *  maxAgents: Number,
+     *  bots: Number,
+     *  private: Boolean
+     * } options The options to be used if a new lobby is created.
+     * @returns {Number} The assigned lobby id.
+     */
+    joinLobby(lobbyId, token, options) {
+        let id;
+
+        if (lobbyId === -1) {
+            // Automatic allocation.
+            // Join the first not-full, not-private lobby.
+            for (let [i, l] of this.lobbies) {
+                if (!l.isFull() && !l.private) {
+                    id = i;
+                    l.addPlayer(token);
+                    break;
+                }
+            }
+            // If all lobbies are full or there are none.
+            if (id === undefined) {
+                id = 0;
+                // Find the first unused id.
+                while (this.lobbies.has(id)) id++;
+                let lobby = new Lobby(id, options);
+                lobby.addPlayer(token);
+                this.lobbies.set(id, lobby);
+            }
+        } else {
+            id = lobbyId;
+            // Join lobby if it exists, otherwise create a new one.
+            if (this.lobbies.has(lobbyId)) {
+                let lobby = this.lobbies.get(lobbyId);
+                lobby.addPlayer(token);
+            } else {
+                let lobby = new Lobby(id, options);
+                lobby.addPlayer(token);
+                this.lobbies.set(id, lobby);
+            }
         }
-        // lobby has been filled 
-        // hand lobby over to game handler 
+
+        return id;
     }
 
-    // end lobby 
+    /**
+     * Starts the game in a lobby.
+     * @param {Number} lobbyId 
+     * @param {String[]} players List of player tokens.
+     * @param {Number} bots Number of bots to be added.
+     */
+    startLobby(lobbyId, players, bots) {
 
-    async addPlayer(id){
-        this.lobby.registerPlayer(id);
+        Server.instance.gameManager.createGame()
+        this.lobbies.delete(lobbyId);
     }
 
-    // notify lobby address of updates 
-
-    // remove player 
-
-    // handle and monitor disconnection
-    
 }
-
-  var Lobby = new LobbyManager("/api/a");
-  Lobby.startLobby();

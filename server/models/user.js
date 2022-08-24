@@ -1,7 +1,6 @@
 export default {
     id: {
       type: 'uuid',
-      primary: true
     },
     studentNumberString: {
         type: 'string',
@@ -9,6 +8,7 @@ export default {
     },
     authenticationTokenString: {
         type: 'string',
+        primary: true,
         required: true,
         unique: true,
     },
@@ -16,5 +16,7 @@ export default {
         type: 'relationship',
         relationship: 'CONTROLS',
         direction: 'out',
+        unique: true,
+        eager: true,
     },
 };
