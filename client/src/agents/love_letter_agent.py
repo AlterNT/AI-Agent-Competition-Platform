@@ -1,5 +1,7 @@
 from random import random 
 
+#print("test")
+
 class LoveLetterAgent:
     def __init__(self, player_index, state):
         self.player_index = player_index
@@ -7,7 +9,7 @@ class LoveLetterAgent:
     
     def play_card(self):
         cards = self.state.cards()
-        players = self.state.players().remove(player_index)
+        players = self.state.players().remove(self.player_index)
         
         random_card = random.choice(cards)
         random_player = random.choice(players)
@@ -32,5 +34,8 @@ class LoveLetterAgent:
 
         if random_card == "COUNTESS":
             print(random_card)
-            
-        pass
+        
+        # pass
+        print("test")
+
+#print("test")
