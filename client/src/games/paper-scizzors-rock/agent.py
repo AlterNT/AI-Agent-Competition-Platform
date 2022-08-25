@@ -1,5 +1,6 @@
 import sys
 import random
+import client_io
 
 class Agent:
     MOVES = ['PAPER', 'SCIZZORS', 'ROCK']
