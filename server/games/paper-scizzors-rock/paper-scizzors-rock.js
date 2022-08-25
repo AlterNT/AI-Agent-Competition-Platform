@@ -3,17 +3,17 @@ class PaperScizzorsRock {
     static SCIZZORS = 'SCIZZORS'
     static ROCK = 'ROCK'
 
-    constructor(agents) {
-        this.agents = agents
+    constructor() {
+        this.agents = 
         this.actions = []
     }
 
-    
+
 }
 
 async function main() {
-    const agents = process.argv.slice(2)
-    const game = new PaperScizzorsRock(agents)
+    const game = new PaperScizzorsRock()
+    console.log('test')
 }
 
 main()

@@ -41,14 +41,16 @@ class ServerHandler {
         return turn.turn
     }
 
-    async joinLobby() {
-        const response = await fetch(`${this.serverAPI}/join`, {
+    async joinLobby(gameID) {
+        // const response = await 
+        fetch(`${this.serverAPI}/join`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                agentToken: this.agentToken
+                agentToken: this.agentToken,
+                game: gameID
             })
         })
     }

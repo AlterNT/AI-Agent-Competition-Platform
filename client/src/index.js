@@ -22,28 +22,36 @@ async function main() {
         console.log(`${i}. ${games[i]}`)
     }
     const gameIndex = parseInt(prompt('SELECT GAME NUMBER: '))
-    const game = games[gameIndex]
+    const gameID = games[gameIndex]
 
     console.log() // for cleaner interface
 
     // initialise AgentIO
-    const agentIO = new AgentIO(game)
+    const agentIO = new AgentIO(gameID)
 
     // select agent
     agentIO.loadAgent()
 
-    // join lobby
-    await serverHandler.joinLobby()
+    // main play game loop
+    while (true) {
+        // join lobby
+        await serverHandler.joinLobby(gameID)
 
-    // turn
-    const turn = await serverHandler.turn()
-    
-    // state
-    const state = await serverHandler.state()
+        // request status
+        while (true) {
+            const turn = await serverHandler.turn()
 
-    // give state to agent-io
+            if (turn == 'LOADING') {
+                continue
+            }
 
-    // send make move command to agent
+            if (turn == agentToken ) {
+                agentIO.agentOut('ACTION')
+                break
+            }
+        }
+        break
+    }
 
 }
 

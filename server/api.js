@@ -11,6 +11,10 @@ const __dirname = dirname(__filename)
 const PORT = 8080
 
 class API {
+    constructor(lobbyManager) {
+        this.lobbyManger = lobbyManager
+    }
+
     run() {
         const app = express()
         app.use(bodyParser.json());
@@ -36,14 +40,15 @@ class API {
 
         app.get('/api/turn', (req, res) => {
             const { agentToken } = req.query
-            res.json({ turn: true })
+            res.json({ turn: agentToken })
         })
 
 
         // POST ENDPOINTS
         // ----------------------------------------------------------------------------
         app.post('/api/join/', (req, res) => {
-            const { agentToken } = req.body
+            const { agentToken, gameID } = req.body
+            lobbyManager.addAgent(agentToken, gameID)
         })
 
 

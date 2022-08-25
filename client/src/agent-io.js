@@ -12,13 +12,13 @@ const prompt = promptSync()
 const ACCEPTED_FILETYPES = ['py', 'java']
 
 class AgentIO {
-    constructor(game) {
-        this.game = game
+    constructor(gameID) {
+        this.gameID = gameID
         this.agent = null
     }
 
     loadAgent() {
-        const gameDIR = path.join(__dirname + '/games' + '/' + this.game)
+        const gameDIR = path.join(__dirname + '/games' + '/' + this.gameID)
         const agentFilenames = []
 
         for (const filename of fs.readdirSync(gameDIR)) {
@@ -50,8 +50,16 @@ class AgentIO {
         }
 
         this.agent.stdout.on('data', (data) => {
-            console.log(`${data}`)
+            this.agentIn(data)
         })
+    }
+
+    agentIn(data) {
+        console.log(`AGENT-OUT: ${data}`)
+    }
+
+    agentOut(data) {
+        this.agent.stdin.write(`CLIENT-OUT: ${data}\n`)
     }
 }
 

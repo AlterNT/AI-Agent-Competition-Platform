@@ -1,7 +1,12 @@
+import sys
 class ClientIO:
-    def agent_out(self, data):
-        print('CLIENT-IO: ' + data)
+    # incoming messages from client
+    def client_in(self):
+        data = sys.stdin.readline().strip()
+        if data.startswith('CLIENT-OUT: '):
+            return data
 
-    def agent_in(self, data):
-        if data.startswith('AGENT-IO: '):
-            print(data)
+    # outgoing messages to client
+    def client_out(self, data):
+        print(data)
+        
