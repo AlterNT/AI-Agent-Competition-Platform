@@ -38,7 +38,7 @@ class ServerHandler {
             }
         })
         const turn = await response.json()
-        return turn
+        return turn.turn
     }
 
     async joinLobby() {

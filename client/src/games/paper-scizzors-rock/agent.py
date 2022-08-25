@@ -18,6 +18,5 @@ def main():
     agent = Agent('token')
     agent.move()
 
-
 if __name__ == '__main__':
     main()

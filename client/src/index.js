@@ -32,6 +32,18 @@ async function main() {
     // select agent
     agentIO.loadAgent()
 
+    // join lobby
+    await serverHandler.joinLobby()
+
+    // turn
+    const turn = await serverHandler.turn()
+    
+    // state
+    const state = await serverHandler.state()
+
+    // give state to agent-io
+
+    // send make move command to agent
 
 }
 

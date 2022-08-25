@@ -36,7 +36,7 @@ class API {
 
         app.get('/api/turn', (req, res) => {
             const { agentToken } = req.query
-            res.json({ turn: 'turn' })
+            res.json({ turn: true })
         })
 
 
