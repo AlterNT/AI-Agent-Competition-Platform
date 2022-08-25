@@ -42,7 +42,6 @@ class ServerHandler {
     }
 
     async joinLobby(gameID) {
-        // const response = await 
         fetch(`${this.serverAPI}/join`, {
             method: "POST",
             headers: {
@@ -50,7 +49,7 @@ class ServerHandler {
             },
             body: JSON.stringify({
                 agentToken: this.agentToken,
-                game: gameID
+                gameID: gameID
             })
         })
     }

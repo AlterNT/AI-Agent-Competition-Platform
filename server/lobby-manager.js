@@ -6,6 +6,7 @@ class LobbyManager {
     }
 
     addAgent(agentToken, gameID) {
+        console.log(agentToken, gameID)
         let lobby = null
 
         if (this.lobbies.length == 0) {

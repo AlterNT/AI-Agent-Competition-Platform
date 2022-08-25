@@ -5,14 +5,16 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
 
+import LobbyManager from './lobby-manager.js'
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 const PORT = 8080
 
 class API {
-    constructor(lobbyManager) {
-        this.lobbyManger = lobbyManager
+    constructor() {
+        this.lobbyManager = new LobbyManager()
     }
 
     run() {
@@ -48,6 +50,7 @@ class API {
         // ----------------------------------------------------------------------------
         app.post('/api/join/', (req, res) => {
             const { agentToken, gameID } = req.body
+            this.lobbyManage
             this.lobbyManager.addAgent(agentToken, gameID)
         })
 
