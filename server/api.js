@@ -48,7 +48,7 @@ class API {
         // ----------------------------------------------------------------------------
         app.post('/api/join/', (req, res) => {
             const { agentToken, gameID } = req.body
-            lobbyManager.addAgent(agentToken, gameID)
+            this.lobbyManager.addAgent(agentToken, gameID)
         })
 
 
