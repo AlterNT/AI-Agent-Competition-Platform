@@ -1,4 +1,4 @@
-import child_process from child_process
+import child_process from 'child_process'
 
 class Lobby {
     constructor(agentToken, gameID) {
