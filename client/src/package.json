@@ -1,0 +1,8 @@
+{
+  "type": "module",
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "node-fetch": "^3.2.10",
+    "prompt-sync": "^4.2.0"
+  }
+}
