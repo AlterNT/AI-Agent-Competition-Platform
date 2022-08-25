@@ -11,3 +11,5 @@ class Lobby {
         this.game = child_process.spawn(['bash', `./games/${gameID}/start.sh`])
     }
 }
+
+export default Lobby
