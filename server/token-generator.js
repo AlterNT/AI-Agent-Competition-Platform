@@ -6,13 +6,13 @@ import process from 'process';
  * @param {String} key key used for HmacSHA256 encyption
  */
 export default class TokenGenerator {
-    constructor(key){
-        if (!key) {
-            console.error(`Please provide a key in the env variable 'AI_PLATFORM_SECRET_KEY'`);
+    constructor(){
+        this.key = process.env.AI_PLATFORM_SECRET_KEY;
+        if (!this.key) {
+            console.error(`You must provide a key in the env variable 'AI_PLATFORM_SECRET_KEY'`);
             process.exit(1);
         }
 
-        this.key = key;
         this.header = {
             'alg': 'HS256',
             'typ': 'JWT'
@@ -39,7 +39,7 @@ export default class TokenGenerator {
      * @param {String[]} studentNumber the require number of tokens to be produced
      * @returns {{studentNumber: String, authToken: String}[]} an array of objects with the last token generated at the last index
      */
-    generateTokens(studentNumbers) {
+    computeStudentTokens(studentNumbers) {
         return studentNumbers.map((number) => {
             return {
                 studentNumber: number,

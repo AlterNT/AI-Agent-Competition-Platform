@@ -195,7 +195,7 @@ export default class Server {
             .split('\n');
 
         const tokengen = new TokenGenerator();
-        return tokengen.generateStudentTokens(studentNumbers);
+        return tokengen.computeStudentTokens(studentNumbers);
     }
 
     /**
