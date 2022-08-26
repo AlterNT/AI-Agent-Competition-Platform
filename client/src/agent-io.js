@@ -14,8 +14,9 @@ export default class AgentIO {
      * user selects the agent they wish to use
      */
     loadAgent() {
-        const agentsDIR = path.resolve(__dirname + '/agents')
-        const agentFilenames = []
+        // TODO: this breaks for me?
+        // const agentsDIR = path.resolve('/home/cookies-xor-cream/git/projects/CITS3200-project/client/src/agents')
+        // const agentFilenames = []
 
         /* TODO: This needs reworking as the agents folder is deprecated.
 
