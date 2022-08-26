@@ -1,3 +1,31 @@
+# Usage
+
+## Client
+### CLI Mode
+TODO
+
+### With Electron GUI
+TODO
+
+## Server
+### Token Generation
+```zsh
+node . tokens <path-to-token-file>
+```
+
+Token file looks as so:
+```csv
+StudentNumber1
+StudentNumber2
+StudentNumber3
+...
+```
+
+### Starting the Server
+```zsh
+node . start
+```
+
 # Installation
 ## Dependencies
 - [npm](https://phoenixnap.com/kb/install-node-js-npm-on-windows)

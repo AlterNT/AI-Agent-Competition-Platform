@@ -1,9 +1,7 @@
 import express from 'express';
-import Server from './server.js';
+import Server from './Server.js';
 
 const runAPI = async () => {
-    // TODO: Not sure about having the server not being the first thing initialized.
-    // Refactor?
     const server = new Server();
     const app = express()
     // TODO: Config would probably be a good idea for port.
