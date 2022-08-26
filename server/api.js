@@ -1,5 +1,5 @@
 import express from 'express';
-import Server from './Server.js';
+import Server from './server.js';
 
 const runAPI = async () => {
     const server = new Server();

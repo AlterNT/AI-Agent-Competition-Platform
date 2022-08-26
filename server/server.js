@@ -7,6 +7,7 @@ import LobbyManager from './lobby-manager.js';
 import GameManager from './game-manager.js';
 import Game from './game/game.js';
 import PaperScissorsRock from './game/psr.js';
+import TokenGenerator from './token-generator.js';
 import 'process';
 
 export default class Server {

@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import 'dotenv/config'
-import Server from './Server.js';
+import Server from './server.js';
 import runAPI from "./api.js";
 import process from 'process';
 
