@@ -1,11 +1,6 @@
 import { Client } from "./main.js"
 import fetch from 'node-fetch'
 
-
->>>>>>> lobby-management
-
-
-<<<<<<< HEAD
 export default class ServerHandler {
 
     /** @type {String} */
