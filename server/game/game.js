@@ -1,7 +1,7 @@
 import Agent from "./agent.js";
 
 export default class Game {
-    
+
     /** @abstract @type {Number} */
     static minPlayers;
     /** @abstract @type {Number} */
@@ -13,7 +13,7 @@ export default class Game {
 
     /**
      * @abstract
-     * @param {Agent[]} agents 
+     * @param {Agent[]} agents
      */
     async startGame(agents) {
 

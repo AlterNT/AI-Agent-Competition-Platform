@@ -3,7 +3,7 @@
 // - = Client interaction
 // LobbyManager contains instances of Lobby classes which contain instances of player classes.
 
-// - = Client interaction 
+// - = Client interaction
 // -> = server side interaction
 
 // - CLient requests game
@@ -23,20 +23,20 @@
 // -> API check to see if there is active waiting lobbys
 //	      if so add player to lobby through lobby manager function
 //	      if not request new lobby from lobby manager.
-//			LobbyManager instance started 
-//			creates lobby instances 
-//			creates player instance 
+//			LobbyManager instance started
+//			creates lobby instances
+//			creates player instance
 //			keeps queue of active games
 
-//-> Lobby manager sets call back for timeout 
+//-> Lobby manager sets call back for timeout
 //			hand over to game client with random agnets of occurs
 
-//-> Lobby manager waits and checks lobby to see if they have 4x player instances 
+//-> Lobby manager waits and checks lobby to see if they have 4x player instances
 
 
 // - client request game
-// -> API check to see if there is active waiting lobbys 
-//	      if so add player to lobby through lobby manager function 
+// -> API check to see if there is active waiting lobbys
+//	      if so add player to lobby through lobby manager function
 //	      if not request new lobby from lobby manager.
 
 import Lobby from './lobby.js';
@@ -98,7 +98,7 @@ export default class LobbyManager {
 
     /**
      * Starts the game in a lobby.
-     * @param {Number} lobbyId 
+     * @param {Number} lobbyId
      * @param {String[]} players List of player tokens.
      * @param {Number} bots Number of bots to be added.
      */

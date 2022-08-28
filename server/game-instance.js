@@ -62,7 +62,7 @@ export default class GameInstance {
 
     /**
      * Returns the events since the last time this method was called.
-     * @param {String} token 
+     * @param {String} token
      * @returns {[{}]}
      */
     getEvents(token) {

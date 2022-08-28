@@ -32,7 +32,7 @@ export default class Lobby {
         }
 
         this.bots = options?.bots ?? this.bots;
-        
+
         this.private = options?.private ?? this.private;
 
         this.debug = options?.debug ?? this.debug;
@@ -55,7 +55,7 @@ export default class Lobby {
 
     /**
      * Adds a player to a lobby.
-     * @param {String} token 
+     * @param {String} token
      */
     addPlayer(token) {
         this.players.push(token);

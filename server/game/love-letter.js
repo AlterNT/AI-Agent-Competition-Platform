@@ -14,7 +14,7 @@ class LoveLetter {
         )
      }
      // Constructs a LoveLetter game.
-     // @param ioStream  IMPLEMENT 
+     // @param ioStream  IMPLEMENT
      LoveLetter(ioStream){
         this.random = Math.random();
         this.iOStream = ioStream;
@@ -31,7 +31,7 @@ class LoveLetter {
         let winner = 0;
         let numPlayers = agents.length;
         // create new game state instance
-        // create new player state instance 
+        // create new player state instance
         try{
             while()//not gameover
             for(let i = 0; i < numPlayers; i++){

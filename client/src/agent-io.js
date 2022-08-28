@@ -24,12 +24,12 @@ export default class AgentIO {
                 }
             }
         }
-        
+
         console.log('AGENTS: ')
         for (const i in agentFilenames) {
             console.log(`${i}. ${agentFilenames[i]}`)
         }
-        
+
         const agentIndex = parseInt(prompt('SELECT AGENT NUMBER: '))
         const agentFilepath = path.resolve(agentsDIR + '/' + agentFilenames[agentIndex])
 
@@ -38,7 +38,7 @@ export default class AgentIO {
 
     /**
      * executes the agent that was select in loadAgent()
-     * @param {String} agentFilepath 
+     * @param {String} agentFilepath
      */
     executeAgent(agentFilepath) {
         if (agentFilepath.endsWith('py')) {
