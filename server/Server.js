@@ -4,11 +4,15 @@ import LobbyManager from './lobby-manager.js';
 import GameManager from './game-manager.js';
 import Game from './game/game.js';
 import PaperScissorsRock from './game/psr.js';
+import API from './api.js';
 
 export default class Server {
     /** @type {Server} */
     static instance;
 
+
+    /** @type {API} */
+    api = new API();
     /** @type {Neode} */
     //dbInstance = Neode.fromEnv().with(Models);
     /** @type {LobbyManager} */

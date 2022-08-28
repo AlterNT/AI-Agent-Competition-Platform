@@ -21,4 +21,5 @@ export default class GameManager {
             const game = this.games.pop(index);
             await this.recordGame(game);
         }
+    }  
 }

@@ -1,2 +1,3 @@
-import runAPI from "./api.js";
-await runAPI();
+import Server from "./server.js";
+
+const server = new Server();
