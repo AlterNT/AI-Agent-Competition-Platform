@@ -12,13 +12,16 @@ export default class Lobby {
     bots = 0;
     /** @type {Boolean} Disables automatic allocation to this lobby. */
     private = false;
+    /** @type {Boolean} */
+    debug = false;
 
     /**
      * Creates a new lobby with options.
      * @param {{
      *  maxAgents: Number,
      *  bots: Number,
-     *  private: Boolean
+     *  private: Boolean,
+     *  debug: Boolean
      * }} options Lobby options.
      */
     constructor(id, options = {}) {
@@ -28,9 +31,11 @@ export default class Lobby {
             this.playerCapacity = options?.maxAgents ?? this.playerCapacity;
         }
 
-        this.bots = options.bots;
+        this.bots = options?.bots ?? this.bots;
         
         this.private = options?.private ?? this.private;
+
+        this.debug = options?.debug ?? this.debug;
     }
 
     /**

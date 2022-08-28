@@ -23,30 +23,13 @@ export default class API {
 
         // return gamestate view for agent
         this.app.get('/client/game', (req, res) => {
-            let { token } = req.params
-
-            // Testing clause.
-            if (token === 'DEBUG') {
-                // Use ip address to identify unique DEBUG agents.
-                const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress ;
-                // TODO: This is a patchwork solution. Maybe look into making it an option?
-                token += '-' + ip;
-            }
-
+            const { token } = req.params
             res.json()
         })
 
         this.app.get('/client/join/:lobby', (req, res) => {
             const lobbyId = parseInt(req.params.lobby);
-            let {token, ...options} = req.query;
-
-            // Testing clause.
-            if (token === 'DEBUG') {
-                // Use ip address to identify unique DEBUG agents.
-                const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress ;
-                // TODO: This is a patchwork solution. Maybe look into making it an option?
-                token += '-' + ip;
-            }
+            const {token, ...options} = req.query;
 
             console.log(`Agent ${token} attempting to join lobby ${lobbyId === -1 ? '(auto)' : lobbyId}`);
             Server.instance.lobbyManager.joinLobby(lobbyId, token, options);
@@ -54,15 +37,7 @@ export default class API {
 
         // receive move played by an agent
         this.app.post('/client/action', (req, res) => {
-            let { token, action } = req.params;
-
-            // Testing clause.
-            if (token === 'DEBUG') {
-                // Use ip address to identify unique DEBUG agents.
-                const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress ;
-                // TODO: This is a patchwork solution. Maybe look into making it an option?
-                token += '-' + ip;
-            }
+            const { token, action } = req.params;
         })
     }
 }

@@ -102,8 +102,8 @@ export default class LobbyManager {
      * @param {String[]} players List of player tokens.
      * @param {Number} bots Number of bots to be added.
      */
-    startLobby(lobbyId, players, bots) {
-        Server.instance.gameManager.createGame(players, bots);
+    async startLobby(lobbyId, players, bots) {
+        await Server.instance.gameManager.createGame(players, bots);
         this.lobbies.delete(lobbyId);
     }
 
