@@ -42,8 +42,10 @@ export default class Server {
     }
 
     async loadTestData() {
-        const numAgents = 20;
-        const numGames = 10;
+        const numAgents = 200;
+        const gamesPerAgent = 3;
+        const agentsPerGame = 5;
+        const numGames = numAgents * gamesPerAgent;
 
         console.log('Cleaning Database...');
         await this.deleteAll();
@@ -58,25 +60,30 @@ export default class Server {
         const userData = tokengen.computeStudentTokens(studentNumbers);
 
         console.log('Creating Users and Agents...');
-        const agents = [];
-        for (let { studentNumber, authToken } of userData) {
-            const user = await this.createUser(studentNumber, authToken);
-            const agent = await this.createAgent(user, '/code');
-
-            agents.push(agent);
-        }
+        await Promise.all(userData.map((
+            { studentNumber, authToken }) => this.createUserAndAgent(studentNumber, authToken)
+        ));
 
         console.log('Creating Games');
+        const gameRecordings = [];
         for (let i = 0; i < numGames; i++) {
             // pick 5 without replacement
             const usersInGame =  [...studentNumbers]
                 .sort(() => 0.5 - Math.random())  // shuffle
-                .slice(0, 5);
+                .slice(0, agentsPerGame);
 
-            await this.recordGame(usersInGame);
+            const userScores = {};
+            usersInGame.forEach((token, i) => {
+                userScores[token] = i == 0 ? 1.0 : 0.0;
+            });
+
+            const promise = this.recordGame(usersInGame, userScores);
+            gameRecordings.push(promise);
         }
 
+        await Promise.all(gameRecordings);
         console.log('Finished');
+
         return;
     }
 
@@ -127,7 +134,6 @@ export default class Server {
     }
 
     /**
-     * @TODO Test
      * @param {String} userToken
      * @param {String | Number} studentNumber
      * @returns {Neode.Node<Models.User>}
@@ -158,7 +164,19 @@ export default class Server {
     }
 
     /**
-     * @TODO Test
+     * @param {String | Number} studentNumber
+     * @param {String} authToken
+     * @returns {Neode.Node<Models.Agent>}
+     */
+
+    async createUserAndAgent(studentNumber, authToken) {
+        const user = await this.createUser(studentNumber, authToken);
+        const agent = await this.createAgent(user, '/code');
+
+        return agent;
+    }
+
+    /**
      * @param {String} userToken
      * @return {Neode.Node<Models.Agent> | null} Agent model
      */
@@ -177,7 +195,6 @@ export default class Server {
     }
 
     /**
-     * @TODO Test
      * @param {String} userToken
      * @return {Neode.Node<Models.Game>[]}
      */
@@ -202,15 +219,16 @@ export default class Server {
      * Creates agent <-> game edges in the db
      * @param {String[]} userTokens
      */
-    async recordGame(userTokens) {
+    async recordGame(userTokens, scores) {
         const game = await this.createGameNode();
 
         for (let userToken of userTokens) {
             // Might need score to be set
             const agent = await this.getUserAgent(userToken);
+            const score = scores[userToken];
             await Promise.all([
-                agent.relateTo(game, 'playedIn'),
-                game.relateTo(agent, 'playedIn'),
+                agent.relateTo(game, 'playedIn', { score }),
+                game.relateTo(agent, 'playedIn', { score }),
             ]);
         }
     }
