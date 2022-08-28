@@ -27,6 +27,7 @@ export default class GameManager {
      * @param {GameInstance} game
      */
     async removeGame(game) {
+        // Write 'events' to database.
         game.userTokens.forEach((token) => this.gameMap.delete(token));
     }
 }

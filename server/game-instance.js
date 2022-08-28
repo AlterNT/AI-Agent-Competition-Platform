@@ -9,8 +9,6 @@ export default class GameInstance {
     debug;
     /** @type {Agent[]} */
     agents = [];
-    /** @type {Map<String, Number>} */
-    playerMap = new Map();
     /** @type {Map<String, [{}]>} */
     playerEvents = new Map();
     // All events that have occurred.
@@ -18,6 +16,7 @@ export default class GameInstance {
 
     constructor(userTokens, numBots, debug) {
         this.debug = debug;
+        this.userTokens = userTokens;
 
         for (let i = 0; i < userTokens.length; i++) {
             const user = userTokens[i];
@@ -82,7 +81,6 @@ export default class GameInstance {
     }
 
     end() {
-        // Write 'events' to database.
         Server.instance.gameManager.removeGame(this);
     }
 
