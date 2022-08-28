@@ -28,6 +28,8 @@ StudentNumber3
 ...
 ```
 
+# Development
+## Server
 ### Generating Test Data
 WARNING: running this will CLEAR your database, do NOT use it on the same machine as a running server
 
@@ -35,6 +37,14 @@ In case of an error on the delete operation: run the command again until it work
 ```zsh
 node . load-test-data
 ```
+
+### Connection to DB Instance With Neo4j Browser
+1. Start Neo4j
+2. In Neo4j Browser: Add --> Remote Connection
+3. Fill in details from `.env` file on the 2 following steps
+4. Connect to the Remote Connection and Open
+5. If lacking any styling run `:style reset`
+6. If server hangs indefinitely disconnect Neo4j browser, and reconnect to the db from the server
 
 # Installation
 ## Dependencies
