@@ -30,6 +30,8 @@ StudentNumber3
 
 ### Generating Test Data
 WARNING: running this will CLEAR your database, do NOT use it on the same machine as a running server
+
+In case of an error on the delete operation: run the command again until it works.
 ```zsh
 node . load-test-data
 ```

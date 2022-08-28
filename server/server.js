@@ -42,8 +42,8 @@ export default class Server {
     }
 
     async loadTestData() {
-        const numAgents = 200;
-        const gamesPerAgent = 3;
+        const numAgents = 20;
+        const gamesPerAgent = 200;
         const agentsPerGame = 5;
         const numGames = numAgents * gamesPerAgent;
 
@@ -77,7 +77,7 @@ export default class Server {
                 userScores[token] = i == 0 ? 1.0 : 0.0;
             });
 
-            const promise = this.recordGame(usersInGame, userScores);
+            const promise = this.recordGame(userScores);
             gameRecordings.push(promise);
         }
 
@@ -217,20 +217,23 @@ export default class Server {
 
     /**
      * Creates agent <-> game edges in the db
-     * @param {String[]} userTokens
+     * @param {{ userToken: String, score: Number}} gameOutcome
      */
-    async recordGame(userTokens, scores) {
+    async recordGame(gameOutcome) {
         const game = await this.createGameNode();
 
-        for (let userToken of userTokens) {
+        const relationMappings = [];
+        for (let [ userToken, score ] of Object.entries(gameOutcome)) {
             // Might need score to be set
             const agent = await this.getUserAgent(userToken);
-            const score = scores[userToken];
-            await Promise.all([
-                agent.relateTo(game, 'playedIn', { score }),
-                game.relateTo(agent, 'playedIn', { score }),
-            ]);
+            const agentRelation = agent.relateTo(game, 'playedIn', { score });
+            const gameRelation = game.relateTo(agent, 'playedIn', { score });
+
+            relationMappings.push(agentRelation);
+            relationMappings.push(gameRelation);
         }
+
+        await Promise.all(relationMappings);
     }
 
     /**
