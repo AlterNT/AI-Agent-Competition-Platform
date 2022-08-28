@@ -8,6 +8,13 @@ TODO
 TODO
 
 ## Server
+All command under this section are executed under the `/server` directory.
+
+### Starting the Server
+```zsh
+node . start
+```
+
 ### Token Generation
 ```zsh
 node . tokens <path-to-token-file>
@@ -21,9 +28,10 @@ StudentNumber3
 ...
 ```
 
-### Starting the Server
+### Generating Test Data
+WARNING: running this will CLEAR your database, do NOT use it on the same machine as a running server
 ```zsh
-node . start
+node . load-test-data
 ```
 
 # Installation

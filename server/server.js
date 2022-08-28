@@ -42,12 +42,17 @@ export default class Server {
     }
 
     async loadTestData() {
+        const numAgents = 20;
+        const numGames = 10;
+
         console.log('Cleaning Database...');
         await this.deleteAll();
+
         console.log('Initializing default agent...');
         await this.getDefaultAgent();
+
         console.log('Generating User Data...');
-        const studentNumbers = [...new Array(100)].map((_, i) => String(10000 * i + 20000000));
+        const studentNumbers = [...new Array(numAgents)].map((_, i) => String(10000 * i + 20000000));
 
         const tokengen = new TokenGenerator();
         const userData = tokengen.computeStudentTokens(studentNumbers);
@@ -59,6 +64,16 @@ export default class Server {
             const agent = await this.createAgent(user, '/code');
 
             agents.push(agent);
+        }
+
+        console.log('Creating Games');
+        for (let i = 0; i < numGames; i++) {
+            // pick 5 without replacement
+            const usersInGame =  [...studentNumbers]
+                .sort(() => 0.5 - Math.random())  // shuffle
+                .slice(0, 5);
+
+            await this.recordGame(usersInGame);
         }
 
         console.log('Finished');
