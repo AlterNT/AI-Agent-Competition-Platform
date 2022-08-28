@@ -28,7 +28,10 @@ switch (process.argv[2]) {
     case 'start':
         await runAPI(server);
         break;
+    case 'load-test-data':
+        await server.loadTestData();
+        process.exit(0);
     default:
         help();
-        break;
+        process.exit(1)
 }

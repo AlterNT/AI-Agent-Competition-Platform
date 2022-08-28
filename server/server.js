@@ -14,12 +14,14 @@ export default class Server {
     /** @type {Server} */
     static instance;
 
-    /** @type {Neode} */
-    //dbInstance = Neode.fromEnv().with(Models);
     /** @type {LobbyManager} */
     lobbyManager = new LobbyManager();
     /** @type {GameManager} */
     gameManager = new GameManager();
+
+    /** @type {[String]} */
+    static defaultAgentToken = '00000000';
+
 
     //TODO? How will this work. Config file?
     /** @type {[String]} */
@@ -33,7 +35,34 @@ export default class Server {
             return Server.instance;
         }
 
+        /** @type {Neode} */
+        this.dbInstance = Neode.fromEnv().with(Models);
+
         Server.instance = this;
+    }
+
+    async loadTestData() {
+        console.log('Cleaning Database...');
+        await this.deleteAll();
+        console.log('Initializing default agent...');
+        await this.getDefaultAgent();
+        console.log('Generating User Data...');
+        const studentNumbers = [...new Array(100)].map((_, i) => String(10000 * i + 20000000));
+
+        const tokengen = new TokenGenerator();
+        const userData = tokengen.computeStudentTokens(studentNumbers);
+
+        console.log('Creating Users and Agents...');
+        const agents = [];
+        for (let { studentNumber, authToken } of userData) {
+            const user = await this.createUser(studentNumber, authToken);
+            const agent = await this.createAgent(user, '/code');
+
+            agents.push(agent);
+        }
+
+        console.log('Finished');
+        return;
     }
 
     /**
@@ -56,7 +85,6 @@ export default class Server {
         const agent = await this.dbInstance.create('Agent', {
             srcPath: '???',
         });
-
 
         await Promise.all([
             user.relateTo(agent, 'controls'),
