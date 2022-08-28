@@ -18,19 +18,19 @@ export default class GameInstance {
         this.debug = debug;
         this.userTokens = userTokens;
 
-        for (let i = 0; i < userTokens.length; i++) {
-            const user = userTokens[i];
-            this.playerMap.set(user, i);
+        // TODO: test
+        const botTokens = [...new Array(numBots)].map(() => Server.defaultAgentToken);
+        const tokens = [...userTokens, ...botTokens].sort(() => 0.5 - Math.random());
+
+        tokens.forEach((token) => {
+            if (token === Server.defaultAgentToken) {
+                this.agents.push(new Server.instance.Game.Bot(userTokens.length - 1 + i));
+                return;
+            }
+
             this.playerEvents.set(user, []);
             this.agents.push(new Server.instance.Game.Agent(user));
-        }
-
-        for (let i = 0; i < numBots; i++) {
-            this.agents.push(new Server.instance.Game.Bot(userTokens.length - 1 + i));
-        }
-
-        // TODO: look into scrambling the order, while keeping playerMap association correct.
-
+        })
     }
 
     /**

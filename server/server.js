@@ -10,6 +10,8 @@ export default class Server {
     /** @type {Server} */
     static instance;
 
+    /** @type {String} */
+    static defaultAgentToken = '00000000';
 
     /** @type {API} */
     api = new API();
