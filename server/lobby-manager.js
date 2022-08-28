@@ -103,8 +103,7 @@ export default class LobbyManager {
      * @param {Number} bots Number of bots to be added.
      */
     startLobby(lobbyId, players, bots) {
-
-        Server.instance.gameManager.createGame()
+        Server.instance.gameManager.createGame(players, bots);
         this.lobbies.delete(lobbyId);
     }
 

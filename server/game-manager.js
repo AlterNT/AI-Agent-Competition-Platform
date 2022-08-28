@@ -2,24 +2,22 @@ import GameInstance from './game-instance.js';
 
 export default class GameManager {
 
-    /** @type {GameInstance[]} */
-    games = [];
+    /** @type {Map<Number, GameInstance>} */
+    games = new Map();
+    /** @type {Map<String, Number>} */
+    playerMap = new Map();
 
     async createGame(userTokens, numBots) {
+        let id = 0;
+        // Find the first unused id.
+        while (this.lobbies.has(id)) id++;
+
         const game = new GameInstance(userTokens, numBots);
-        this.games.push(game);
+
+        this.games.set(id, game);
     }
 
-    async closeFinishedGames() {
-        const finishedIndices = this.games
-            .map((i, game) => {
-                return game.finished() ? i : -1;
-            }).filter((i, _) => i !== -1)
-            .reverse();
+    async removeGame() {
 
-        for (let index of finishedIndices) {
-            const game = this.games.pop(index);
-            await this.recordGame(game);
-        }
-    }  
+    }
 }
