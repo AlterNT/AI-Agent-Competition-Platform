@@ -42,9 +42,9 @@ export default class Server {
     }
 
     async loadTestData() {
-        const numAgents = 20;
-        const gamesPerAgent = 200;
-        const agentsPerGame = 5;
+        const numAgents = 100;
+        const gamesPerAgent = 20;
+        const agentsPerGame = 4;
         const numGames = numAgents * gamesPerAgent;
 
         console.log('Cleaning Database...');
@@ -259,6 +259,66 @@ export default class Server {
         const tokengen = new TokenGenerator();
         return tokengen.computeStudentTokens(studentNumbers);
     }
+
+        /**
+         * Finds the highest WR agent with a min number of games.
+     */
+        async showTopPerformer() {
+            const res = await this.dbInstance.cypher(`
+            MATCH (a:Agent) -[p:PLAYED_IN]-> (g:Game)
+            WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
+            WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
+            RETURN a as Agent, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
+            ORDER BY WinPercent DESC
+            LIMIT 1
+        `);
+            const A = res.records[0].get('Agent');
+            const GP = res.records[0].get('GamesPlayed');
+            const W = res.records[0].get('Wins');
+            const WP = res.records[0].get('WinPercent');
+
+            console.log(A.toString(), GP.toInt(), W.toInt(), WP.toInt());
+
+            //const nodes = res.records.map((record) => record.get('n'));
+            //const data = nodes.map((node) => ({
+                //auth: node.properties.authenticationTokenString,
+                //label: node.labels,
+        }
+
+                /**
+         * Finds the most improved agents comparing past performance to recent performance
+     */
+            async showMostImproved() {
+            const res = await this.dbInstance.cypher(`
+            MATCH (a:Agent) -[p:PLAYED_IN]-> (g:Game)
+            WITH a, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
+            WITH a, Scores[0..5] as FFGS, Scores[-5..] as LFGS, Games[0..5] as FFG, Games[-5..] as LFG
+            WITH a, 
+                size(FFG) as FFGSize, size(LFG) as LFGSize, 
+                size([i in FFGS WHERE i=1]) as FFGWins, 
+                size([i in LFGS WHERE i=1]) as LFGWins
+            WITH a, 
+                100 * FFGWins/FFGSize as InitialWinPercent,
+                100 * LFGWins/LFGSize as LastWinPercent
+            RETURN a as Agent,
+                InitialWinPercent,
+                LastWinPercent,
+                LastWinPercent - InitialWinPercent as PercentageImprovement
+            ORDER BY PercentageImprovement DESC
+            LIMIT 10
+        `);
+            const [A, IWP, LWP, PI] = [[], [], [], []]
+            const RESULTS = []
+            for (let i=0; i<10; i++) {
+                A.push(res.records[i].get('Agent').toString());
+                IWP.push(res.records[i].get('InitialWinPercent').toInt());
+                LWP.push(res.records[i].get('LastWinPercent').toInt());
+                PI.push(res.records[i].get('PercentageImprovement').toInt());
+
+                RESULTS.push([A[i], IWP[i], LWP[i], PI[i]]);
+            };
+            console.log(RESULTS);
+        }
 
     /**
      * @TODO Nathan will overwrite this ig
