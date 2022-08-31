@@ -1,13 +1,48 @@
+import Server from "./server.js";
+
 class CachedQuery {
-    constructor(timeoutDuration, queryFunction) {
-        this.result = queryFunction();
-        setInterval(() => this.result = queryFunction(), timeoutDuration);
+    /**
+     * Takes a timeout and function of server
+     * Updates its result with the function of every time timeoutDuration elapses
+     * @param {Number} timeoutDuration
+     * @param {Function} queryFunction
+     */
+    async run(timeoutDuration, queryFunction) {
+        this.result = await queryFunction.bind(Server.instance)();
+        setInterval(async () => this.result = await queryFunction.bind(Server.instance)(), timeoutDuration);
     }
 }
 
+// Class that is used to access game statistics efficiently
+// Avoids re-querying the database on every request/computation
 export default class GameStatistics {
-    constructor() {
-        const queryFunction = () => (new Date());
-        const example = new CachedQuery(2000, queryFunction);
+    /**
+     * Takes a list of methods of server and recomputed their result every so often
+     * @param {Function[]} queryFunctions
+     */
+    async start(queryFunctions) {
+        // Hardcoded to every 2 seconds for now
+        const timeoutDuration = 2000;
+
+        // Maps query names to query results
+        this.queryMap = new Map();
+        for (let queryFunction of queryFunctions) {
+            const cachedQuery = new CachedQuery();
+            await cachedQuery.run(timeoutDuration, queryFunction);
+            this.queryMap.set(
+                queryFunction.name,
+                cachedQuery,
+            );
+        }
+    }
+
+    /**
+     * Returns whatever has been cached for the result of the query
+     * @param {Function | String} query
+     * @returns {any}
+     */
+    getQueryResult(query) {
+        const queryString = query?.name || query;
+        return this.queryMap.get(queryString).result;
     }
 };
