@@ -51,7 +51,11 @@ node . load-test-data
 - [npm](https://phoenixnap.com/kb/install-node-js-npm-on-windows)
 - [neo4j](https://neo4j.com/)
 
-## Configuring neo4j
+## Neo4j Installation
+[Download Neo4j Community edition](https://neo4j.com/download-center/#community)
+TODO: install instructions
+
+### Configuring Neo4j
 After installing neo4j you must change the default password
 ```bash
 neo4j-admin set-initial-password <insert-password-here> # possibly requiring root permissions
@@ -62,7 +66,21 @@ Go to the server dir and make a dotenv file
 cd server && cp .env_example .env
 ```
 
-Fille in the correct details into the dotenv file
+Fill in the correct details into the dotenv file
+
+### Installing APOC (and Neo4j Libraries)
+This section is only valid on *debian* based linux distros (ubuntu and ubuntu-derivatives count)
+
+The development build of this project is using:
+- neo4j 4.4.10
+- APOC 4.4.0.8
+
+1. Check neo4j version (`neo4j --version`)
+2. Install a matching version of the APOC library (ends in `-all.jar`) from the [GH releases](https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases)
+3. Check plugin directory [here](https://neo4j.com/docs/operations-manual/current/configuration/file-locations/), at the time of writing the plugin directory is located as follows:
+   - Debian-based Linux: `/var/lib/neo4j/plugins`
+   - MacOS/Linux: `<neo4j-home>/plugins`
+   - Windows: `<neo4j-home>\plugins`
 
 ## Running the Server
 ```bash
