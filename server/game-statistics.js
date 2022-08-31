@@ -1,5 +1,6 @@
 import Server from "./server.js";
 
+// TODO refactor this whole file so things musn't be constructed separately (constructed through a static function?)
 class CachedQuery {
     /**
      * Takes a timeout and function of server
