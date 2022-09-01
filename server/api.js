@@ -48,10 +48,9 @@ class API {
 
         // POST ENDPOINTS
         // ----------------------------------------------------------------------------
-        app.post('/api/join/', (req, res) => {
+        app.post('/api/join', (req, res) => {
             const { agentToken, gameID } = req.body
-            this.lobbyManage
-            this.lobbyManager.addAgent(agentToken, gameID)
+            this.lobbyManager.joinLobby(agentToken, gameID)
         })
 
 
