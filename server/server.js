@@ -9,7 +9,7 @@ import Game from './game/game.js';
 import PaperScissorsRock from './game/psr.js';
 import TokenGenerator from './token-generator.js';
 import 'process';
-import GameStatistics from './game-statistics.js';
+import DBSync from './database-sync.js';
 
 export default class Server {
     /** @type {Server} */

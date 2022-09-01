@@ -16,7 +16,7 @@ class CachedQuery {
 
 // Class that is used to access game statistics efficiently
 // Avoids re-querying the database on every request/computation
-export default class GameStatistics {
+export default class DBSync {
     /**
      * Takes a list of methods of server and recomputed their result every so often
      * @param {Function[]} queryFunctions
