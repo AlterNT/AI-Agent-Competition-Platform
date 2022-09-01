@@ -9,7 +9,7 @@ import Game from './game/game.js';
 import PaperScissorsRock from './game/psr.js';
 import TokenGenerator from './token-generator.js';
 import 'process';
-import DBSync from './database-sync.js';
+import DBSync from './db-sync.js';
 
 export default class Server {
     /** @type {Server} */
@@ -36,10 +36,27 @@ export default class Server {
             return Server.instance;
         }
 
+        Server.instance = this;
+    }
+
+    async init() {
         /** @type {Neode} */
         this.dbInstance = Neode.fromEnv().with(Models);
 
-        Server.instance = this;
+        const cachedQueries = [this.showMostImproved, this.showTopPerformer];
+
+        /** @type {DBSync} */
+        this.dbSync = new DBSync();
+        await this.dbSync.start(cachedQueries);
+    }
+
+    /**
+     * Returns whatever has been cached for the result of the query
+     * @param {Function | String} query
+     * @returns {any}
+     */
+    async getQueryResult(query) {
+        return await this.dbSync.getQueryResult(query);
     }
 
     async loadTestData() {
@@ -261,36 +278,39 @@ export default class Server {
         return tokengen.computeStudentTokens(studentNumbers);
     }
 
-        /**
-         * Finds the highest WR agent with a min number of games.
-     */
-        async showTopPerformer() {
-            const res = await this.dbInstance.cypher(`
+    /**
+     * Finds the highest WR agent with a min number of games.
+    */
+    async showTopPerformer() {
+        const res = await this.dbInstance.cypher(`
             MATCH (a:Agent) -[p:PLAYED_IN]-> (g:Game)
             WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
             WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
             RETURN a as Agent, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
             ORDER BY WinPercent DESC
-            LIMIT 1
+            LIMIT 1;
         `);
-            const A = res.records[0].get('Agent');
-            const GP = res.records[0].get('GamesPlayed');
-            const W = res.records[0].get('Wins');
-            const WP = res.records[0].get('WinPercent');
 
-            console.log(A.toString(), GP.toInt(), W.toInt(), WP.toInt());
+        const A = res.records[0].get('Agent');
+        const GP = res.records[0].get('GamesPlayed');
+        const W = res.records[0].get('Wins');
+        const WP = res.records[0].get('WinPercent');
 
-            //const nodes = res.records.map((record) => record.get('n'));
-            //const data = nodes.map((node) => ({
-                //auth: node.properties.authenticationTokenString,
-                //label: node.labels,
-        }
+        // console.log(A.toString(), GP.toInt(), W.toInt(), WP.toInt());
 
-                /**
-         * Finds the most improved agents comparing past performance to recent performance
-     */
-            async showMostImproved() {
-            const res = await this.dbInstance.cypher(`
+        return A; // TODO: return
+
+        //const nodes = res.records.map((record) => record.get('n'));
+        //const data = nodes.map((node) => ({
+            //auth: node.properties.authenticationTokenString,
+            //label: node.labels,
+    }
+
+    /**
+     * Finds the most improved agents comparing past performance to recent performance
+    */
+    async showMostImproved() {
+        const res = await this.dbInstance.cypher(`
             MATCH (a:Agent) -[p:PLAYED_IN]-> (g:Game)
             WITH a, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
             WITH a, Scores[0..5] as FFGS, Scores[-5..] as LFGS, Games[0..5] as FFG, Games[-5..] as LFG
@@ -306,20 +326,21 @@ export default class Server {
                 LastWinPercent,
                 LastWinPercent - InitialWinPercent as PercentageImprovement
             ORDER BY PercentageImprovement DESC
-            LIMIT 10
+            LIMIT 10;
         `);
-            const [A, IWP, LWP, PI] = [[], [], [], []]
-            const RESULTS = []
-            for (let i=0; i<10; i++) {
-                A.push(res.records[i].get('Agent').toString());
-                IWP.push(res.records[i].get('InitialWinPercent').toInt());
-                LWP.push(res.records[i].get('LastWinPercent').toInt());
-                PI.push(res.records[i].get('PercentageImprovement').toInt());
 
-                RESULTS.push([A[i], IWP[i], LWP[i], PI[i]]);
-            };
-            console.log(RESULTS);
-        }
+        const [A, IWP, LWP, PI] = [[], [], [], []]
+        const RESULTS = []
+        for (let i=0; i<10; i++) {
+            A.push(res.records[i].get('Agent').toString());
+            IWP.push(res.records[i].get('InitialWinPercent').toInt());
+            LWP.push(res.records[i].get('LastWinPercent').toInt());
+            PI.push(res.records[i].get('PercentageImprovement').toInt());
+
+            RESULTS.push([A[i], IWP[i], LWP[i], PI[i]]);
+        };
+        return RESULTS; // TODO return
+    }
 
     /**
      * @TODO Nathan will overwrite this ig
