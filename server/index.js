@@ -39,6 +39,26 @@ switch (process.argv[2]) {
         await server.showMostImproved();
         process.exit(0);
 
+    case 'showAgentGames':
+        await server.showAgentGames();
+        process.exit(0);
+
+    case 'showAgentWinrate':
+        await server.showAgentWinrate();
+        process.exit(0);
+    
+    case 'showAgentRecentGames':
+        await server.showAgentRecentGames();
+        process.exit(0);
+    
+    case 'showUserAgents':
+        await server.showUserAgents();
+        process.exit(0);
+
+    case 'showBotAgents':
+        await server.showBotAgents();
+        process.exit(0);
+
     default:
         help();
         process.exit(1)

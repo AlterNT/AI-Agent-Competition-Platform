@@ -262,7 +262,7 @@ export default class Server {
 
         /**
          * Finds the highest WR agent with a min number of games.
-     */
+         */
         async showTopPerformer() {
             const res = await this.dbInstance.cypher(`
             MATCH (a:Agent) -[p:PLAYED_IN]-> (g:Game)
@@ -285,10 +285,10 @@ export default class Server {
                 //label: node.labels,
         }
 
-                /**
+        /**
          * Finds the most improved agents comparing past performance to recent performance
-     */
-            async showMostImproved() {
+         */
+        async showMostImproved() {
             const res = await this.dbInstance.cypher(`
             MATCH (a:Agent) -[p:PLAYED_IN]-> (g:Game)
             WITH a, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
@@ -318,6 +318,76 @@ export default class Server {
                 RESULTS.push([A[i], IWP[i], LWP[i], PI[i]]);
             };
             console.log(RESULTS);
+        }
+
+
+        /**
+         * Finds the games of a specified agent
+         */
+        async showAgentGames() {
+            const res = await this.dbInstance.cypher(`
+            MATCH (a:Agent)-[:PLAYED_IN]->(g:Game)
+            WHERE a.id = "c2f75e6e-b25c-41dd-9f7d-31375e0a129c"
+            RETURN a as Agent, g as Games
+            `);
+
+            const RESULTS = [];
+            const Agent = res.records[0].get('Agent').toString();
+
+            for (let i=0; i<res.records.length; i++){
+                RESULTS.push(res.records[i].get('Games').toString());
+            };
+            console.log(Agent, RESULTS);
+        };
+
+        /**
+         * TBC
+         */
+        async showAgentWinrate() { 
+            const res = await this.dbInstance.cypher(`
+            MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"}) -[p:PLAYED_IN]-> (g:Game)
+            WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
+            WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
+            RETURN a, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
+            ORDER BY WinPercent DESC
+            `);
+            console.log(res);
+        }
+
+        /*
+        * TBC
+        */
+        async showAgentRecentGames() {
+            const res = await this.dbInstance.cypher(`
+            MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"})
+            WITH a, apoc.coll.sortNodes([(a)-[:PLAYED_IN]->(g:Game) | g ], 'timePlayed') as Games
+            RETURN a as Agent, Games[0..5] as MostRecentGames
+            `);
+            console.log(res);
+        }
+
+        /*
+        * TBC
+        */
+        async showUserAgents() {
+            const res = await this.dbInstance.cypher(`
+            MATCH (u:User)-[c:CONTROLS]->(a:Agent)
+            WHERE u.authenticationTokenString = "20070000"
+            RETURN u as User, a as Agents   
+            `);
+            console.log(res);
+        }
+
+        /*
+        * TBC
+        */
+        async showBotAgents() {
+            const res = await this.dbInstance.cypher(`
+            MATCH (u:User)-[:CONTROLS]->(a:Agent)
+            WHERE u.authenticationTokenString = "00000000"
+            RETURN u as User, a as Agents
+            `);
+            console.log(res);
         }
 
     /**
