@@ -30,6 +30,15 @@ switch (process.argv[2]) {
     case 'load-test-data':
         await server.loadTestData();
         process.exit(0);
+
+    case 'showTopPerformer':
+        await server.showTopPerformer();
+        process.exit(0);
+    
+    case 'showMostImproved':
+        await server.showMostImproved();
+        process.exit(0);
+
     default:
         help();
         process.exit(1)
