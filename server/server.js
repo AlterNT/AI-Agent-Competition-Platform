@@ -270,7 +270,7 @@ export default class Server {
             WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
             RETURN a as Agent, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
             ORDER BY WinPercent DESC
-            LIMIT 1
+            LIMIT 1;
         `);
             const A = res.records[0].get('Agent');
             const GP = res.records[0].get('GamesPlayed');
@@ -293,11 +293,11 @@ export default class Server {
             MATCH (a:Agent) -[p:PLAYED_IN]-> (g:Game)
             WITH a, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
             WITH a, Scores[0..5] as FFGS, Scores[-5..] as LFGS, Games[0..5] as FFG, Games[-5..] as LFG
-            WITH a, 
-                size(FFG) as FFGSize, size(LFG) as LFGSize, 
-                size([i in FFGS WHERE i=1]) as FFGWins, 
+            WITH a,
+                size(FFG) as FFGSize, size(LFG) as LFGSize,
+                size([i in FFGS WHERE i=1]) as FFGWins,
                 size([i in LFGS WHERE i=1]) as LFGWins
-            WITH a, 
+            WITH a,
                 100 * FFGWins/FFGSize as InitialWinPercent,
                 100 * LFGWins/LFGSize as LastWinPercent
             RETURN a as Agent,
@@ -305,7 +305,7 @@ export default class Server {
                 LastWinPercent,
                 LastWinPercent - InitialWinPercent as PercentageImprovement
             ORDER BY PercentageImprovement DESC
-            LIMIT 10
+            LIMIT 10;
         `);
             const [A, IWP, LWP, PI] = [[], [], [], []]
             const RESULTS = []
@@ -326,9 +326,9 @@ export default class Server {
          */
         async showAgentGames() {
             const res = await this.dbInstance.cypher(`
-            MATCH (a:Agent)-[:PLAYED_IN]->(g:Game)
-            WHERE a.id = "c2f75e6e-b25c-41dd-9f7d-31375e0a129c"
-            RETURN a as Agent, g as Games
+                MATCH (a:Agent)-[:PLAYED_IN]->(g:Game)
+                WHERE a.id = "c2f75e6e-b25c-41dd-9f7d-31375e0a129c"
+                RETURN a as Agent, g as Games;
             `);
 
             const RESULTS = [];
@@ -343,13 +343,13 @@ export default class Server {
         /**
          * TBC
          */
-        async showAgentWinrate() { 
+        async showAgentWinrate() {
             const res = await this.dbInstance.cypher(`
-            MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"}) -[p:PLAYED_IN]-> (g:Game)
-            WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
-            WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
-            RETURN a, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
-            ORDER BY WinPercent DESC
+                MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"}) -[p:PLAYED_IN]-> (g:Game)
+                WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
+                WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
+                RETURN a, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
+                ORDER BY WinPercent DESC;
             `);
             console.log(res);
         }
@@ -359,9 +359,9 @@ export default class Server {
         */
         async showAgentRecentGames() {
             const res = await this.dbInstance.cypher(`
-            MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"})
-            WITH a, apoc.coll.sortNodes([(a)-[:PLAYED_IN]->(g:Game) | g ], 'timePlayed') as Games
-            RETURN a as Agent, Games[0..5] as MostRecentGames
+                MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"})
+                WITH a, apoc.coll.sortNodes([(a)-[:PLAYED_IN]->(g:Game) | g ], 'timePlayed') as Games
+                RETURN a as Agent, Games[0..5] as MostRecentGames;
             `);
             console.log(res);
         }
@@ -371,9 +371,9 @@ export default class Server {
         */
         async showUserAgents() {
             const res = await this.dbInstance.cypher(`
-            MATCH (u:User)-[c:CONTROLS]->(a:Agent)
-            WHERE u.authenticationTokenString = "20070000"
-            RETURN u as User, a as Agents   
+                MATCH (u:User)-[c:CONTROLS]->(a:Agent)
+                WHERE u.authenticationTokenString = "20070000"
+                RETURN u as User, a as Agents;
             `);
             console.log(res);
         }
@@ -383,9 +383,9 @@ export default class Server {
         */
         async showBotAgents() {
             const res = await this.dbInstance.cypher(`
-            MATCH (u:User)-[:CONTROLS]->(a:Agent)
-            WHERE u.authenticationTokenString = "00000000"
-            RETURN u as User, a as Agents
+                MATCH (u:User)-[:CONTROLS]->(a:Agent)
+                WHERE u.authenticationTokenString = "00000000"
+                RETURN u as User, a as Agents;
             `);
             console.log(res);
         }
