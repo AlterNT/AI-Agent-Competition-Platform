@@ -24,39 +24,33 @@ switch (process.argv[2]) {
             help();
         }
         break;
+    case 'run-db-query':
+        const queryName = process.argv.length >= 3 && process.argv[3];
+        if (queryName) {
+            try {
+                // TODO get query list from server after game-statistics-api is merged
+                const query = server[queryName].bind(server);
+                if (!query) {
+                    console.error(`Query ${queryName} does not exist, is there a typo?`);
+                    process.exit(1);
+                }
+
+                const result = await query();
+                console.log(result);
+                process.exit(0);
+            } catch (e) {
+                console.error(`Query ${queryName} has failed: ${e}`);
+                process.exit(1);
+            }
+        } else {
+            help();
+            process.exit(1);
+        }
     case 'start':
         await runAPI(server);
         break;
     case 'load-test-data':
         await server.loadTestData();
-        process.exit(0);
-
-    case 'showTopPerformer':
-        await server.showTopPerformer();
-        process.exit(0);
-    
-    case 'showMostImproved':
-        await server.showMostImproved();
-        process.exit(0);
-
-    case 'showAgentGames':
-        await server.showAgentGames();
-        process.exit(0);
-
-    case 'showAgentWinrate':
-        await server.showAgentWinrate();
-        process.exit(0);
-    
-    case 'showAgentRecentGames':
-        await server.showAgentRecentGames();
-        process.exit(0);
-    
-    case 'showUserAgents':
-        await server.showUserAgents();
-        process.exit(0);
-
-    case 'showBotAgents':
-        await server.showBotAgents();
         process.exit(0);
 
     default:
