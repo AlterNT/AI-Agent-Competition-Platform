@@ -260,11 +260,13 @@ export default class Server {
         return tokengen.computeStudentTokens(studentNumbers);
     }
 
-        /**
-         * Finds the highest WR agent with a min number of games.
-         */
-        async showTopPerformer() {
-            const res = await this.dbInstance.cypher(`
+    /**
+     * finds the highest WR agent with a min number of games.
+     * @TODO maybe this should be top 10 agents?
+     * @return {any[]} array of single, most improved agent
+     */
+     async queryTopWinrate() {
+        const res = await this.dbInstance.cypher(`
             MATCH (a:Agent) -[p:PLAYED_IN]-> (g:Game)
             WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
             WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
@@ -272,24 +274,21 @@ export default class Server {
             ORDER BY WinPercent DESC
             LIMIT 1;
         `);
-            const A = res.records[0].get('Agent');
-            const GP = res.records[0].get('GamesPlayed');
-            const W = res.records[0].get('Wins');
-            const WP = res.records[0].get('WinPercent');
 
-            console.log(A.toString(), GP.toInt(), W.toInt(), WP.toInt());
+        return res.records.map((record) => ({
+            agent: record.get('Agent').toString(),
+            gamesPlayed: record.get('GamesPlayed').toInt(),
+            wins: record.get('Wins').toInt(),
+            winPercent: record.get('WinPercent').toInt(),
+        }));
+    }
 
-            //const nodes = res.records.map((record) => record.get('n'));
-            //const data = nodes.map((node) => ({
-                //auth: node.properties.authenticationTokenString,
-                //label: node.labels,
-        }
-
-        /**
-         * Finds the most improved agents comparing past performance to recent performance
-         */
-        async showMostImproved() {
-            const res = await this.dbInstance.cypher(`
+    /**
+     * Finds the most improved agents comparing past performance to recent performance
+     * @return {any[]} list of agents and improvements sorted by most improved
+     */
+    async queryMostImproved() {
+        const res = await this.dbInstance.cypher(`
             MATCH (a:Agent) -[p:PLAYED_IN]-> (g:Game)
             WITH a, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
             WITH a, Scores[0..5] as FFGS, Scores[-5..] as LFGS, Games[0..5] as FFG, Games[-5..] as LFG
@@ -307,88 +306,90 @@ export default class Server {
             ORDER BY PercentageImprovement DESC
             LIMIT 10;
         `);
-            const [A, IWP, LWP, PI] = [[], [], [], []]
-            const RESULTS = []
-            for (let i=0; i<10; i++) {
-                A.push(res.records[i].get('Agent').toString());
-                IWP.push(res.records[i].get('InitialWinPercent').toInt());
-                LWP.push(res.records[i].get('LastWinPercent').toInt());
-                PI.push(res.records[i].get('PercentageImprovement').toInt());
 
-                RESULTS.push([A[i], IWP[i], LWP[i], PI[i]]);
-            };
-            console.log(RESULTS);
-        }
+        return res.records.map((record) => ({
+            agent: record.get('Agent').toString(),
+            initialWinPercent: record.get('InitialWinPercent').toInt(),
+            lastWinPercent: record.get('LastWinPercent').toInt(),
+            percentageImproved: record.get('PercentageImprovement').toInt(),
+        }));
+    }
 
 
-        /**
-         * Finds the games of a specified agent
-         */
-        async showAgentGames() {
-            const res = await this.dbInstance.cypher(`
-                MATCH (a:Agent)-[:PLAYED_IN]->(g:Game)
-                WHERE a.id = "c2f75e6e-b25c-41dd-9f7d-31375e0a129c"
-                RETURN a as Agent, g as Games;
-            `);
+    /**
+     * @TODO agent param
+     * @param {string} agentId
+     * @return {any[]} All games of specified agent
+     */
+    async queryAgentGames() {
+        const res = await this.dbInstance.cypher(`
+            MATCH (a:Agent)-[:PLAYED_IN]->(g:Game)
+            WHERE a.id = "c2f75e6e-b25c-41dd-9f7d-31375e0a129c"
+            RETURN a as Agent, g as Games;
+        `);
 
-            const RESULTS = [];
-            const Agent = res.records[0].get('Agent').toString();
+        return res.map((record) => record.get('Games').toString());
+    };
 
-            for (let i=0; i<res.records.length; i++){
-                RESULTS.push(res.records[i].get('Games').toString());
-            };
-            console.log(Agent, RESULTS);
-        };
+    /**
+     * @param {String} agentId
+     * @return {any[]} winrate of all agents
+     */
+    async queryAgentWinrate() {
+        const res = await this.dbInstance.cypher(`
+            MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"}) -[p:PLAYED_IN]-> (g:Game)
+            WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
+            WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
+            RETURN a, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
+            ORDER BY WinPercent DESC;
+        `);
 
-        /**
-         * TBC
-         */
-        async showAgentWinrate() {
-            const res = await this.dbInstance.cypher(`
-                MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"}) -[p:PLAYED_IN]-> (g:Game)
-                WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
-                WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
-                RETURN a, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
-                ORDER BY WinPercent DESC;
-            `);
-            console.log(res);
-        }
+        return res.records.map((record) => ({
 
-        /*
-        * TBC
-        */
-        async showAgentRecentGames() {
-            const res = await this.dbInstance.cypher(`
-                MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"})
-                WITH a, apoc.coll.sortNodes([(a)-[:PLAYED_IN]->(g:Game) | g ], 'timePlayed') as Games
-                RETURN a as Agent, Games[0..5] as MostRecentGames;
-            `);
-            console.log(res);
-        }
+        }));
+    }
 
-        /*
-        * TBC
-        */
-        async showUserAgents() {
-            const res = await this.dbInstance.cypher(`
-                MATCH (u:User)-[c:CONTROLS]->(a:Agent)
-                WHERE u.authenticationTokenString = "20070000"
-                RETURN u as User, a as Agents;
-            `);
-            console.log(res);
-        }
+    /**
+     * @param {String} agentId
+     * @param {Number} lookbehind number of games to seek
+     * @return {any[]} all x recent games of agents
+     */
+    async queryAgentRecentGames() {
+        const res = await this.dbInstance.cypher(`
+            MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"})
+            WITH a, apoc.coll.sortNodes([(a)-[:PLAYED_IN]->(g:Game) | g ], 'timePlayed') as Games
+            RETURN a as Agent, Games[0..5] as MostRecentGames;
+        `);
 
-        /*
-        * TBC
-        */
-        async showBotAgents() {
-            const res = await this.dbInstance.cypher(`
-                MATCH (u:User)-[:CONTROLS]->(a:Agent)
-                WHERE u.authenticationTokenString = "00000000"
-                RETURN u as User, a as Agents;
-            `);
-            console.log(res);
-        }
+        return res.records.map((record) => record.get('MostRecentGames'));
+    }
+
+    /**
+     * @param {String} studentNumber
+     * @return {any[]} all agents of user
+     */
+    async queryUserAgents() {
+        const res = await this.dbInstance.cypher(`
+            MATCH (u:User)-[c:CONTROLS]->(a:Agent)
+            WHERE u.studentNumber = "20070000"
+            RETURN u as User, a as Agents;
+        `);
+
+        return res.records.map((record) => record.get('Agents'));
+    }
+
+    /**
+     * @return {any[]} array of all bot agents
+     */
+    async queryBotAgents() {
+        const res = await this.dbInstance.cypher(`
+            MATCH (u:User)-[:CONTROLS]->(a:Agent)
+            WHERE u.authenticationTokenString = "00000000"
+            RETURN u as User, a as Agents;
+        `);
+
+        return res.records.map((record) => record.get('Agents'));
+    }
 
     /**
      * @TODO Nathan will overwrite this ig
