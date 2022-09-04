@@ -17,17 +17,26 @@ const runAPI = async () => {
 
     // @TODO: returns all games played
     app.get('/api/games', (_, res) => {
-        res.json();
+        server.queryGames()
+            .then((games) => {
+                res.json({games});
+            });
     });
 
     // @TODO: returns all users
     app.get('/api/users', (_, res) => {
-        res.json();
+        server.queryUsers()
+            .then((users) => {
+                res.json({users});
+            });
     });
 
     // @TODO: returns all agents
     app.get('/api/agents', (_, res) => {
-        res.json();
+        server.queryAgents()
+            .then((agents) => {
+                res.json({agents});
+            });
     });
 
     // returns all bot agents
