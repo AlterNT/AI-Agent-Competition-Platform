@@ -7,10 +7,11 @@ const help = () => {
     console.log(
         `USAGE (from /server):
         To get help string: node . help
-        To generate Tokens: node . tokens [studentIdFilePath]
-        To run a tournament: node . run-tournament
-        To test initializing: node . init
         To generate test data: node . load-test-data
+        To run a database query: node . run-db-query queryName
+        To generate Tokens: node . tokens [studentIdFilePath]
+        To test server initialization: node . init
+        TODO: To run a tournament: node . run-tournament
         `
     );
 }
@@ -52,6 +53,7 @@ switch (process.argv[2]) {
             help();
             process.exit(1);
         }
+
     case 'start':
         await runAPI(server);
         break;
