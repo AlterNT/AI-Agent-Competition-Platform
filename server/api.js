@@ -15,7 +15,7 @@ const runAPI = async () => {
     // ---------------------------------------------------------------
     // map db nodes
 
-    // @TODO: returns all games played
+    // returns all games played
     app.get('/api/games', (_, res) => {
         server.queryGames()
             .then((games) => {
@@ -23,7 +23,7 @@ const runAPI = async () => {
             });
     });
 
-    // @TODO: returns all users
+    // returns all users
     app.get('/api/users', (_, res) => {
         server.queryUsers()
             .then((users) => {
@@ -31,7 +31,7 @@ const runAPI = async () => {
             });
     });
 
-    // @TODO: returns all agents
+    // returns all agents
     app.get('/api/agents', (_, res) => {
         server.queryAgents()
             .then((agents) => {
@@ -42,8 +42,8 @@ const runAPI = async () => {
     // returns all bot agents
     app.get('/api/bots', (_, res) => {
         server.queryBotAgents()
-            .then((result) => {
-                res.json(result);
+            .then((bots) => {
+                res.json({bots});
             });
     });
 
