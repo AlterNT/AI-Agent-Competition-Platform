@@ -110,6 +110,7 @@ const runAPI = async () => {
 
     // ---------------------------------------------------------------
     // game statistics: single agent
+    // @TODO: implement by reusing cached batch query results
 
     // @TODO: winrate of given agent
     // @TODO: returns nothing if not enough games were played

@@ -9,6 +9,7 @@ import Game from './game/game.js';
 import PaperScissorsRock from './game/psr.js';
 import TokenGenerator from './token-generator.js';
 import 'process';
+import DBSync from './db-sync.js';
 
 export default class Server {
     /** @type {Server} */
@@ -35,10 +36,28 @@ export default class Server {
             return Server.instance;
         }
 
+        Server.instance = this;
+    }
+
+    async init() {
         /** @type {Neode} */
         this.dbInstance = Neode.fromEnv().with(Models);
 
-        Server.instance = this;
+        // @TODO: cached queries
+        const cachedQueries = [];
+
+        /** @type {DBSync} */
+        this.dbSync = new DBSync();
+        await this.dbSync.start(cachedQueries);
+    }
+
+    /**
+     * Returns whatever has been cached for the result of the query
+     * @param {Function | String} query
+     * @returns {any}
+     */
+    async getQueryResult(query) {
+        return await this.dbSync.getQueryResult(query);
     }
 
     async loadTestData() {
@@ -303,6 +322,10 @@ export default class Server {
             ORDER BY WinPercent DESC
             LIMIT 1;
         `);
+            const A = res.records[0].get('Agent');
+            const GP = res.records[0].get('GamesPlayed');
+            const W = res.records[0].get('Wins');
+            const WP = res.records[0].get('WinPercent');
 
         return res.records.map((record) => ({
             agent: record.get('Agent').toString(),

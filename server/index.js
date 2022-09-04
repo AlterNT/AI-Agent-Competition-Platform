@@ -5,14 +5,18 @@ import process from 'process';
 
 const help = () => {
     console.log(
-        `USAGE:
-        To generate Tokens: node server tokens [studentIdFilePath]
-        To run a tournament: node server run-tournament
+        `USAGE (from /server):
+        To get help string: node . help
+        To generate Tokens: node . tokens [studentIdFilePath]
+        To run a tournament: node . run-tournament
+        To test initializing: node . init
+        To generate test data: node . load-test-data
         `
     );
 }
 
 const server = new Server();
+await server.init();
 
 switch (process.argv[2]) {
     case 'tokens':
@@ -20,8 +24,10 @@ switch (process.argv[2]) {
         if (tokenFile) {
             const tokens = server.generateUserTokens(tokenFile);
             console.log(tokens);
+            process.exit(0);
         } else {
             help();
+            process.exit(1);
         }
         break;
     case 'run-db-query':
@@ -49,6 +55,10 @@ switch (process.argv[2]) {
     case 'start':
         await runAPI(server);
         break;
+
+    case 'init':
+        process.exit(0);
+
     case 'load-test-data':
         await server.loadTestData();
         process.exit(0);
