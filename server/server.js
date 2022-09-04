@@ -261,6 +261,35 @@ export default class Server {
     }
 
     /**
+     * @return {any[]} array of all games
+     */
+     async queryGames() {
+        const res = await this.dbInstance.all('Game')
+        return res.map((_, i) => res.get(i).properties());
+    }
+
+    /**
+     * @TODO remove token from users
+     * @return {any[]} array of all users
+     */
+     async queryUsers() {
+        const res = await this.dbInstance.all('User')
+        return res.map((_, i) => {
+            const props = res.get(i).properties()
+            delete props.studentNumberString
+            return props;
+        });
+    }
+
+    /**
+     * @return {any[]} array of all agents
+     */
+     async queryAgents() {
+        const res = await this.dbInstance.all('Agent')
+        return res.map((_, i) => res.get(i).properties());
+    }
+
+    /**
      * finds the highest WR agent with a min number of games.
      * @TODO maybe this should be top 10 agents?
      * @return {any[]} array of single, most improved agent
