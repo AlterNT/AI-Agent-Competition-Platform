@@ -322,10 +322,6 @@ export default class Server {
             ORDER BY WinPercent DESC
             LIMIT 1;
         `);
-            const A = res.records[0].get('Agent');
-            const GP = res.records[0].get('GamesPlayed');
-            const W = res.records[0].get('Wins');
-            const WP = res.records[0].get('WinPercent');
 
         return res.records.map((record) => ({
             agent: record.get('Agent').toString(),
@@ -392,12 +388,15 @@ export default class Server {
             MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"}) -[p:PLAYED_IN]-> (g:Game)
             WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
             WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
-            RETURN a, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
+            RETURN a AS Agent, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
             ORDER BY WinPercent DESC;
         `);
 
         return res.records.map((record) => ({
-
+            agent: record.get('Agent').toString(),
+            initialWinPercent: record.get('InitialWinPercent').toInt(),
+            lastWinPercent: record.get('LastWinPercent').toInt(),
+            percentageImproved: record.get('PercentageImprovement').toInt(),
         }));
     }
 
