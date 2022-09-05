@@ -48,15 +48,10 @@ class ClientIO {
             child_process.exec('javac', [agentFilepath])
             this.agent = child_process.spawn('java', [agentFilepath])
         }
-
-        this.agent.stdout.on('data', (data) => {
-            this.clientIn(data)
-        })
     }
 
     clientIn(data) {
         console.log(`CLIENT-IN: ${data}`)
-        
     }
 
     clientOut(data) {
