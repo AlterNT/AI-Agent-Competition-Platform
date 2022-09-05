@@ -25,7 +25,6 @@ class LobbyManager {
         if (lobby.agents.length == lobby.gameSettings.maxPlayers) {
             const lobby = this.lobbies[gameID]
             const game = lobby.startGame()
-            game.main()
             for (const agent of lobby.agents) {
                 this.agentMap[agent] = game
             }
@@ -33,26 +32,32 @@ class LobbyManager {
         }
     }
 
-    commitAction(agentToken, move) {
+    action(agentToken, action) {
         if (!(agentToken in this.agentMap)) {
-            return;
-        };
-
-        if (!this.isTurn(agentToken)) {
-            return;
+            return
         }
 
-        const game = this.agentMap[agentToken];
-        game.resolve(move)
+        if (!this.isTurn(agentToken)) {
+            return
+        }
+
+        if (action.type == 'METHOD') {
+            // TODO: run the method and return it
+        }
+
+        if (action.type == 'MOVE') {
+            const game = this.agentMap[agentToken]
+            game.resolve(action.value)
+        }
     }
 
     isTurn(agentToken) {
         if (agentToken in this.agentMap) {
-            const game = this.agentMap[agentToken];
-            return game.turn === agentToken;
-        } else {
-            return false;
-        }
+            const game = this.agentMap[agentToken]
+            return game.turn == agentToken
+        } 
+
+        return false
     }
 }
 

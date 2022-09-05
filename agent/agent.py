@@ -1,48 +1,34 @@
 import random
 import time
 from agentIO import AgentIO
-from random import randrange
 
-class Agent:
-    MOVES = ['PAPER', 'SCIZZORS', 'ROCK']
-
-    def __init__(self, token):
-        self.token = token
-        self.client_io = client_io.ClientIO()
-
-    def command(self):
-        message = self.client_io.client_in()
-        command = message.replace('CLIENT-OUT: ', '')
-        return command
-
-    def move(self):
-        random_number = random.randrange(0, 3)
-        move = self.MOVES[random_number]
-        self.client_io.client_out(move)
+MOVES = {
+    1: 'PAPER',
+    2: 'SCISSORS',
+    3: 'ROCK',
+}
 
 def main():
-    # initialise agent
-    # agent = Agent('token')
+    agentIO = AgentIO(f'token{random.randrange(1000)}')
     
-    # # wait for command
-    # command = agent.command()
-
-    # if command == 'ACTION':
-    #     agent.move()
-
-    ai = AgentIO(f'token{randrange(1000)}')
     while True:
-        ai.join_lobby()
+        print('joining lobby')
+        agentIO.join_lobby()
         print('joined lobby')
+        
         print('waiting for turn...')
-        while not ai.turn():
+        while not agentIO.turn():
             time.sleep(1)
             print('waiting for turn...')
+            
+        print('making move')
+        random_move_int = random.randint(1, 3)
+        move = MOVES[random_move_int]
+        print(f'move = {move}')
+        
         print('playing move')
-        ai.see()
-        ai.send_action('MOVE', 'ROCK')
+        agentIO.send_action('MOVE', move)
         print('played move')
-        time.sleep(1)
 
 if __name__ == '__main__':
     main()

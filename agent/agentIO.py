@@ -13,7 +13,7 @@ class AgentIO:
     def join_lobby(self):
         response = requests.post(self.server_path('api/join'), json={
             'agentToken': self.agentToken,
-            'gameID': 'paper-scizzors-rock'
+            'gameID': 'paper-scissors-rock'
         })
         response_json = response.json()
         return response_json['success']

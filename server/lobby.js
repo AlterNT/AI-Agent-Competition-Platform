@@ -1,6 +1,6 @@
 import child_process from 'child_process'
 import fs from 'fs'
-import PaperScizzorsRock from './games/paper-scizzors-rock/paper-scizzors-rock.js'
+import PaperScissorsRock from './games/paper-scissors-rock/paper-scissors-rock.js'
 
 class Lobby {
     constructor(gameID) {
@@ -19,7 +19,9 @@ class Lobby {
     }
 
     startGame() {
-        return new PaperScizzorsRock(this.agents)
+        const game = new PaperScissorsRock(this.agents)
+        game.main()
+        return game
     }
 }
 

@@ -57,13 +57,7 @@ class API {
 
         app.post('/api/action', (req, res) => {
             const { agentToken, action } = req.body;
-            switch (action.type) {
-                case 'MOVE':
-                    this.lobbyManager.commitAction(agentToken, action);
-                    break;
-                case 'METHOD':
-                    break;
-            }
+            this.lobbyManager.action(agentToken, action);
             res.json({ success: true })
         })
     }
