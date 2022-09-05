@@ -6,11 +6,10 @@ class LobbyManager {
     constructor() {
         this.lobbies = {}
         this.agentMap = {}
-        this.lobbyCount = 0 // currently will just keep increasing
     }
 
     createLobby(gameID) {
-        const lobby = new Lobby(gameID, this.lobbyCount++)
+        const lobby = new Lobby(gameID)
         this.lobbies[gameID] = lobby
     }
 
@@ -25,12 +24,12 @@ class LobbyManager {
 
         if (lobby.agents.length == lobby.gameSettings.maxPlayers) {
             const lobby = this.lobbies[gameID]
-            lobby.startGame()
+            const game = lobby.startGame()
+            for (const agent of lobby.agents) {
+                this.agentMap[agent] = game
+            }
+            delete this.lobbies[gameID]
         }
-
-        this.agentMap[agentToken] = { lobbyID: this.lobbyCount, gameID: gameID }
-        console.log(this.lobbies)
-        console.log(this.agentMap)
     }
 
 

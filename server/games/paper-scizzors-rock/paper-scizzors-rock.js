@@ -16,7 +16,7 @@ class PaperScizzorsRock {
 
     async main() {
         for (const agent of this.agents) {
-            const move = agent.move()
+            const move = await agent.move()
             this.moves.push(move)
         }
 

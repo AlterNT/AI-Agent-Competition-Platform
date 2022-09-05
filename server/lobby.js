@@ -3,8 +3,7 @@ import fs from 'fs'
 import PaperScizzorsRock from './games/paper-scizzors-rock/paper-scizzors-rock.js'
 
 class Lobby {
-    constructor(gameID, lobbyID) {
-        this.id = lobbyID
+    constructor(gameID) {
         this.agents = []
         this.gameSettings = this.gameSettings(gameID)
         this.game = null
@@ -20,7 +19,7 @@ class Lobby {
     }
 
     startGame() {
-        this.game = new PaperScizzorsRock(this.agents)
+        return new PaperScizzorsRock(this.agents)
     }
 }
 
