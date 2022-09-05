@@ -56,6 +56,8 @@ class API {
 
         app.post('/api/action', (req, res) => {
             const { agentToken, action } = req.body
+            const game = this.lobbyManager.agentMap[agentToken]
+            game.pending = resolve(action)
             res.json({ success: true })
         })
     }

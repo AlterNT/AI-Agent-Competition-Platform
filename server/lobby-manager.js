@@ -31,8 +31,6 @@ class LobbyManager {
             delete this.lobbies[gameID]
         }
     }
-
-
 }
 
 export default LobbyManager
