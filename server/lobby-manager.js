@@ -23,9 +23,9 @@ class LobbyManager {
         const lobby = this.lobbies[gameID]
         lobby.addAgent(agentToken)
 
-        if (this.agents.length == this.gameSettings.maxPlayers) {
+        if (lobby.agents.length == lobby.gameSettings.maxPlayers) {
             const lobby = this.lobbies[gameID]
-            lobby.start()
+            lobby.startGame()
         }
 
         this.agentMap[agentToken] = { lobbyID: this.lobbyCount, gameID: gameID }
