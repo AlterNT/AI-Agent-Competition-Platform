@@ -39,6 +39,15 @@ class LobbyManager {
         const game = this.agentMap[agentToken];
         console.log(game);
     }
+
+    isTurn(agentToken) {
+        if (agentToken in this.agentMap) {
+            const game = this.agentMap[agentToken];
+            return game.activeAgent === agentToken;
+        } else {
+            return false;
+        }
+    }
 }
 
 export default LobbyManager

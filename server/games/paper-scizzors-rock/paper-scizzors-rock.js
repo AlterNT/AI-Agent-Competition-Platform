@@ -6,6 +6,7 @@ class PaperScizzorsRock {
     static ROCK = 'ROCK'
 
     constructor(agentTokens) {
+        this.activeAgent = null;
         this.agents = []
         for (const agentToken of agentTokens) {
             this.agents.push(new Agent(agentToken))
@@ -16,6 +17,7 @@ class PaperScizzorsRock {
 
     async main() {
         for (const agent of this.agents) {
+            this.activeAgent = agent
             const move = await agent.move()
             this.moves.push(move)
         }
