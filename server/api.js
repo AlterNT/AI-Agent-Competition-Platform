@@ -54,7 +54,6 @@ class API {
             res.json({ success: true })
         })
 
-
         app.post('/api/action', (req, res) => {
             const { agentToken, action } = req.body
             res.json({ success: true })

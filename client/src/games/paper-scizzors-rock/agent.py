@@ -1,21 +1,22 @@
 import random
-import client_io
+import agent_io
+
 class Agent:
     MOVES = ['PAPER', 'SCIZZORS', 'ROCK']
 
     def __init__(self, token):
         self.token = token
-        self.client_io = client_io.ClientIO()
+        self.agent_io = agent_io.AgentIO()
 
     def command(self):
-        message = self.client_io.client_in()
+        message = self.agent_io.agent_in()
         command = message.replace('CLIENT-OUT: ', '')
         return command
 
     def move(self):
         random_number = random.randrange(0, 3)
         move = self.MOVES[random_number]
-        self.client_io.client_out(move)
+        self.agent_io.agent_out(move)
 
 def main():
     # initialise agent

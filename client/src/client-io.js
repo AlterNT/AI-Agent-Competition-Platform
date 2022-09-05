@@ -11,7 +11,7 @@ const prompt = promptSync()
 
 const ACCEPTED_FILETYPES = ['py', 'java']
 
-class AgentIO {
+class ClientIO {
     constructor(gameID) {
         this.gameID = gameID
         this.agent = null
@@ -42,7 +42,7 @@ class AgentIO {
 
     executeAgent(agentFilepath) {
         if (agentFilepath.endsWith('py')) {
-            this.agent = child_process.spawn('python', [agentFilepath])
+            this.agent = child_process.spawn('python3', [agentFilepath])
 
         } else if (agentFilepath.endsWith('java')) {
             child_process.exec('javac', [agentFilepath])
@@ -50,18 +50,19 @@ class AgentIO {
         }
 
         this.agent.stdout.on('data', (data) => {
-            this.agentIn(data)
+            this.clientIn(data)
         })
     }
 
-    agentIn(data) {
-        console.log(`AGENT-OUT: ${data}`)
+    clientIn(data) {
+        console.log(`CLIENT-IN: ${data}`)
+        
     }
 
-    agentOut(data) {
+    clientOut(data) {
         this.agent.stdin.write(`CLIENT-OUT: ${data}\n`)
     }
 }
 
-export default AgentIO
+export default ClientIO
 
