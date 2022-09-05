@@ -25,6 +25,7 @@ class LobbyManager {
         if (lobby.agents.length == lobby.gameSettings.maxPlayers) {
             const lobby = this.lobbies[gameID]
             const game = lobby.startGame()
+            game.main()
             for (const agent of lobby.agents) {
                 this.agentMap[agent] = game
             }
@@ -37,6 +38,7 @@ class LobbyManager {
             return;
         };
         const game = this.agentMap[agentToken];
+        game.resolve(move)
         console.log(game);
     }
 
