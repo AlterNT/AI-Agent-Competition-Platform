@@ -37,15 +37,19 @@ class LobbyManager {
         if (!(agentToken in this.agentMap)) {
             return;
         };
+
+        if (!this.isTurn(agentToken)) {
+            return;
+        }
+
         const game = this.agentMap[agentToken];
         game.resolve(move)
-        console.log(game);
     }
 
     isTurn(agentToken) {
         if (agentToken in this.agentMap) {
             const game = this.agentMap[agentToken];
-            return game.activeAgent === agentToken;
+            return game.turn === agentToken;
         } else {
             return false;
         }

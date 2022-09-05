@@ -31,17 +31,18 @@ def main():
     #     agent.move()
 
     ai = AgentIO(f'token{randrange(1000)}')
-    ai.join_lobby()
-    print('joined lobby')
-    print('waiting for turn...')
     while True:
+        ai.join_lobby()
+        print('joined lobby')
+        print('waiting for turn...')
         while not ai.turn():
             time.sleep(1)
             print('waiting for turn...')
-        ai.send_action('PLAY', play='rock')
+        print('playing move')
+        ai.see()
+        ai.send_action('MOVE', 'ROCK')
         print('played move')
         time.sleep(1)
-    
 
 if __name__ == '__main__':
     main()

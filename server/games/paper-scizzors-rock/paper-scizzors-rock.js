@@ -12,7 +12,7 @@ class PaperScizzorsRock {
     }
 
     constructor(agentTokens) {
-        this.activeAgent = null;
+        this.turn = null;
         this.agents = []
         for (const agentToken of agentTokens) {
             this.agents.push(new Agent(agentToken))
@@ -25,13 +25,14 @@ class PaperScizzorsRock {
 
     async main() {
         for (const agent of this.agents) {
-            this.activeAgent = agent
+            this.turn = agent.token
             this.pending = new Promise((resolve) => {
                 this.resolve = resolve
             })
             const move = await this.pending
             this.moves.push(move)
         }
+        this.turn = null;
 
         const move0 = ACTIONS[this.moves[0]]
         const move1 = ACTIONS[this.moves[1]]
@@ -44,7 +45,7 @@ class PaperScizzorsRock {
 
         } else {
             this.result = this.agents[1]
-        } 
+        }
     }
 }
 
