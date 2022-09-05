@@ -5,13 +5,13 @@ class PaperScizzorsRock {
     static ROCK = 'ROCK'
 
     constructor() {
-        this.agent1 = 
-        this.player1Move = null
-        this.player2Move = null
+        this.agent1 = null
+        this.agent2 = null
     }
 
     main() {
-        this.player1Move = 
+        const agent1Move = agent1.move()
+        const agent2Move = agent2.move()
     }
 }
 
