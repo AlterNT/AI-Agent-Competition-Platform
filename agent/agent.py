@@ -1,4 +1,5 @@
 import random
+import time
 from agentIO import AgentIO
 from random import randrange
 
@@ -30,7 +31,13 @@ def main():
     #     agent.move()
 
     ai = AgentIO(f'token{randrange(1000)}')
-    a = ai.join_lobby()
+    ai.join_lobby()
+    print('joined lobby')
+    print('waiting for turn...')
+    while not ai.turn():
+        time.sleep(1)
+        print('waiting for turn...')
+    a = ai.send_action('PLAY', play='rock')
     print(a)
     
 

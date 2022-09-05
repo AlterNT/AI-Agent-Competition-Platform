@@ -1,3 +1,4 @@
+import json
 import requests
 
 class AgentIO:
@@ -11,18 +12,23 @@ class AgentIO:
 
     def join_lobby(self):
         response = requests.post(self.server_path('api/join'), json={ 'agentToken': self.agentToken, 'gameID': 'paper-scizzors-rock' })
-        json = response.json()
-        return json['success']
+        response_json = response.json()
+        return response_json['success']
 
-    def send_move(self):
-        response = requests.post(self.server_path('api/action'), { 'agentToken': self.agentToken })
+    def send_action(self, gameType, **kwargs):
+        params = kwargs;
+        params['type'] = gameType
+        requests.post(self.server_path('api/action'), json={ 'agentToken': self.agentToken, 'action': {
+            'name': 'ACTION',
+            'action': json.dumps(params)
+        }})
 
     def see(self):
         response = requests.get(self.server_path('api/state'), { 'agentToken': self.agentToken })
-        json = response.json();
-        return json['gamestate']
+        response_json = response.json()
+        return response_json['gamestate']
 
     def turn(self):
         response = requests.get(self.server_path('api/turn'), { 'agentToken': self.agentToken })
-        json = response.json()
-        return json['turn']
+        response_json = response.json()
+        return response_json['turn']
