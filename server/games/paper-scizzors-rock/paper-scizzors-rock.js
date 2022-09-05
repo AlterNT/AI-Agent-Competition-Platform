@@ -17,13 +17,11 @@ class PaperScizzorsRock {
     async main() {
         for (const agent of this.agents) {
             const move = agent.move()
+            this.moves.push(move)
         }
+
+        console.log(this.moves)
     }
 }
 
-async function main() {
-    const game = new PaperScizzorsRock()
-    console.log('test')
-}
-
-main()
+export default PaperScizzorsRock

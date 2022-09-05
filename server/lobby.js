@@ -1,5 +1,6 @@
 import child_process from 'child_process'
 import fs from 'fs'
+import PaperScizzorsRock from './games/paper-scizzors-rock/paper-scizzors-rock.js'
 
 class Lobby {
     constructor(gameID, lobbyID) {
@@ -19,9 +20,7 @@ class Lobby {
     }
 
     startGame() {
-        if (this.agents.length >= this.gameSettings.maxPlayers && this.agents.length <= this.gameSettings.maxPlayers) {
-            this.game = child_process.spawn(['bash', `./games/${gameID}/start.sh`])
-        }
+        this.game = new PaperScizzorsRock(this.agents)
     }
 }
 
