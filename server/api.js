@@ -56,6 +56,7 @@ class API {
 
         app.post('/api/action', (req, res) => {
             const { agentToken, action } = req.body
+            this.lobbyManager.commitAction(agentToken, action);
             res.json({ success: true })
         })
     }

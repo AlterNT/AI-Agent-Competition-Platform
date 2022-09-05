@@ -32,7 +32,13 @@ class LobbyManager {
         }
     }
 
-
+    commitAction(agentToken, move) {
+        if (!(agentToken in this.agentMap)) {
+            return;
+        };
+        const game = this.agentMap[agentToken];
+        console.log(game);
+    }
 }
 
 export default LobbyManager
