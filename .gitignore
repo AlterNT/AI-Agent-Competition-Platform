@@ -134,3 +134,4 @@ dist
 
 # Runtime data
 *.pyc
+__pycache__
