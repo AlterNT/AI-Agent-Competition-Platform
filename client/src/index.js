@@ -2,7 +2,7 @@ import fs from 'fs'
 import yaml from 'js-yaml'
 import promptSync from 'prompt-sync'
 
-import AgentIO from './agent-io.js'
+import ClientIO from './client-io.js'
 import ServerHandler from './server-handler.js'
 
 const prompt = promptSync()
@@ -26,11 +26,11 @@ async function main() {
 
     console.log() // for cleaner interface
 
-    // initialise AgentIO
-    const agentIO = new AgentIO(gameID)
+    // initialise ClientIO
+    const clientIO = new ClientIO(gameID)
 
     // select agent
-    agentIO.loadAgent()
+    clientIO.loadAgent()
 
     // main play game loop
     while (true) {
@@ -46,7 +46,7 @@ async function main() {
             }
 
             if (turn == agentToken ) {
-                agentIO.agentOut('ACTION')
+                clientIO.clientOut('ACTION')
                 break
             }
         }

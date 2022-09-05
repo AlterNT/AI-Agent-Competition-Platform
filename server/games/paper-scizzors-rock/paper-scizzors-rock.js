@@ -1,17 +1,23 @@
 import Agent from './agent.js'
+
 class PaperScizzorsRock {
     static PAPER = 'SCIZZORS'
     static SCIZZORS = 'SCIZZORS'
     static ROCK = 'ROCK'
 
-    constructor() {
-        this.agent1 = null
-        this.agent2 = null
+    constructor(agentTokens) {
+        this.agents = []
+        for (const agentToken of agentTokens) {
+            this.agents.push(new Agent(agentToken))
+        }
+
+        this.moves = []
     }
 
-    main() {
-        const agent1Move = agent1.move()
-        const agent2Move = agent2.move()
+    async main() {
+        for (const agent of this.agents) {
+            const move = agent.move()
+        }
     }
 }
 
