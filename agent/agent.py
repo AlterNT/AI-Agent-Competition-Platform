@@ -1,5 +1,6 @@
 import random
 import time
+
 from agentIO import AgentIO
 
 MOVES = {
