@@ -42,7 +42,7 @@ class API {
 
         app.get('/api/turn', (req, res) => {
             const { agentToken } = req.query
-            res.json({ turn: agentToken })
+            res.json({ turn: true })
         })
 
 
@@ -51,11 +51,13 @@ class API {
         app.post('/api/join', (req, res) => {
             const { agentToken, gameID } = req.body
             this.lobbyManager.joinLobby(agentToken, gameID)
+            res.json({ success: true })
         })
 
 
         app.post('/api/action', (req, res) => {
             const { agentToken, action } = req.body
+            res.json({ success: true })
         })
     }
 }
