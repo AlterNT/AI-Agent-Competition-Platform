@@ -10,13 +10,17 @@ class PaperScizzorsRock {
         for (const agentToken of agentTokens) {
             this.agents.push(new Agent(agentToken))
         }
-
+        this.pending = null
+        this.resolve = null
         this.moves = []
     }
 
     async main() {
         for (const agent of this.agents) {
-            const move = await agent.move()
+            this.pending = new Promise((resolve) => {
+                this.resolve = resolve
+            })
+            const move = await this.pending
             this.moves.push(move)
         }
 
