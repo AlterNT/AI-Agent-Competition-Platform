@@ -32,6 +32,10 @@ async function main() {
     // select agent
     clientIO.loadAgent()
 
+    clientIO.agent.stdout.on('data', (data) => {
+        clientIO.clientIn(data)
+    })
+
     // main play game loop
     while (true) {
         // join lobby
@@ -45,8 +49,8 @@ async function main() {
                 continue
             }
 
-            if (turn == agentToken ) {
-                clientIO.clientOut('ACTION')
+            if (turn == true) {
+                const action = clientIO.clientOut('ACTION')
                 break
             }
         }

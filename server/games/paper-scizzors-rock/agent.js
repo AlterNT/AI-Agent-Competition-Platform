@@ -7,3 +7,5 @@ export default class Agent {
         const move = null
     }
 }
+
+export default Agent
