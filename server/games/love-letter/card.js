@@ -27,6 +27,27 @@ class Card {
     }
 
     /**
+     * @return the value of the card
+     **/
+    toValue() {
+        return this.value;
+    }
+
+    /**
+     * @return the name of the card
+     **/
+    toStrings() {
+        return this.name;
+    }
+
+    /**
+     * @return the number of times the card appears in the deck
+     **/
+    toCount() {
+        return this.count;
+    }
+
+    /**
      * Creates a shuffled deck of cards
      * @return an array of cards representing a standard deck of loveletter cards, in random order.
      **/

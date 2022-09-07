@@ -1,4 +1,3 @@
-import Action from './action.js'
 import Card from './card.js'
 
 /**
@@ -8,18 +7,43 @@ import Card from './card.js'
  * States of players in the same game will have common data, allowing for an efficient representation.
  **/
 class State {
-    player // the player who observes this outcome, or -1 for the game engine
-    num // The number of players in the game
-    discards // the discarded cards or each player
-    discardCount //how many cards each player has discarded
-    hand // the cards players currently hold, or null if the player has been eliminated 
-    deck // the deck of remaining cards
-    top // the index of the top of the deck
-    known // whether player knows another players card
+    /** @type {Integer} the player who observes this outcome, or -1 for the game engine */
+    player
+
+    /** @type {Integer} The number of players in the game */
+    num
+
+    /** @type {Array, Array, Card} the discarded cards or each player */
+    discards
+
+    /** @type {Array, Integer} how many cards each player has discarded */
+    discardCount
+
+    /** @type {Array, Card} the cards players currently hold, or null if the player has been eliminated */
+    hand
+
+    /** @type {Array, Card} the deck of remaining cards */
+    deck
+
+    /** @type {Array, Integer} the index of the top of the deck */
+    top
+
+    /** @type {Array, Array, Boolean} whether player knows another players card */
+    known
+
+    /** @type {Array, Boolean} */
     handmaid
-    scores // the current score of each player
+
+    /** @type {Array, Integer} the current score of each player */
+    scores
+
+    /** @type {Array, Integer} */
     random
-    nextPlayer // the index of the next player to draw a card (using Object reference so value is shared).
+
+    /** @type {Array, Integer} the index of the next player to draw a card (using Object reference so value is shared). */
+    nextPlayer
+
+    /** @type {Array, Agents} */
     agents
 
     /**
@@ -30,18 +54,18 @@ class State {
      * @throws IllegalArgumentException if the array is of the wrong size.
      **/
     constructor(random, agents) {
+        this.random = random
         this.num = agents.length
         if (this.num < 2 || this.num > 4) {
             throw new Error("incorrect number of agents")
         }
         this.agents = agents
-        this.random = random
         this.player = -1
         this.scores = new Array(this.num).fill(0)
         try {
-            this.newRound()
+            this.newRound();
         } catch { }
-        this.nextPlayer = new Array(1).fill(0)
+        this.nextPlayer = [0]
     }
 
     /**
@@ -56,20 +80,19 @@ class State {
         for (let i = 0; i < this.num; i++) {
             this.discards[i] = new Array(16)
         }
-        this.discardCount = new Array(this.num).fill(0)
+        this.discardCount = new Array(this.num)
         this.hand = new Array(this.num)
-        this.handmaid = new Array(this.num).fill(false)
-        this.top = new Array(1).fill(0)
+        this.handmaid = new Array(this.num)
+        this.top = [0]
         this.known = new Array(this.num)
         for (let i = 0; i < this.num; i++) {
-            this.known[i] = new Array(this.num).fill(false)
+            this.known[i] = new Array(this.num)
         }
         for (let i = 0; i < this.num; i++) {
-            this.hand[i] = this.deck[top[0]++]
+            this.hand[i] = this.deck[this.top[0]++]
             this.known[i][i] = true
         }
     }
-
 
     /**
      * Produces a state object for a player in the game.
@@ -82,12 +105,12 @@ class State {
         if (this.player != -1) { throw new Error("Operation not permitted in player's state.") }
         if (player < 0 || this.num <= player) { throw new Error("Player out of range.") }
         try {
-            const state = Object.assign(new State(this.random, this.agents), this)
-            state.player = player
+            let state = Object.assign(new State(this.random, this.agents), this)
+            state.player = player;
             return state
         } catch (e) {
             console.error(e)
-            return null;
+            return null
         }
     }
 
@@ -107,7 +130,7 @@ class State {
      * @param drawn the card drawn
      * @throws IllegalActionException if any of these conditions hold.
      **/      
-    islegalAction(a, t, c, drawn) {
+    isLegalAction(a, t, c, drawn) {
         if (this.hand[a] != c && drawn != c) {
             throw new Error("Player does not hold the played card")
         }
@@ -124,8 +147,8 @@ class State {
             if (c.name === "Prince" && a === t) {
                 return
             }
-            if (this.handmaidf(t) && (!this.allHandmaid(a) || c.name === "Prince")) {
-                throw new Error("The action's target is protected by the handmaid")
+            if (this.playerHandmaid(t) && (!this.allHandmaid(a) || c.name === "Prince")) {
+                throw new Error("The action's target is protected by the handmaid");
             }
         }
     }
@@ -144,16 +167,15 @@ class State {
      * @param act the action to be performed
      * @param drawn the card drawn by the playing agent.
      * @throws IllegalActionException if any of these conditions hold.
-     **/      
+     **/ 
     legalAction(act, drawn) {
-        if (act == null) { return false }
+        if (act === null) { return false }
+        if (this.hand[act.player] === null) { return false }
         try {
-            legalAction(act.player, act.target, act.card, drawn)
-        }
-        catch { return false }
+            this.isLegalAction(act.player, act.target, act.card, drawn)
+        } catch { return false }
         return true
     }
-
 
     /**
      * Draws a card for a player from the shuffled deck. May only be performed in the game state.
@@ -166,7 +188,6 @@ class State {
         return this.deck[this.top[0]++];
     }
 
-
     /**
      * Executes the given action of a player.
      * May only be called for non-player states (i.e. the omniscient game engine state)
@@ -176,19 +197,21 @@ class State {
      * @throws IllegalActionAxception if the state is a player state, or if the action is against the rules. 
      **/
     update(act, card) {
-        if (this.player != -1) { throw new Error("Method cannot be called from a player state") }
-        const a = act.player
-        const t = act.target
-        const c = act.card
+        if (this.player != -1) {
+            throw new Error("Method cannot be called from a player state");
+        }
+        const a = act.player;
+        const t = act.target;
+        const c = act.card;
         this.discards[a][this.discardCount[a]++] = c
-        
+
         try {
             this.legalAction(a, t, c, card)
         } catch (e) {
             this.discardCount[a]--
             throw e
         }
-
+        
         if (c == this.hand[a]) {
             this.hand[a] = card
             for (let i = 0; i < this.num; i++) {
@@ -200,29 +223,29 @@ class State {
 
         this.handmaid[a] = false
         let ret = t != -1 ? this.name(t) : ""
-    
-        switch (c) {
-            case Card.GUARD:
+
+        switch (c.name) {
+            case Card.GUARD.name:
                 ret += this.guardAction(a, t, act.guess)
                 break
-            case Card.PRIEST:
+            case Card.PRIEST.name:
                 ret += this.priestAction(a, t)
                 break
-            case Card.BARON:
+            case Card.BARON.name:
                 ret += this.baronAction(a, t)
                 break
-            case Card.HANDMAID:
+            case Card.HANDMAID.name:
                 this.handmaid[a] = true
                 break
-            case Card.PRINCE:
+            case Card.PRINCE.name:
                 ret += this.princeAction(t)
                 break
-            case Card.KING:
+            case Card.KING.name:
                 ret += this.kingAction(a, t)
                 break
-            case Card.COUNTESS:
+            case Card.COUNTESS.name:
                 break
-            case Card.PRINCESS:
+            case Card.PRINCESS.name:
                 ret += this.princessAction(a)
                 break
             default:
@@ -247,7 +270,7 @@ class State {
                 this.nextPlayer[0] = (this.nextPlayer[0] + 1) % this.num;
             }
         }
-        return ret;
+        return ret
     }
 
     guardAction(a, t, guess) {
@@ -271,8 +294,8 @@ class State {
 
     baronAction(a, t) {
         if (this.allHandmaid(a)) { return "\nPlayer " + this.name(t) + " is protected by the Handmaid.\n" }
-        const elim = -1;
-        if (this.hand[a].toValue() > this.hand[t].toValue()) { elim = t }
+        let elim = -1
+        if (this.hand[a].value > this.hand[t].value) { elim = t }
         else if (this.hand[a].value < this.hand[t].value) { elim = a }
         if (elim != -1) {
             this.discards[elim][this.discardCount[elim]++] = this.hand[elim]
@@ -331,6 +354,13 @@ class State {
         return outcome
     }
 
+    /**
+     * returns the index of the observing player, or -1 for perfect information.
+     * @return the index of the observing player, or -1 for perfect information.
+     **/
+    getPlayerIndex() {
+        return this.player;
+    }
 
     /**
      * get the card of the specified player, if known.
@@ -357,7 +387,7 @@ class State {
      * Gives the next player to play in the round
      * @return the index of the next player to play
      **/
-    nextPlayer() {
+    getNextPlayer() {
         return this.nextPlayer[0]
     }
 
@@ -365,7 +395,7 @@ class State {
      * helper method to determine if the nominated player is protected by the handmaid
      * @return true if and only if the index corresponds to a player who is protected by the handmaid
      **/
-    handmaid(player) {
+    playerHandmaid(player) {
         if (player < 0 || player >= this.num) { return false }
         return this.handmaid[player]
     }
@@ -381,7 +411,7 @@ class State {
         for (let i = 0; i < this.num; i++) {
             noAction = noAction && (this.eliminated(i) || this.handmaid[i] || i === player)
         }
-        return noAction;
+        return noAction
     }
 
     name(playerIndex) {
@@ -392,9 +422,7 @@ class State {
      * gives the remaining size of the deck, including the burnt card
      * @return the number of cards not in players hands or discarded.
      **/
-    deckSize() {
-        return 16 - this.top[0]
-    }
+    deckSize() { return 16 - this.top[0]; }
 
     /**
      * returns an array of the remaining cards that haven't been played yet.
@@ -444,9 +472,9 @@ class State {
             if (!this.eliminated(p)) {
                 let dv = 0
                 for (let j = 0; j < this.discardCount[p]; j++) { dv += this.discards[p][j].value }
-                if (this.hand[p].toValue() > topCard || (this.hand[p].toValue() == topCard && dv > discardValue)) {
+                if (this.hand[p].value > topCard || (this.hand[p].value == topCard && dv > discardValue)) {
                     winner = p
-                    topCard = this.hand[p].toValue()
+                    topCard = this.hand[p].value
                     discardValue = dv
                 }
             }
@@ -468,9 +496,7 @@ class State {
      * confirms the game is over
      * @return true if and only if a player a acrued sufficient tokens to win the game
      **/
-    gameOver() {
-        return this.gameWinner() != -1
-    }
+    gameOver() { return this.gameWinner() != -1; }
 
     /**
      * Gives the index of the winning player if there is one, otherwise returns -1
@@ -486,6 +512,3 @@ class State {
 }
 
 export default State
-
-
-

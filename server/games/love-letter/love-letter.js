@@ -1,7 +1,5 @@
-import Action from './action.js'
+import State from "./state.js"
 import RandomAgent from './random-agent.js'
-import Card from './card.js'
-import State from './state.js'
 
 import seedrandom from 'seedrandom'
 
@@ -28,46 +26,37 @@ class LoveLetter {
      * @return scores of each agent as an array of integers
      **/
     playGame(agents) {
-        const gameOver = false
-        const winner = 0
         const numPlayers = agents.length
         const gameState = new State(this.random, agents)
         const playerStates = []
         try {
             while (!gameState.gameOver()) {
-                const start = true
                 for (let i = 0; i < numPlayers; i++) {
                     playerStates[i] = gameState.playerState(i)
                     agents[i].newRound(playerStates[i])
                 }
                 while (!gameState.roundOver()) {
-                    console.log(gameState)
                     console.log("Cards are:\nplayer 0:" + JSON.stringify(gameState.getCard(0)) + "\nplayer 1:" + JSON.stringify(gameState.getCard(1)) + "\nplayer 2:" + JSON.stringify(gameState.getCard(2)) + "\nplayer 3:" + JSON.stringify(gameState.getCard(3)) + "\n")
                     const topCard = gameState.drawCard()
-                    console.log("Player " + gameState.nextPlayer[0] + " draws the " + topCard.name + " card.")
-                    let action = agents[gameState.nextPlayer[0]].playCard(topCard)
+                    console.log("Player " + gameState.getNextPlayer() + " draws the " + topCard.name + " card.")
+                    let act = agents[gameState.getNextPlayer()].playCard(topCard)
                     try {
-                        console.log('updating')
-                        this.stream.write(gameState.update(action, topCard) + '\n')
-                        console.log('updated')
-                    } 
-                    catch {
-                        this.stream.write("ILLEGAL ACTION PERFORMED BY PLAYER " + agents[gameState.nextPlayer[0]] + 
+                        this.stream.write(gameState.update(act, topCard) + '\n')
+                    } catch {
+                        this.stream.write("ILLEGAL ACTION PERFORMED BY PLAYER " + agents[gameState.getNextPlayer()] + 
                         "(" + gameState.player[0] + ")\nRandom Move Substituted" + '\n')
-                        this.randomAgent.newRound(gameState.playerState(gameState.nextPlayer[0]))
-                        action = this.randomAgent.playCard(topCard)
-                        console.log(action)
+                        this.randomAgent.newRound(gameState.playerState(gameState.getNextPlayer()))
+                        act = this.randomAgent.playCard(topCard)
                         this.stream.write(gameState.update(action, topCard) + '\n')
                     }
-
-                    for (let i = 0; i < numPlayers; i++) { agents[i].see(action, playerStates[i]) }
+                    for (let i = 0; i < numPlayers; i++) { agents[i].see(act, playerStates[i]) }
                 }
-                console.log("New Round, scores are:\n\nPlayer 0: " + gameState.score[0] + "\nPlayer 1: " + gameState.score[1] + "\nPlayer 2: " + gameState.score[2] + "\nPlayer 3: " + gameState.score[3] + "\n")
+                console.log("New Round, scores are:\n\nPlayer 0: " + gameState.score(0) + "\nPlayer 1: " + gameState.score(1) + "\nPlayer 2: " + gameState.score(2) + "\nPlayer 3: " + gameState.score(3) + "\n")
                 gameState.newRound()
             }
             this.stream.write("Player " + gameState.gameWinner() + " wins the Princess's heart!" + '\n')
             const scoreboard = new Array(numPlayers)
-            for (let i = 0; i < numPlayers; i++) { scoreboard[i] = gameState.score[i] }
+            for (let i = 0; i < numPlayers; i++) { scoreboard[i] = gameState.score(i) }
             return scoreboard
         } catch (e) {
             this.stream.write("something went wrong" + '\n', e)
@@ -77,9 +66,9 @@ class LoveLetter {
     }
 
     main() {
-        const agents = [new RandomAgent('agent0'), new RandomAgent('agent1'), new RandomAgent('agent2'), new RandomAgent('agent3')]
+        const agents = [new RandomAgent(), new RandomAgent(), new RandomAgent(), new RandomAgent()]
         const loveLetter = new LoveLetter()
-        let results = loveLetter.playGame(agents)
+        const results = loveLetter.playGame(agents)
         loveLetter.stream.write("The final scores are: \n")
         for (const i in agents) {
             loveLetter.stream.write("\t Agent "+i+", \""+agents[i]+"\":\t "+results[i]+"\n")
@@ -87,5 +76,5 @@ class LoveLetter {
     }
 }
 
-var x = new LoveLetter()
-x.main()
+const loveLetter = new LoveLetter();
+loveLetter.main();

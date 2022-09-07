@@ -45,7 +45,6 @@ class Action {
 
     toString() { return this.makeString("" + this.player, "" + this.target) }
 
-
     /**
      * Constructs a GUARD action from the player guessing the targets card.
      * @param player the player performing the action

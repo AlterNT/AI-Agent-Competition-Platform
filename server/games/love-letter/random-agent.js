@@ -1,11 +1,10 @@
 import Action from './action.js'
-import Agent from './agent.js'
 import Card from './card.js'
 
 import seedrandom from 'seedrandom'
 
 class RandomAgent {
-    constructor(name) {
+    constructor(name='rando') {
         this.random = seedrandom()
         this.name = name
         this.state = null
@@ -13,8 +12,8 @@ class RandomAgent {
     }
 
     newRound(state) {
-        this.state = state
-        this.index = this.state.player
+        this.state = state;
+        this.index = this.state.getPlayerIndex()
     }
 
     see(action, state) {
@@ -37,25 +36,25 @@ class RandomAgent {
                     case Card.GUARD.name:
                         const randomCard = Object.values(Card)[parseInt(this.random.double() * 7) + 1]
                         action = Action.playGuard(this.index, target, randomCard)
-                        return action
+                        break
                     case Card.PRIEST.name:
                         action = Action.playPriest(this.index, target)
-                        return action
+                        break
                     case Card.BARON.name:
                         action = Action.playBaron(this.index, target)
-                        return action
+                        break
                     case Card.HANDMAID.name:
                         action = Action.playHandmaid(this.index)
-                        return action
+                        break
                     case Card.PRINCE.name:
                         action = Action.playPrince(this.index, target)
-                        return action
+                        break
                     case Card.KING.name:
                         action = Action.playKing(this.index, target)
-                        return action
+                        break
                     case Card.COUNTESS.name:
                         action = Action.playCountess(this.index)
-                        return action
+                        break
                     default:
                         action = null
                 }
