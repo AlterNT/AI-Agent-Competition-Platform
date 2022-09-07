@@ -28,6 +28,10 @@ def main():
                 print('waiting for turn...')
                 time.sleep(1)
 
+            if random.randint(1, 9) == 3:
+                print('TIMING OUT', agentIO.agentToken)
+                time.sleep(2)
+
             print('making move')
             random_move_int = random.randint(1, 3)
             move = MOVES[random_move_int]
