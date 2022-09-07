@@ -14,9 +14,10 @@ export default {
         required: true,
     }, // to be stored as a JSON string
     playedIn: {
-        type: 'relationship',
+        type: 'relationships',
         relationship: 'PLAYED_IN',
         direction: 'in',
+        target: 'Agent',
         properties: {
             score: {
                 type: 'float', // don't use abstract supertype 'number'

@@ -130,14 +130,14 @@ const runAPI = async () => {
 
     // @TODO: improvement of given agent
     // @TODO: returns nothing if not enough games were played
-    app.get('/api/overall-improvement', (req, res) => {
+    app.get('/api/improvement', (req, res) => {
         const { agentId } = req.params;
         res.json();
     });
 
     // @TODO: recent improvement of given agent
     // @TODO: returns nothing if not enough games were played
-    app.get('/api/recent-improvement', (req, res) => {
+    app.get('/api/improvement-rate', (req, res) => {
         const { agentId } = req.params;
         res.json();
     });
@@ -160,13 +160,13 @@ const runAPI = async () => {
     app.get('/client/game', (req, res) => {
         const { agentToken } = req.params
 
-        res.json()
-    })
+        res.json();
+    });
 
     // receive move played by an agent
     app.post('/client/action', (req, res) => {
         const { agentToken, action } = req.params;
-    })
+    });
 }
 
 export default runAPI;

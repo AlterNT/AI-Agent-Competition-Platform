@@ -284,7 +284,21 @@ export default class Server {
      */
      async queryGames() {
         const res = await this.dbInstance.all('Game')
-        return res.map((_, i) => res.get(i).properties());
+        return res.map((_, i) => {
+            const game = res.get(i);
+            const agentEdges = game.get('playedIn');
+            const agentIds = agentEdges.map((_, i) => {
+                return agentEdges
+                    .get(i)
+                    .startNode()
+                    .get('id');
+            });
+
+            return {
+                ...game.properties(),
+                agentIds,
+            }
+        });
     }
 
     /**
@@ -295,7 +309,7 @@ export default class Server {
         const res = await this.dbInstance.all('User')
         return res.map((_, i) => {
             const props = res.get(i).properties()
-            delete props.studentNumberString
+            delete props.authenticationTokenString
             return props;
         });
     }
@@ -315,12 +329,11 @@ export default class Server {
      */
      async queryTopWinrate() {
         const res = await this.dbInstance.cypher(`
-            MATCH (a:Agent) -[p:PLAYED_IN]-> (g:Game)
+            MATCH (a:Agent)-[p:PLAYED_IN]-> (g:Game)
             WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
             WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
-            RETURN a as Agent, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
-            ORDER BY WinPercent DESC
-            LIMIT 1;
+            RETURN a.id as Agent, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
+            ORDER BY WinPercent DESC;
         `);
 
         return res.records.map((record) => ({

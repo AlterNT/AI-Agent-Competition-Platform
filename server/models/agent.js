@@ -16,8 +16,9 @@ export default {
         eager: true,
     },
     playedIn: {
-        type: 'relationship',
+        type: 'relationships',
         relationship: 'PLAYED_IN',
+        target: 'Game',
         direction: 'out',
         properties: {
             score: {
