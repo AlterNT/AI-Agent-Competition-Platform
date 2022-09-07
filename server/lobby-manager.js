@@ -42,7 +42,7 @@ class LobbyManager {
         }
 
         const game = this.agentMap[agentToken]
-        game.resolve(action.value)
+        game.resolve(action)
     }
 
     method(agentToken, method, params) {
