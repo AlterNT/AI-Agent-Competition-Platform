@@ -102,19 +102,29 @@ const runAPI = async () => {
     // @TODO: all agents sorted by winrate
     // @TODO: bots flag to specify whether only bots should return
     app.get('/api/top-winrate', (_, res) => {
-        res.json();
+        server.queryTopWinrate()
+            .then((winrate) => {
+                res.json({ winrate })
+            });
     });
 
     // @TODO: all agents sorted by who's improved the most
     // @TODO: bots flag to specify whether only bots should return
     app.get('/api/most-improved', (_, res) => {
-        res.json();
+        server.queryMostImproved()
+            .then((improvement) => {
+                res.json({ improvement })
+            });
     });
 
     // @TODO: all the agents sorted by who's improving the quickest
     // @TODO: bots flag to specify whether only bots should return
     app.get('/api/most-improving', (_, res) => {
-        res.json();
+        // @TODO: query for this and implement it
+        server.queryMostImproved()
+            .then((improvement) => {
+                res.json({ improvement })
+            });
     });
 
     // ---------------------------------------------------------------

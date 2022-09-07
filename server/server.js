@@ -310,8 +310,9 @@ export default class Server {
         return res.map((_, i) => {
             const user = res.get(i);
             const agentId = user.get('controls').endNode().get('id');
-            const props = user.properties()
-            delete props.authenticationTokenString
+            const props = user.properties();
+            delete props.authenticationTokenString;
+
             return {
                 ...props,
                 agentId,
@@ -345,15 +346,15 @@ export default class Server {
             MATCH (a:Agent)-[p:PLAYED_IN]-> (g:Game)
             WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
             WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
-            RETURN a.id as Agent, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
+            RETURN a.id as AgentId, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
             ORDER BY WinPercent DESC;
         `);
 
         return res.records.map((record) => ({
-            agent: record.get('Agent').toString(),
+            agent: record.get('AgentId').toString(),
             gamesPlayed: record.get('GamesPlayed').toInt(),
             wins: record.get('Wins').toInt(),
-            winPercent: record.get('WinPercent').toInt(),
+            winPercent: record.get('WinPercent').toNumber().toFixed(2),
         }));
     }
 
@@ -363,7 +364,7 @@ export default class Server {
      */
     async queryMostImproved() {
         const res = await this.dbInstance.cypher(`
-            MATCH (a:Agent) -[p:PLAYED_IN]-> (g:Game)
+            MATCH (a:Agent)-[p:PLAYED_IN]-> (g:Game)
             WITH a, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
             WITH a, Scores[0..5] as FFGS, Scores[-5..] as LFGS, Games[0..5] as FFG, Games[-5..] as LFG
             WITH a,
@@ -373,7 +374,7 @@ export default class Server {
             WITH a,
                 100 * FFGWins/FFGSize as InitialWinPercent,
                 100 * LFGWins/LFGSize as LastWinPercent
-            RETURN a as Agent,
+            RETURN a.id as AgentId,
                 InitialWinPercent,
                 LastWinPercent,
                 LastWinPercent - InitialWinPercent as PercentageImprovement
@@ -382,7 +383,7 @@ export default class Server {
         `);
 
         return res.records.map((record) => ({
-            agent: record.get('Agent').toString(),
+            agent: record.get('AgentId').toString(),
             initialWinPercent: record.get('InitialWinPercent').toInt(),
             lastWinPercent: record.get('LastWinPercent').toInt(),
             percentageImproved: record.get('PercentageImprovement').toInt(),
@@ -418,6 +419,7 @@ export default class Server {
             ORDER BY WinPercent DESC;
         `);
 
+        // @TODO: this return is wrong
         return res.records.map((record) => ({
             agent: record.get('Agent').toString(),
             initialWinPercent: record.get('InitialWinPercent').toInt(),
