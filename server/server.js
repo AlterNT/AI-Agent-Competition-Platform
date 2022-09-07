@@ -308,9 +308,14 @@ export default class Server {
      async queryUsers() {
         const res = await this.dbInstance.all('User')
         return res.map((_, i) => {
-            const props = res.get(i).properties()
+            const user = res.get(i);
+            const agentId = user.get('controls').endNode().get('id');
+            const props = user.properties()
             delete props.authenticationTokenString
-            return props;
+            return {
+                ...props,
+                agentId,
+            };
         });
     }
 
@@ -319,7 +324,15 @@ export default class Server {
      */
      async queryAgents() {
         const res = await this.dbInstance.all('Agent')
-        return res.map((_, i) => res.get(i).properties());
+        return res.map((_, i) => {
+            const agent = res.get(i)
+            const studentNumber = agent.get('controls').startNode().get('studentNumber');
+
+            return {
+                ...agent.properties(),
+                studentNumber,
+            }
+        });
     }
 
     /**
