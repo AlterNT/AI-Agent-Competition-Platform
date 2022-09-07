@@ -41,14 +41,17 @@ class LobbyManager {
             return
         }
 
-        if (action.type == 'METHOD') {
-            // TODO: run the method and return it
-        }
+        const game = this.agentMap[agentToken]
+        game.resolve(action.value)
+    }
 
-        if (action.type == 'MOVE') {
-            const game = this.agentMap[agentToken]
-            game.resolve(action.value)
-        }
+    method(agentToken, method, params) {
+        if (!(agentToken in this.agentMap)) { return }
+
+        if (!this.isTurn(agentToken)) { return }
+
+        const game = this.agentMap[agentToken]
+        const data = game[method](...params)
     }
 
     isTurn(agentToken) {

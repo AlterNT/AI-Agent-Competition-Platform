@@ -20,18 +20,22 @@ class AgentIO:
         except requests.exceptions.ConnectionError:
             return False
 
-    def send_action(self, type, value):
+    def send_action(self, action):
         try:
             response = requests.post(self.server_path('api/action'), json={
                 'agentToken': self.agentToken,
-                'action': {
-                    'type': type,
-                    'value': value
-                }
+                'action': action
             })
             return response
         except requests.exceptions.ConnectionError:
             raise requests.exceptions.ConnectionError
+    
+    def receive_method(self, method):
+            response = requests.get(self.server_path('api/method'), json={
+            'agentToken': self.agentToken,
+                'method': method
+            })
+            return response
 
     def see(self):
         return self.send_action('METHOD', 'see') # ['gamestate']

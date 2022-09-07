@@ -46,6 +46,12 @@ class API {
             res.json({ turn })
         })
 
+        app.get('/api/method', (req, res) => {
+            const { agentToken, method, params } = req.body
+            const data = this.lobbyManager.method(agentToken, method, params)
+            res.json({ data })
+        })
+
 
         // POST ENDPOINTS
         // ----------------------------------------------------------------------------
