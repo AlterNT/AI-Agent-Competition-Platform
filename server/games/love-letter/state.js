@@ -170,7 +170,6 @@ class State {
      **/ 
     legalAction(act, drawn) {
         if (act === null) { return false }
-        if (this.hand[act.player] === null) { return false }
         try {
             this.isLegalAction(act.player, act.target, act.card, drawn)
         } catch { return false }
