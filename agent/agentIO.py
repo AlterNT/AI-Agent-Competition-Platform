@@ -17,13 +17,17 @@ class AgentIO:
         response_json = response.json()
         return response_json['success']
 
-    def send_action(self, type, value):
+    def send_action(self, action):
         response = requests.post(self.server_path('api/action'), json={
             'agentToken': self.agentToken,
-            'action': {
-                'type': type,
-                'value': value
-            }
+            'action': action
+        })
+        return response
+    
+    def receive_method(self, method):
+        response = requests.get(self.server_path('api/method'), json={
+            'agentToken': self.agentToken,
+            'method': method
         })
         return response
 
