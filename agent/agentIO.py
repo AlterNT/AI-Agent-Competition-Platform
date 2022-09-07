@@ -31,11 +31,15 @@ class AgentIO:
             raise requests.exceptions.ConnectionError
     
     def receive_method(self, method):
+        try:
             response = requests.get(self.server_path('api/method'), json={
             'agentToken': self.agentToken,
                 'method': method
             })
             return response
+        except requests.exceptions.ConnectionError:
+            raise requests.exceptions.ConnectionError
+
 
     def see(self):
         return self.send_action('METHOD', 'see') # ['gamestate']

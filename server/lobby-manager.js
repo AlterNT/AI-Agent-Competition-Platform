@@ -48,10 +48,9 @@ class LobbyManager {
     method(agentToken, method, params) {
         if (!(agentToken in this.agentMap)) { return }
 
-        if (!this.isTurn(agentToken)) { return }
-
         const game = this.agentMap[agentToken]
-        const data = game[method](...params)
+        const data = game[method](params)
+        return data;
     }
 
     isTurn(agentToken) {
