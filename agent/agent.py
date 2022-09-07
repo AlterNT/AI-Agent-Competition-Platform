@@ -34,7 +34,7 @@ def main():
             print(f'move = {move}')
 
             print('playing move')
-            agentIO.send_action('MOVE', move)
+            agentIO.send_action(move)
             print('played move')
 
             print('finished game\n')
