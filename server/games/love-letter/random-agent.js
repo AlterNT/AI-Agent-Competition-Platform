@@ -4,8 +4,8 @@ import Card from './card.js'
 import seedrandom from 'seedrandom'
 
 class RandomAgent {
-    constructor(name='rando') {
-        this.random = seedrandom()
+    constructor(name='rando', random=seedrandom()) {
+        this.random = random
         this.name = name
         this.state = null
         this.index = null

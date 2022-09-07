@@ -66,8 +66,8 @@ class LoveLetter {
     }
 
     main() {
-        const agents = [new RandomAgent(), new RandomAgent(), new RandomAgent(), new RandomAgent()]
-        const loveLetter = new LoveLetter()
+        const agents = [new RandomAgent('random0', seedrandom(0)), new RandomAgent('random1', seedrandom(1)), new RandomAgent('random2', seedrandom(2)), new RandomAgent('random3', seedrandom(3))]
+        const loveLetter = new LoveLetter(seedrandom(10), process.stdout)
         const results = loveLetter.playGame(agents)
         loveLetter.stream.write("The final scores are: \n")
         for (const i in agents) {
