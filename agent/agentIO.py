@@ -1,5 +1,10 @@
 import requests
 
+headers = {
+    "Cache-Control": "no-cache",
+    "Pragma": "no-cache"
+}
+
 class AgentIO:
     server_url = 'http://localhost:8080'
 
@@ -18,7 +23,7 @@ class AgentIO:
             response_json = response.json()
             return response_json['success']
         except requests.exceptions.ConnectionError:
-            return False
+            raise requests.exceptions.ConnectionError
 
     def send_action(self, action):
         try:
@@ -32,21 +37,25 @@ class AgentIO:
     
     def receive_method(self, method):
         try:
-            response = requests.get(self.server_path('api/method'), json={
-            'agentToken': self.agentToken,
-                'method': method
-            })
+            response = requests.get(
+                self.server_path('api/method'),
+                json={
+                    'agentToken': self.agentToken,
+                    'method': method
+                },
+                headers=headers
+            )
             return response
         except requests.exceptions.ConnectionError:
             raise requests.exceptions.ConnectionError
 
 
     def see(self):
-        return self.send_action('METHOD', 'see') # ['gamestate']
+        return self.send_action('METHOD', 'see')
 
     def turn(self):
         try:
-            response = requests.get(self.server_path('api/turn'), { 'agentToken': self.agentToken })
+            response = requests.get(self.server_path('api/turn'), { 'agentToken': self.agentToken }, headers=headers)
             response_json = response.json()
             return response_json['turn']
         except requests.exceptions.ConnectionError:

@@ -57,8 +57,8 @@ class API {
         // ----------------------------------------------------------------------------
         app.post('/api/join', (req, res) => {
             const { agentToken, gameID } = req.body
-            this.lobbyManager.joinLobby(agentToken, gameID)
-            res.json({ success: true })
+            const success = this.lobbyManager.joinLobby(agentToken, gameID)
+            res.json({ success })
         })
 
         app.post('/api/action', (req, res) => {
