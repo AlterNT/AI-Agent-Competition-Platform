@@ -2,6 +2,7 @@ import State from "./state.js"
 import RandomAgent from './random-agent.js'
 
 import seedrandom from 'seedrandom'
+import fs from 'fs'
 
 /**
  * A class for running a single game of LoveLetter.
@@ -67,7 +68,7 @@ class LoveLetter {
 
     main() {
         const agents = [new RandomAgent('random0', seedrandom(0)), new RandomAgent('random1', seedrandom(1)), new RandomAgent('random2', seedrandom(2)), new RandomAgent('random3', seedrandom(3))]
-        const loveLetter = new LoveLetter(seedrandom(10), process.stdout)
+        const loveLetter = new LoveLetter(seedrandom(10), fs.createWriteStream('./game.log'))
         const results = loveLetter.playGame(agents)
         loveLetter.stream.write("The final scores are: \n")
         for (const i in agents) {
@@ -76,5 +77,5 @@ class LoveLetter {
     }
 }
 
-const loveLetter = new LoveLetter();
-loveLetter.main();
+const loveLetter = new LoveLetter()
+loveLetter.main()
