@@ -52,6 +52,32 @@ class API {
             res.json({ data })
         })
 
+        // GET ENPOINTS
+        // Specifically for accessing State, Action and Card Modal.
+        // ----------------------------------------------------------------------------
+
+        // to see if given action is legal
+        app.get('/api/state/legalAction', (req, res) => {
+            const { agentToken, target, card } = req.body;
+            const isLegalAction = 0; // need to create methods to find players game to get state so it can be used as a checker
+            res.json({isLegalAction});
+        })
+
+        // so player can draw the top card off the top of the deck.
+        app.get('/api/state/getCard', (req, res) => {
+            const { agentToken } = req.body;
+            const getCard = 0; // create new method to access a given palyers lobby and return getCard() function from the lobbyies state controller
+            res.json({getCard});
+        })
+
+        // create action for player 
+        // redundant - can be included within the game logic server side 
+        // would require player to return a (card & target) pair for playCard rather that a action object 
+        app.get('/api/action/create', (req, res) => {
+            const {agentToken, target, card, guess} = req.body;
+            const action = 0;
+            res.json({action});
+        })
 
         // POST ENDPOINTS
         // ----------------------------------------------------------------------------

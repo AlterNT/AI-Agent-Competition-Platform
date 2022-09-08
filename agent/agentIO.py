@@ -78,3 +78,14 @@ class AgentIO:
             return response_json['turn']
         except requests.exceptions.ConnectionError:
             raise requests.exceptions.ConnectionError
+
+    # request api route
+    def getCard(agentToken):
+        break
+    # request api route
+    def isLegalAction(agentToken, target, card, drawn):
+        break
+
+    
+
+    

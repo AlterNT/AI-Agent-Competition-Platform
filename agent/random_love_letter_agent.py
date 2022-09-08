@@ -7,13 +7,14 @@ class RandomAgent:
         self.token = token
         self.state = None
         self.index = None
-        
+
+    # Replace with API call through agentIO  
     def legal_action(self, action, card):
         keys = ['agents', self.token, 'state']
         method = 'legalAction'
         params = [action, card]
         return self.agentIO.request_method(keys, method, params)
-    
+    # Replace with API call through agentIO
     def get_card(self):
         keys = ['agents', self.token, 'state']
         method = 'getCard'
@@ -22,7 +23,7 @@ class RandomAgent:
     
     def playCard(self, card):
         action = None
-        play = None
+        play = None 
         while not self.legal_action(action, card):
             if random.random() < 0.5: 
                 play = card 
@@ -62,6 +63,17 @@ class RandomAgent:
         } 
 
         return action
+
+        # Below is a list of all possible calls a user can make from the client end on the state object.
+        # legalaction 
+        # getCard
+        # getPlayerIndex
+        # eliminated
+        # getNextPlayer
+        # name
+        # decksize
+        # unseenCards
+        # score
     
 agent = Agent('asdf')
 agent.get_player_index()
