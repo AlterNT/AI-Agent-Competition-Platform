@@ -1,3 +1,4 @@
+import time
 import requests
 
 headers = {
@@ -47,8 +48,28 @@ class AgentIO:
         except requests.exceptions.ConnectionError:
             raise requests.exceptions.ConnectionError
 
+    def game_finished(self):
+        try:
+            finished_json = self.request_method([], 'finished', []).json()
+            return not finished_json or finished_json['data']['finished']
+        except requests.exceptions.ConnectionError:
+            return True
+
     def see(self):
-        return self.send_action('METHOD', 'see')
+        return self.request_method([], 'see', []).json()
+
+    def await_game_start(self):
+        try:
+            print('awaiting game start...')
+            while True:
+                data = self.see()['data']
+                error = data.get('error')
+                if not error:
+                    break
+                time.sleep(1)
+        except requests.exceptions.ConnectionError:
+            raise requests.exceptions.ConnectionError
+        print('game started')
 
     def turn(self):
         try:

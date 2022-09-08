@@ -18,6 +18,10 @@ class Lobby {
         return false;
     }
 
+    removeAgent(agentToken) {
+        this.agents = this.agents.filter((token) => token !== agentToken);
+    }
+
     gameSettings(gameID) {
         const gameSettings = JSON.parse(fs.readFileSync(`./games/${gameID}/settings.json`))
         return gameSettings

@@ -5,7 +5,8 @@ const MAX_PLAYERS = 4
 class LobbyManager {
     constructor() {
         this.lobbies = {}
-        this.agentMap = {}
+        this.gameMap = {}
+        this.lobbyMap = {}
     }
 
     createLobby(gameID) {
@@ -14,33 +15,51 @@ class LobbyManager {
     }
 
     joinLobby(agentToken, gameID) {
+        const currentGame =  this.gameMap[agentToken];
+        if (currentGame) {
+            if (!currentGame.result) {
+                return false;
+            } else {
+                delete this.gameMap[agentToken];
+            }
+        }
+        // console.log('???', agentToken, gameID)
         // checks if there is a lobby for this game and creates one if there isnt
         if (this.lobbies[gameID] == undefined) {
             this.createLobby(gameID)
         }
 
-        const lobby = this.lobbies[gameID]
+        const previousAllocation = this.lobbyMap[agentToken]
+        if (previousAllocation) {
+            previousAllocation.removeAgent(agentToken);
+        }
+
+        const lobby = this.lobbies[gameID];
         const success = lobby.addAgent(agentToken)
 
-        if (lobby.agents.length == lobby.gameSettings.maxPlayers) {
-            const lobby = this.lobbies[gameID]
-            const game = lobby.startGame()
-            console.log('Starting!', lobby.agents)
+        this.lobbyMap[agentToken] = lobby
+
+        if (lobby.agents.length === lobby.gameSettings.maxPlayers) {
+            const game = lobby.startGame();
+            console.log('Starting!', lobby.agents);
             for (const agent of lobby.agents) {
-                this.agentMap[agent] = game
+                this.gameMap[agent] = game;
             }
-            delete this.lobbies[gameID]
+            lobby.agents.forEach((token) => {
+                delete this.lobbyMap[token];
+            })
+            delete this.lobbies[gameID];
         }
 
         return success;
     }
 
     action(agentToken, action) {
-        if (!(agentToken in this.agentMap)) {
+        if (!(agentToken in this.gameMap)) {
             return
         }
 
-        const game = this.agentMap[agentToken]
+        const game = this.gameMap[agentToken]
         if (!this.isTurn(agentToken)) {
             return
         }
@@ -50,20 +69,22 @@ class LobbyManager {
     }
 
     method(agentToken, keys, method, params) {
-        if (!(agentToken in this.agentMap)) { return }
+        if (!(agentToken in this.gameMap)) {
+            return { error: 'game not started' }
+        }
 
-        const game = this.agentMap[agentToken]
+        const game = this.gameMap[agentToken]
         let object = game
-        for (const key of keys) { object = object[key] }
+        keys.forEach((key) => object = object[key])
         const data = object[method](...params)
         return data
     }
 
     isTurn(agentToken) {
-        if (agentToken in this.agentMap) {
-            const game = this.agentMap[agentToken]
+        if (agentToken in this.gameMap) {
+            const game = this.gameMap[agentToken]
             return game.turn == agentToken
-        } 
+        }
 
         return false
     }

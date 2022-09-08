@@ -48,7 +48,6 @@ class API {
 
         app.get('/api/method', (req, res) => {
             const { agentToken, keys, method, params } = req.body
-            console.log(agentToken, keys, method, params)
             const data = this.lobbyManager.method(agentToken, keys, method, params)
             res.json({ data })
         })

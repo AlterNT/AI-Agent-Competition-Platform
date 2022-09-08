@@ -26,7 +26,7 @@ class PaperScizzorsRock {
 
             const timeout = setTimeout(() => {
                 this.resolve(null);
-            }, 2000);
+            }, 3000);
 
             const move = await this.pending;
             clearTimeout(timeout);
@@ -62,6 +62,10 @@ class PaperScizzorsRock {
 
     finished() {
         return { finished: !!this.result };
+    }
+
+    see() {
+        return { state: this.moves };
     }
 }
 
