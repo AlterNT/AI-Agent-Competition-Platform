@@ -45,13 +45,16 @@ class LobbyManager {
         game.resolve(action.value)
     }
 
-    method(agentToken, method, params) {
+    method(agentToken, keys, method, params) {
         if (!(agentToken in this.agentMap)) { return }
 
         if (!this.isTurn(agentToken)) { return }
 
         const game = this.agentMap[agentToken]
-        const data = game[method](...params)
+        const object = game
+        for (const key of keys) { object = object[key] }
+        const data = object[method](...params)
+        return data
     }
 
     isTurn(agentToken) {

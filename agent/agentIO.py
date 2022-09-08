@@ -24,10 +24,12 @@ class AgentIO:
         })
         return response
     
-    def receive_method(self, method):
+    def request_method(self, keys, method, params):
         response = requests.get(self.server_path('api/method'), json={
             'agentToken': self.agentToken,
-            'method': method
+            'keys': keys,
+            'method': method,
+            'params': params
         })
         return response
 
