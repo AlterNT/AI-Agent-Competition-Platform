@@ -20,16 +20,19 @@ class LobbyManager {
         }
 
         const lobby = this.lobbies[gameID]
-        lobby.addAgent(agentToken)
+        const success = lobby.addAgent(agentToken)
 
         if (lobby.agents.length == lobby.gameSettings.maxPlayers) {
             const lobby = this.lobbies[gameID]
             const game = lobby.startGame()
+            console.log('Starting!', lobby.agents)
             for (const agent of lobby.agents) {
                 this.agentMap[agent] = game
             }
             delete this.lobbies[gameID]
         }
+
+        return success;
     }
 
     action(agentToken, action) {
@@ -37,18 +40,17 @@ class LobbyManager {
             return
         }
 
+        const game = this.agentMap[agentToken]
         if (!this.isTurn(agentToken)) {
             return
         }
 
-        const game = this.agentMap[agentToken]
-        game.resolve(action.value)
+        game.turn = null;
+        game.resolve(action)
     }
 
     method(agentToken, keys, method, params) {
         if (!(agentToken in this.agentMap)) { return }
-
-        if (!this.isTurn(agentToken)) { return }
 
         const game = this.agentMap[agentToken]
         const object = game

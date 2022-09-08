@@ -23,24 +23,45 @@ class PaperScizzorsRock {
             this.pending = new Promise((resolve) => {
                 this.resolve = resolve
             })
-            const move = await this.pending
+
+            const timeout = setTimeout(() => {
+                this.resolve(null);
+            }, 2000);
+
+            const move = await this.pending;
+            clearTimeout(timeout);
+
+            if (!move) {
+                this.result = `TIMED OUT: ${agent}`;
+                break;
+            }
+
             this.moves.push(move)
         }
-        
-        const move0 = MOVES[this.moves[0]]
-        const move1 = MOVES[this.moves[1]]
 
-        if (move0 == move1) {
-            this.result = 'DRAW'
+        if (!this.result) {
+            const move0 = MOVES[this.moves[0]];
+            const move1 = MOVES[this.moves[1]];
 
-        } else if (move0 + 1 % 3 == move1 % 3) {
-            this.result = `WINNER: ${this.agents[0]}`
-
-        } else {
-            this.result = `WINNER: ${this.agents[1]}`
+            const modulo = (move0 - move1 + 3) % 3;
+            switch (modulo) {
+                case 0:
+                    this.result =  'DRAW';
+                    break
+                case 1:
+                    this.result =  `WINNER: ${this.agents[0]}`;
+                    break
+                case 2:
+                    this.result =  `WINNER: ${this.agents[1]}`;
+                    break
+            }
         }
 
-        console.log(this.result)
+        console.log(this.result);
+    }
+
+    finished() {
+        return { finished: !!this.result };
     }
 }
 

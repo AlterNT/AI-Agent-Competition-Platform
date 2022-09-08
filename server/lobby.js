@@ -10,7 +10,12 @@ class Lobby {
     }
 
     addAgent(agentToken) {
-        this.agents.push(agentToken)
+        if (!this.agents.includes(agentToken)) {
+            this.agents.push(agentToken)
+            return true;
+        }
+
+        return false;
     }
 
     gameSettings(gameID) {
