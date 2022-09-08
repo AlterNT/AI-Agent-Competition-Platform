@@ -53,7 +53,7 @@ class LobbyManager {
         if (!(agentToken in this.agentMap)) { return }
 
         const game = this.agentMap[agentToken]
-        const object = game
+        let object = game
         for (const key of keys) { object = object[key] }
         const data = object[method](...params)
         return data
