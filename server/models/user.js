@@ -2,13 +2,13 @@ export default {
     id: {
       type: 'uuid',
     },
-    studentNumberString: {
+    studentNumber: {
         type: 'string',
         required: true,
         primary: true,
         unique: true,
     },
-    authenticationTokenString: {
+    authToken: {
         type: 'string',
         required: true,
         unique: true,

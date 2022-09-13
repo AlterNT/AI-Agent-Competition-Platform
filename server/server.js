@@ -43,7 +43,6 @@ export default class Server {
         /** @type {Neode} */
         this.dbInstance = Neode.fromEnv().with(Models);
 
-        // @TODO: cached queries
         const batchQueries = [
             this.queryGames,
             this.queryAgents,
@@ -165,8 +164,8 @@ export default class Server {
      */
     async createUser(studentNumber, userToken) {
         return await this.dbInstance.create('User', {
-                studentNumberString: String(studentNumber),
-                authenticationTokenString: userToken,
+            studentNumber: String(studentNumber),
+            authToken: userToken,
         });
     }
 
@@ -316,10 +315,10 @@ export default class Server {
         return res.map((_, i) => {
             const user = res.get(i);
             const agentId = user.get('controls').endNode().get('id');
-            const { studentNumberString } = user.properties();
+            const { studentNumber } = user.properties();
 
             return {
-                studentNumberString,
+                studentNumber,
                 agentId,
             };
         });
@@ -452,7 +451,7 @@ export default class Server {
     async queryBotAgents() {
         const res = await this.dbInstance.cypher(`
             MATCH (u:User)-[:CONTROLS]->(a:Agent)
-            WHERE u.authenticationTokenString = "00000000"
+            WHERE u.authToken = "00000000"
             RETURN u as User, a as Agents;
         `);
 

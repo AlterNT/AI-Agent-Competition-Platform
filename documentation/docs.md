@@ -51,7 +51,6 @@ type AgentId        = String;               // uuid of an agent:    e.g. 'ce030d
 type StudentNumber  = String;               // UWA student number:  e.g. '20000000'
 type GameScores     = Map<AgentId, Float>;  // maps agent ids to scores: agentId : agentScore
 type GameState      = String;               // JSON string of game state
-type History        = Integer;              // number of datapoints requested
 ```
 
 ## Domain Objects
@@ -137,12 +136,12 @@ type Bots = {
 
 ### Games
 
-Returns the outcome and state of the past 'history' games (or all of them is `history == 0`).
+Returns the outcome and state of all past games.
 
 #### Route
 
 ```
-/api/games?history=History
+/api/games
 ```
 
 #### Response Type:
@@ -157,12 +156,12 @@ type Games = {
 
 ### Agent Games
 
-Returns the past 'history' games for agent (or all of them if `history == 0`).
+Returns all past games for the given agent
 
 #### Route
 
 ```
-/api/agent-games?history=History
+/api/agent-games?agentId=AgentId
 ```
 
 #### Response Type:

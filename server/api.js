@@ -33,22 +33,16 @@ const runAPI = async () => {
 
     // returns all bot agents
     app.get('/api/bots', (_, res) => {
-        server.getQueryResult(server.queryBotAgents)
+        server.getQueryResult(server.queryAgents, { studentNumber: Server.defaultAgentToken })
             .then((bots) => {
                 res.json({bots});
             });
     });
 
-    // @TODO: returns all agents controlled by a non-bot user
-    app.get('/api/user-agents', (_, res) => {
-        res.json();
-    });
-
-
     // @TODO: returns all agents for a user
     app.get('/api/agents-of-user', (req, res) => {
         const { studentNumber } = req.query;
-        server.getQueryResult(server.queryAgents, {studentNumberString: studentNumber}) // @TODO: implement arg
+        server.getQueryResult(server.queryAgents, {studentNumber})
             .then((agents) => {
                 res.json({agents});
             });
@@ -57,10 +51,13 @@ const runAPI = async () => {
     // ---------------------------------------------------------------
     // get historical game data
 
-    // @TODO: returns all games for a given user
+    // return all games for a given user
     app.get('/api/user-games', (req, res) => {
         const { agentId } = req.query;
-        res.json();
+        server.getQueryResult(server.queryGames, { agentIds: agentId })
+            .then((games) => {
+                res.json({games});
+            });
     });
 
     // @TODO: returns last x games for a given user

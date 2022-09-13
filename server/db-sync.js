@@ -47,9 +47,18 @@ export default class DBSync {
         const queryString = query?.name || query;
         const rawResult = this.queryMap.get(queryString).result;
         let result = rawResult;
+
+        const filterValidation = (key, object, expectation) => {
+            if (!(key in object)) {
+                return false;
+            }
+            const value = object[key];
+            return value === expectation || value?.includes(expectation);
+        }
+
         Object.keys(filters).forEach((key) => {
-            const value = filters[key];
-            result = result.filter((v) => v[key] === value);
+            const expectation = filters[key];
+            result = result.filter((object) => filterValidation(key, object, expectation));
         });
         return result;
     }
