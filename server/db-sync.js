@@ -19,15 +19,15 @@ class CachedQuery {
 export default class DBSync {
     /**
      * Takes a list of methods of server and recomputed their result every so often
-     * @param {Function[]} queryFunctions
+     * @param {Function[]} batchQueries
      */
-    async start(queryFunctions) {
+    async start(batchQueries) {
         // Hardcoded to every 2 seconds for now
         const timeoutDuration = 2000;
 
         // Maps query names to query results
         this.queryMap = new Map();
-        for (let queryFunction of queryFunctions) {
+        for (let queryFunction of batchQueries) {
             const cachedQuery = new CachedQuery();
             await cachedQuery.run(timeoutDuration, queryFunction);
             this.queryMap.set(

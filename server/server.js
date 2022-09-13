@@ -303,36 +303,19 @@ export default class Server {
 
     /**
      * @TODO remove token from users
-     * @return {any[]} array of all users
+     * @return {any[]} array of all user and agents id
      */
-     async queryUsers() {
+     async queryAgents() {
         const res = await this.dbInstance.all('User')
         return res.map((_, i) => {
             const user = res.get(i);
             const agentId = user.get('controls').endNode().get('id');
-            const props = user.properties();
-            delete props.authenticationTokenString;
+            const { studentNumberString } = user.properties();
 
             return {
-                ...props,
+                studentNumberString,
                 agentId,
             };
-        });
-    }
-
-    /**
-     * @return {any[]} array of all agents
-     */
-     async queryAgents() {
-        const res = await this.dbInstance.all('Agent')
-        return res.map((_, i) => {
-            const agent = res.get(i)
-            const studentNumber = agent.get('controls').startNode().get('studentNumber');
-
-            return {
-                ...agent.properties(),
-                studentNumber,
-            }
         });
     }
 

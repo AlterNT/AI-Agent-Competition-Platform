@@ -17,23 +17,15 @@ const runAPI = async () => {
 
     // returns all games played
     app.get('/api/games', (_, res) => {
-        server.queryGames()
+        server.getQueryResult(server.queryGames)
             .then((games) => {
                 res.json({games});
             });
     });
 
-    // returns all users
-    app.get('/api/users', (_, res) => {
-        server.queryUsers()
-            .then((users) => {
-                res.json({users});
-            });
-    });
-
-    // returns all agents
+    // returns all user/agent ids
     app.get('/api/agents', (_, res) => {
-        server.queryAgents()
+        server.getQueryResult(server.queryAgents)
             .then((agents) => {
                 res.json({agents});
             });
@@ -41,7 +33,7 @@ const runAPI = async () => {
 
     // returns all bot agents
     app.get('/api/bots', (_, res) => {
-        server.queryBotAgents()
+        server.getQueryResult(server.queryBotAgents)
             .then((bots) => {
                 res.json({bots});
             });
