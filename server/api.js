@@ -50,7 +50,7 @@ const runAPI = async () => {
 
     // ---------------------------------------------------------------
     // Statistics (batch)
-    // if no agents have played sufficient games this returns an empty list 
+    // if no agents have played sufficient games this returns an empty list
     // @TODO: after tournament system we can look into rankings as well?
 
     // all agents sorted by winrate

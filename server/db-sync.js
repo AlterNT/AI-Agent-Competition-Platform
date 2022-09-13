@@ -19,7 +19,7 @@ class CachedQuery {
 export default class DBSync {
     /**
      * Takes a list of methods of server and recomputed their result every so often
-     * @param {Function[]} batchQueries
+     * @param {Function[]} batchQueries each function must evaluate to a list and be async
      */
     async start(batchQueries) {
         // Hardcoded to every 2 seconds for now
@@ -39,6 +39,10 @@ export default class DBSync {
 
     /**
      * Returns whatever has been cached for the result of the query
+     * Searched for a key and expectation pair that exists in the filter to exist in the response
+     * value does not have to be exactly equal to the expectation
+     * it can be an array that includes the expectation or an object that maps from it
+     *
      * @param {Function | String} query
      * @param {{ any }} filters (strict) equalities applied on the resulting object
      * @returns {any}
