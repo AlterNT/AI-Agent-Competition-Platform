@@ -157,7 +157,7 @@ export default class Server {
      * @param {String | Number} studentNumber
      * @returns {Neode.Node<Models.User>}
      */
-    async createUser(userToken, studentNumber) {
+    async createUser(studentNumber, userToken) {
         return await this.dbInstance.create('User', {
                 studentNumberString: String(studentNumber),
                 authenticationTokenString: userToken,
@@ -403,7 +403,7 @@ export default class Server {
             RETURN a as Agent, g as Games;
         `);
 
-        return res.map((record) => record.get('Games').toString());
+        return res.records.map((record) => record.get('Games').toString());
     };
 
     /**

@@ -5,10 +5,11 @@ export default {
     studentNumberString: {
         type: 'string',
         required: true,
+        primary: true,
+        unique: true,
     },
     authenticationTokenString: {
         type: 'string',
-        primary: true,
         required: true,
         unique: true,
     },
