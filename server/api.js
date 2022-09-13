@@ -53,8 +53,7 @@ const runAPI = async () => {
     // if no agents have played sufficient games this returns an empty list 
     // @TODO: after tournament system we can look into rankings as well?
 
-    // @TODO: all agents sorted by winrate
-    // @TODO: bots flag to specify whether only bots should return
+    // all agents sorted by winrate
     app.get('/api/top-winrate', (_, res) => {
         server.getQueryResult(server.queryTopWinrate)
             .then((winrate) => {
@@ -62,8 +61,7 @@ const runAPI = async () => {
             });
     });
 
-    // @TODO: all agents sorted by who's improved the most
-    // @TODO: bots flag to specify whether only bots should return
+    // all agents sorted by which improved the most since its first game
     app.get('/api/most-improved', (_, res) => {
         server.getQueryResult(server.queryMostImproved)
             .then((improvement) => {
@@ -71,8 +69,7 @@ const runAPI = async () => {
             });
     });
 
-    // @TODO: all the agents sorted by who's improving the quickest
-    // @TODO: bots flag to specify whether only bots should return
+    // all the agents sorted by which improved the most in its past few games
     app.get('/api/most-improving', (_, res) => {
         // @TODO: implement the correct query for this
         server.getQueryResult(server.queryMostImproved)
@@ -85,25 +82,37 @@ const runAPI = async () => {
     // game statistics: single agent
     // @TODO: implement by reusing cached batch query results
 
-    // @TODO: winrate of given agent
-    // @TODO: returns nothing if not enough games were played
+    // winrate of given agent
+    // returns null if not enough games played
     app.get('/api/winrate', (req, res) => {
         const { agentId } = req.query;
-        res.json();
+        server.getQueryResult(server.queryTopWinrate, {agentId})
+            .then((winrateArray) => {
+                const winrate = winrateArray?.[0] || null;
+                res.json({ winrate })
+            });
     });
 
-    // @TODO: improvement of given agent
-    // @TODO: returns nothing if not enough games were played
+    // improvement of agent since its first game
+    // returns null if not enough games played
     app.get('/api/improvement', (req, res) => {
         const { agentId } = req.query;
-        res.json();
+        server.getQueryResult(server.queryMostImproved, {agentId})
+            .then((improvementArray) => {
+                const improvement = improvementArray?.[0] || null;
+                res.json({ improvement })
+            });
     });
 
-    // @TODO: recent improvement of given agent
-    // @TODO: returns nothing if not enough games were played
+    // improvement of agent in its recent few games
+    // returns null if not enough games played
     app.get('/api/improvement-rate', (req, res) => {
         const { agentId } = req.query;
-        res.json();
+        server.getQueryResult(server.queryMostImproved, {agentId})
+            .then((improvementArray) => {
+                const improvement = improvementArray?.[0] || null;
+                res.json({ improvement })
+            });
     });
 
     // ---------------------------------------------------------------

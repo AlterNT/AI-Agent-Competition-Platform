@@ -339,7 +339,7 @@ export default class Server {
         `);
 
         return res.records.map((record) => ({
-            agent: record.get('AgentId').toString(),
+            agentId: record.get('AgentId').toString(),
             gamesPlayed: record.get('GamesPlayed').toInt(),
             wins: record.get('Wins').toInt(),
             winPercent: record.get('WinPercent').toNumber().toFixed(2),
@@ -371,7 +371,7 @@ export default class Server {
         `);
 
         return res.records.map((record) => ({
-            agent: record.get('AgentId').toString(),
+            agentId: record.get('AgentId').toString(),
             initialWinPercent: record.get('InitialWinPercent').toInt(),
             lastWinPercent: record.get('LastWinPercent').toInt(),
             percentageImproved: record.get('PercentageImprovement').toInt(),
@@ -403,13 +403,13 @@ export default class Server {
             MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"}) -[p:PLAYED_IN]-> (g:Game)
             WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
             WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
-            RETURN a AS Agent, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
+            RETURN a.id AS AgentId, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
             ORDER BY WinPercent DESC;
         `);
 
         // @TODO: this return is wrong
         return res.records.map((record) => ({
-            agent: record.get('Agent').toString(),
+            agentId: record.get('AgentId').toString(),
             initialWinPercent: record.get('InitialWinPercent').toInt(),
             lastWinPercent: record.get('LastWinPercent').toInt(),
             percentageImproved: record.get('PercentageImprovement').toInt(),
