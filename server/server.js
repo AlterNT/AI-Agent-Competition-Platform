@@ -292,16 +292,18 @@ export default class Server {
         return res.map((_, i) => {
             const game = res.get(i);
             const agentEdges = game.get('playedIn');
-            const agentIds = agentEdges.map((_, i) => {
-                return agentEdges
-                    .get(i)
-                    .startNode()
-                    .get('id');
+            const agentScores = {};
+            agentEdges.map((_, i) => {
+                const agentEdge = agentEdges.get(i);
+                const agentId = agentEdge.startNode().get('id');
+                const score = agentEdge.properties().score.toFixed(2);
+
+                agentScores[agentId] = score;
             });
 
             return {
                 ...game.properties(),
-                agentIds,
+                agentScores,
             }
         });
     }

@@ -53,7 +53,10 @@ export default class DBSync {
                 return false;
             }
             const value = object[key];
-            return value === expectation || value?.includes(expectation);
+            const valueKeys = typeof(value) === 'object' ? Object.keys(value) : [];
+            const valueArray = Array.isArray(value) ? value : [];
+            const includesExpectation = valueKeys.includes(expectation) || valueArray.includes(expectation);
+            return value === expectation || includesExpectation;
         }
 
         Object.keys(filters).forEach((key) => {

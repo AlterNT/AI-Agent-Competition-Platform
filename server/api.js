@@ -42,7 +42,7 @@ const runAPI = async () => {
     // return all games for a given user
     app.get('/api/agent-games', (req, res) => {
         const { agentId } = req.query;
-        server.getQueryResult(server.queryGames, { agentIds: agentId })
+        server.getQueryResult(server.queryGames, { agentScores: agentId })
             .then((games) => {
                 res.json({games});
             });
