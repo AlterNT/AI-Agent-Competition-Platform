@@ -10,30 +10,37 @@ class PaperScizzorsRock {
     constructor(agentTokens) {
         this.agents = agentTokens
         this.moves = []
-        this.turn = null;
+        this.turn = null
         this.result = null
 
         this.pending = null
         this.resolve = null
     }
 
+    async awaitEvent() {
+        this.pending = new Promise((resolve) => {
+            this.resolve = resolve
+        })
+
+        const timeout = setTimeout(() => {
+            this.resolve(null)
+        }, 3000)
+
+        const move = await this.pending
+        clearTimeout(timeout)
+
+        return move
+    }
+
     async main() {
         for (const agent of this.agents) {
             this.turn = agent
-            this.pending = new Promise((resolve) => {
-                this.resolve = resolve
-            })
-
-            const timeout = setTimeout(() => {
-                this.resolve(null);
-            }, 3000);
-
-            const move = await this.pending;
-            clearTimeout(timeout);
+            
+            const move = await this.awaitEvent()
 
             if (!move) {
-                this.result = `TIMED OUT: ${agent}`;
-                break;
+                this.result = `TIMED OUT: ${agent}`
+                break
             }
 
             this.moves.push(move)
@@ -46,26 +53,26 @@ class PaperScizzorsRock {
             const modulo = (move0 - move1 + 3) % 3;
             switch (modulo) {
                 case 0:
-                    this.result =  'DRAW';
+                    this.result = 'DRAW'
                     break
                 case 1:
-                    this.result =  `WINNER: ${this.agents[0]}`;
+                    this.result = `WINNER: ${this.agents[0]}`
                     break
                 case 2:
-                    this.result =  `WINNER: ${this.agents[1]}`;
+                    this.result = `WINNER: ${this.agents[1]}`
                     break
             }
         }
 
-        console.log(this.result);
+        console.log(this.result)
     }
 
     finished() {
-        return { finished: !!this.result };
+        return { finished: !!this.result }
     }
 
     see() {
-        return { state: this.moves };
+        return { state: this.moves }
     }
 }
 

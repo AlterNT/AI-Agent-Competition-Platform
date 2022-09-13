@@ -51,6 +51,8 @@ class LobbyManager {
             delete this.lobbies[gameID];
         }
 
+        console.log(this.lobbies)
+
         return success;
     }
 
@@ -74,6 +76,10 @@ class LobbyManager {
         }
 
         const game = this.gameMap[agentToken]
+        if (!this.isTurn(agentToken)) {
+            return
+        }
+
         let object = game
         keys.forEach((key) => object = object[key])
         const data = object[method](...params)

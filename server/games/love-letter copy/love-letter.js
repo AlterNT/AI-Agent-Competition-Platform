@@ -1,8 +1,8 @@
 import State from "./state.js"
 import RandomAgent from './random-agent.js'
-import Action from './action.js'
 
 import seedrandom from 'seedrandom'
+import fs from 'fs'
 
 /**
  * A class for running a single game of LoveLetter.
@@ -15,46 +15,10 @@ class LoveLetter {
      * @param seed a seed for the random number generator.
      * @param stream a iostream to record the events of the game
      **/
-    constructor(agents, seed=0, stream=process.stdout) {
-        this.agents = agents = [
-            new RandomAgent(agents[0], seedrandom(0)), 
-            new RandomAgent(agents[1], seedrandom(1)), 
-            new RandomAgent(agents[2], seedrandom(2)), 
-            new RandomAgent(agents[3], seedrandom(3))
-        ]
+    constructor(seed=0, stream=process.stdout) {
         this.random = seedrandom(seed)
         this.stream = process.stdout.pipe(stream)
         this.randomAgent = new RandomAgent()
-
-        // variables for receiving agent actions
-        this.promise = null
-        this.resolve = null
-
-        this.topCard = null
-    }
-
-    /**
-     * Creates a new promise to await agent action
-     * Timeouts if action is not received within time limit
-     * @returns action received from agent or null if timeout is reached
-     **/
-    async awaitEvent() {
-        this.pending = new Promise((resolve) => {
-            this.resolve = resolve
-        })
-
-        const timeout = setTimeout(() => {
-            this.resolve(null)
-        }, 3000)
-
-        const move = await this.pending
-        clearTimeout(timeout)
-
-        return move
-    }
-
-    getTopCard() {
-        return this.topCard
     }
 
     /**
@@ -62,7 +26,7 @@ class LoveLetter {
      * @param agents the players in the game
      * @return scores of each agent as an array of integers
      **/
-    async playGame(agents) {
+    playGame(agents) {
         const numPlayers = agents.length
         const gameState = new State(this.random, agents)
         const playerStates = []
@@ -75,11 +39,8 @@ class LoveLetter {
                 while (!gameState.roundOver()) {
                     console.log("Cards are:\nplayer 0:" + JSON.stringify(gameState.getCard(0)) + "\nplayer 1:" + JSON.stringify(gameState.getCard(1)) + "\nplayer 2:" + JSON.stringify(gameState.getCard(2)) + "\nplayer 3:" + JSON.stringify(gameState.getCard(3)) + "\n")
                     const topCard = gameState.drawCard()
-                    this.topCard = topCard
                     console.log("Player " + gameState.getNextPlayer() + " draws the " + topCard.name + " card.")
-                    let action = await this.awaitEvent()
-                    console.log(action)
-                    let act = Action[action.action](...action.params)
+                    let act = agents[gameState.getNextPlayer()].playCard(topCard)
                     try {
                         this.stream.write(gameState.update(act, topCard) + '\n')
                     } catch {
@@ -106,12 +67,15 @@ class LoveLetter {
     }
 
     main() {
-        this.playGame(this.agents)
-        const results = this.stream.write("The final scores are: \n")
-        for (const i in this.agents) {
-            this.stream.write("\t Agent "+i+", \""+this.agents[i]+"\":\t "+results[i]+"\n")
+        const agents = [new RandomAgent('random0', seedrandom(0)), new RandomAgent('random1', seedrandom(1)), new RandomAgent('random2', seedrandom(2)), new RandomAgent('random3', seedrandom(3))]
+        const loveLetter = new LoveLetter(seedrandom(10), fs.createWriteStream('./game.log'))
+        const results = loveLetter.playGame(agents)
+        loveLetter.stream.write("The final scores are: \n")
+        for (const i in agents) {
+            loveLetter.stream.write("\t Agent "+i+", \""+agents[i]+"\":\t "+results[i]+"\n")
         }
     }
 }
 
-export default LoveLetter
+const loveLetter = new LoveLetter()
+loveLetter.main()

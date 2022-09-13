@@ -1,12 +1,6 @@
-import time
 import requests
 
-headers = {
-    "Cache-Control": "no-cache",
-    "Pragma": "no-cache"
-}
-
-class AgentIO:
+class API:
     server_url = 'http://localhost:8080'
 
     def __init__(self, agentToken):
@@ -15,11 +9,11 @@ class AgentIO:
     def server_path(self, path):
         return f'{self.server_url}/{path}'
 
-    def join_lobby(self):
+    def join_lobby(self, gameID):
         try:
             response = requests.post(self.server_path('api/join'), json={
                 'agentToken': self.agentToken,
-                'gameID': 'paper-scissors-rock'
+                'gameID': gameID
             })
             response_json = response.json()
             return response_json['success']
@@ -32,7 +26,7 @@ class AgentIO:
                 'agentToken': self.agentToken,
                 'action': action
             })
-            return response
+            return response.json()
         except requests.exceptions.ConnectionError:
             raise requests.exceptions.ConnectionError
     
@@ -44,47 +38,19 @@ class AgentIO:
                 'method': method,
                 'params': params
             })
-            return response
+            return response.json()
         except requests.exceptions.ConnectionError:
             raise requests.exceptions.ConnectionError
-
-    def game_finished(self):
+    
+    def is_turn(self):
         try:
-            finished_json = self.request_method([], 'finished', []).json()
-            return not finished_json or finished_json['data']['finished']
-        except requests.exceptions.ConnectionError:
-            return True
-
-    def see(self):
-        return self.request_method([], 'see', []).json()
-
-    def await_game_start(self):
-        try:
-            print('awaiting game start...')
-            while True:
-                data = self.see()['data']
-                error = data.get('error')
-                if not error:
-                    break
-                time.sleep(1)
+            response = requests.get(self.server_path('api/turn'), json={
+                'agentToken': self.agentToken
+            })
+            return response.json().get('turn', False)
         except requests.exceptions.ConnectionError:
             raise requests.exceptions.ConnectionError
-        print('game started')
-
-    def turn(self):
-        try:
-            response = requests.get(self.server_path('api/turn'), { 'agentToken': self.agentToken }, headers=headers)
-            response_json = response.json()
-            return response_json['turn']
-        except requests.exceptions.ConnectionError:
-            raise requests.exceptions.ConnectionError
-
-    # request api route
-    def getCard(agentToken):
-        pass
-    # request api route
-    def isLegalAction(agentToken, target, card, drawn):
-        pass
+            
 
     
 

@@ -42,7 +42,7 @@ class API {
 
         app.get('/api/turn', (req, res) => {
             const { agentToken } = req.query
-            const turn = this.lobbyManager.isTurn(agentToken);
+            const turn = this.lobbyManager.isTurn(agentToken)
             res.json({ turn })
         })
 
@@ -89,6 +89,7 @@ class API {
 
         app.post('/api/action', (req, res) => {
             const { agentToken, action } = req.body;
+            console.log(`!!!${action}`)
             this.lobbyManager.action(agentToken, action);
             res.json({ success: true })
         })
