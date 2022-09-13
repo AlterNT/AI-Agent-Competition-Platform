@@ -44,20 +44,26 @@ export default class Server {
         this.dbInstance = Neode.fromEnv().with(Models);
 
         // @TODO: cached queries
-        const cachedQueries = [];
+        const batchQueries = [
+            this.queryGames,
+            this.queryAgents,
+            this.queryTopWinrate,
+            this.queryMostImproved,
+        ];
 
         /** @type {DBSync} */
         this.dbSync = new DBSync();
-        await this.dbSync.start(cachedQueries);
+        await this.dbSync.start(batchQueries);
     }
 
     /**
      * Returns whatever has been cached for the result of the query
      * @param {Function | String} query
+     * @param {{ any } | undefined | null} filters (strict) equalities applied on the resulting object
      * @returns {any}
      */
-    async getQueryResult(query) {
-        return await this.dbSync.getQueryResult(query);
+    async getQueryResult(query, filters) {
+        return await this.dbSync.getQueryResult(query, filters || {});
     }
 
     async loadTestData() {

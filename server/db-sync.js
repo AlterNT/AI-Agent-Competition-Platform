@@ -40,10 +40,17 @@ export default class DBSync {
     /**
      * Returns whatever has been cached for the result of the query
      * @param {Function | String} query
+     * @param {{ any }} filters (strict) equalities applied on the resulting object
      * @returns {any}
      */
-    getQueryResult(query) {
+    getQueryResult(query, filters) {
         const queryString = query?.name || query;
-        return this.queryMap.get(queryString).result;
+        const rawResult = this.queryMap.get(queryString).result;
+        let result = rawResult;
+        Object.keys(filters).forEach((key) => {
+            const value = filters[key];
+            result = result.filter((v) => v[key] === value);
+        });
+        return result;
     }
 };

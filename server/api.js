@@ -47,10 +47,10 @@ const runAPI = async () => {
 
     // @TODO: returns all agents for a user
     app.get('/api/agents-of-user', (req, res) => {
-        const { studentNumber } = req.params;
-        server.queryUserAgents(studentNumber) // @TODO: implement arg
-            .then((result) => {
-                res.json(result);
+        const { studentNumber } = req.query;
+        server.getQueryResult(server.queryAgents, {studentNumberString: studentNumber}) // @TODO: implement arg
+            .then((agents) => {
+                res.json({agents});
             });
     });
 
@@ -59,19 +59,19 @@ const runAPI = async () => {
 
     // @TODO: returns all games for a given user
     app.get('/api/user-games', (req, res) => {
-        const { agentId } = req.params;
+        const { agentId } = req.query;
         res.json();
     });
 
     // @TODO: returns last x games for a given user
     app.get('/api/user-recent-games', (req, res) => {
-        const { agentId, lookbehind } = req.params;
+        const { agentId, lookbehind } = req.query;
         res.json();
     });
 
     // @TODO: returns last x games played by a bot
     app.get('/api/user-recent-games', (req, res) => {
-        const { lookbehind } = req.params;
+        const { lookbehind } = req.query;
         res.json();
     });
 
@@ -82,7 +82,7 @@ const runAPI = async () => {
 
     // @TODO: returns all games for an agent
     app.get('/api/agent-games', (req, res) => {
-        const { studentNumber } = req.params;
+        const { studentNumber } = req.query;
         res.json();
     });
 
@@ -126,21 +126,21 @@ const runAPI = async () => {
     // @TODO: winrate of given agent
     // @TODO: returns nothing if not enough games were played
     app.get('/api/winrate', (req, res) => {
-        const { agentId } = req.params;
+        const { agentId } = req.query;
         res.json();
     });
 
     // @TODO: improvement of given agent
     // @TODO: returns nothing if not enough games were played
     app.get('/api/improvement', (req, res) => {
-        const { agentId } = req.params;
+        const { agentId } = req.query;
         res.json();
     });
 
     // @TODO: recent improvement of given agent
     // @TODO: returns nothing if not enough games were played
     app.get('/api/improvement-rate', (req, res) => {
-        const { agentId } = req.params;
+        const { agentId } = req.query;
         res.json();
     });
 
