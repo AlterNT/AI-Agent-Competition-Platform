@@ -13,15 +13,7 @@ const runAPI = async () => {
     )
 
     // ---------------------------------------------------------------
-    // map db nodes
-
-    // returns all games played
-    app.get('/api/games', (_, res) => {
-        server.getQueryResult(server.queryGames)
-            .then((games) => {
-                res.json({games});
-            });
-    });
+    // Historical Game Data (and Utilities)
 
     // returns all user/agent ids
     app.get('/api/agents', (_, res) => {
@@ -39,20 +31,16 @@ const runAPI = async () => {
             });
     });
 
-    // @TODO: returns all agents for a user
-    app.get('/api/agents-of-user', (req, res) => {
-        const { studentNumber } = req.query;
-        server.getQueryResult(server.queryAgents, {studentNumber})
-            .then((agents) => {
-                res.json({agents});
+    // returns all games played
+    app.get('/api/games', (_, res) => {
+        server.getQueryResult(server.queryGames)
+            .then((games) => {
+                res.json({games});
             });
     });
 
-    // ---------------------------------------------------------------
-    // get historical game data
-
     // return all games for a given user
-    app.get('/api/user-games', (req, res) => {
+    app.get('/api/agent-games', (req, res) => {
         const { agentId } = req.query;
         server.getQueryResult(server.queryGames, { agentIds: agentId })
             .then((games) => {
@@ -60,38 +48,15 @@ const runAPI = async () => {
             });
     });
 
-    // @TODO: returns last x games for a given user
-    app.get('/api/user-recent-games', (req, res) => {
-        const { agentId, lookbehind } = req.query;
-        res.json();
-    });
-
-    // @TODO: returns last x games played by a bot
-    app.get('/api/user-recent-games', (req, res) => {
-        const { lookbehind } = req.query;
-        res.json();
-    });
-
-    // @TODO: returns all bot games
-    app.get('/api/bot-games', (req, res) => {
-        res.json();
-    });
-
-    // @TODO: returns all games for an agent
-    app.get('/api/agent-games', (req, res) => {
-        const { studentNumber } = req.query;
-        res.json();
-    });
-
     // ---------------------------------------------------------------
-    // game statistics: batch
+    // Statistics (batch)
     // if no agents have played sufficient games this returns an empty list 
-    // @TODO: after tournament system we should have a ranking API as well
+    // @TODO: after tournament system we can look into rankings as well?
 
     // @TODO: all agents sorted by winrate
     // @TODO: bots flag to specify whether only bots should return
     app.get('/api/top-winrate', (_, res) => {
-        server.queryTopWinrate()
+        server.getQueryResult(server.queryTopWinrate)
             .then((winrate) => {
                 res.json({ winrate })
             });
@@ -100,7 +65,7 @@ const runAPI = async () => {
     // @TODO: all agents sorted by who's improved the most
     // @TODO: bots flag to specify whether only bots should return
     app.get('/api/most-improved', (_, res) => {
-        server.queryMostImproved()
+        server.getQueryResult(server.queryMostImproved)
             .then((improvement) => {
                 res.json({ improvement })
             });
@@ -109,8 +74,8 @@ const runAPI = async () => {
     // @TODO: all the agents sorted by who's improving the quickest
     // @TODO: bots flag to specify whether only bots should return
     app.get('/api/most-improving', (_, res) => {
-        // @TODO: query for this and implement it
-        server.queryMostImproved()
+        // @TODO: implement the correct query for this
+        server.getQueryResult(server.queryMostImproved)
             .then((improvement) => {
                 res.json({ improvement })
             });
