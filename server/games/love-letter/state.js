@@ -132,7 +132,7 @@ class State {
      * @throws IllegalActionException if any of these conditions hold.
      **/      
     isLegalAction(a, t, c, drawn) {
-        if (this.hand[a] != c && drawn != c) {
+        if (this.hand[a].name != c.name && drawn.name != c.name) {
             throw new Error("Player does not hold the played card")
         }
         if (this.nextPlayer[0] != a) {
@@ -178,8 +178,6 @@ class State {
             } catch { return false }
         }
         try {
-            console.log(act)
-            console.log(drawn)
             this.isLegalAction(act.player, act.target, act.card, drawn)
         } catch { return false }
         return true

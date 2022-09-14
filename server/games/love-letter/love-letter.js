@@ -91,7 +91,7 @@ class LoveLetter {
             
                     const timeout = setTimeout(() => {
                         this.resolve(null)
-                    }, 30000)
+                    }, 20000)
             
                     const action = await this.pending
                     clearTimeout(timeout)
@@ -105,6 +105,7 @@ class LoveLetter {
                         "(" + gameState.player[0] + ")\nRandom Move Substituted" + '\n')
                         this.randomAgent.newRound(gameState.playerState(gameState.getNextPlayer()))
                         act = this.randomAgent.playCard(topCard)
+                        console.log('random action', act)
                         this.stream.write(gameState.update(action, topCard) + '\n')
                     }
                     for (let i = 0; i < numPlayers; i++) { agents[i].see(act, playerStates[i]) }
