@@ -23,14 +23,18 @@ switch (process.argv[2]) {
     case 'tokens':
         const tokenFile = process.argv.length >= 3 && process.argv[3];
         if (tokenFile) {
-            const tokens = server.generateUserTokens(tokenFile);
+            const tokens = await server.generateUserTokens(tokenFile);
             console.log(tokens);
             process.exit(0);
         } else {
             help();
             process.exit(1);
         }
-        break;
+
+    case 'drop-db':
+        await server.deleteAll();
+        process.exit(0);
+
     case 'run-db-query':
         const queryName = process.argv.length >= 3 && process.argv[3];
         if (queryName) {

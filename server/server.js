@@ -50,9 +50,11 @@ export default class Server {
             this.queryMostImproved,
         ];
 
+        const timeoutDurationMilliseconds = 10_000;
+
         /** @type {DBSync} */
         this.dbSync = new DBSync();
-        await this.dbSync.start(batchQueries);
+        await this.dbSync.start(batchQueries, timeoutDurationMilliseconds);
     }
 
     /**
@@ -266,7 +268,7 @@ export default class Server {
      * @param {String} studentNumbersFilePath string containing the file path of the student numbers file
      * @returns {{studentNumber: String, authToken: String}[]} an array of objects with the last token generated at the last index
      */
-    generateUserTokens(studentNumbersFilePath) {
+    async generateUserTokens(studentNumbersFilePath) {
         let studentNumbersFileContent;
         try {
             studentNumbersFileContent = fs.readFileSync(studentNumbersFilePath)
@@ -281,7 +283,11 @@ export default class Server {
             .split('\n');
 
         const tokengen = new TokenGenerator();
-        return tokengen.computeStudentTokens(studentNumbers);
+        const studentData = tokengen.computeStudentTokens(studentNumbers);
+
+        for (const { studentNumber, authToken } of studentData) {
+            await this.createUser(studentNumber, authToken);
+        }
     }
 
     /**
@@ -314,9 +320,9 @@ export default class Server {
      */
      async queryAgents() {
         const res = await this.dbInstance.all('User')
-        return res.map((_, i) => {
+        const allUsers = res.map((_, i) => {
             const user = res.get(i);
-            const agentId = user.get('controls').endNode().get('id');
+            const agentId = user.get('controls')?.endNode()?.get('id');
             const { studentNumber } = user.properties();
 
             return {
@@ -324,6 +330,9 @@ export default class Server {
                 agentId,
             };
         });
+
+        const usersWithAgent = allUsers.filter(({ agentId }) => agentId);
+        return usersWithAgent;
     }
 
     /**
@@ -458,17 +467,5 @@ export default class Server {
         `);
 
         return res.records.map((record) => record.get('Agents'));
-    }
-
-    /**
-     * @TODO Nathan will overwrite this ig
-     */
-    async assignPlayerToLobby(userToken, numPlayers) {
-        const lobbyManager = this.lobbyManagers[numPlayers]; // Check numPlayers exists in obj;
-        lobbyManager.addPlayed(userToken);
-    }
-
-    async close() {
-        this.dbInstance.close();
     }
 }

@@ -21,10 +21,7 @@ export default class DBSync {
      * Takes a list of methods of server and recomputed their result every so often
      * @param {Function[]} batchQueries each function must evaluate to a list and be async
      */
-    async start(batchQueries) {
-        // Hardcoded to every 2 seconds for now
-        const timeoutDuration = 2000;
-
+    async start(batchQueries, timeoutDuration) {
         // Maps query names to query results
         this.queryMap = new Map();
         for (let queryFunction of batchQueries) {
