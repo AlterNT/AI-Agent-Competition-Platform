@@ -70,9 +70,9 @@ class API {
             res.json({getCard});
         })
 
-        // create action for player 
-        // redundant - can be included within the game logic server side 
-        // would require player to return a (card & target) pair for playCard rather that a action object 
+        // create action for player
+        // redundant - can be included within the game logic server side
+        // would require player to return a (card & target) pair for playCard rather that a action object
         app.get('/api/action/create', (req, res) => {
             const {agentToken, target, card, guess} = req.body
             const action = 0
