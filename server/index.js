@@ -17,7 +17,6 @@ const help = () => {
 
 const server = new Server();
 await server.init();
-
 const api = new API(server);
 
 switch (process.argv[2]) {
@@ -63,6 +62,7 @@ switch (process.argv[2]) {
         process.exit(0);
 
     case 'load-test-data':
+        console.log('Loading test data')
         await server.loadTestData();
         process.exit(0);
 
