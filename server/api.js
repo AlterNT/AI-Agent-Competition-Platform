@@ -13,8 +13,9 @@ const __dirname = dirname(__filename)
 const PORT = 8080
 
 class API {
-    constructor() {
+    constructor(server) {
         this.lobbyManager = new LobbyManager()
+        this.server = server
     }
 
     run() {
@@ -26,15 +27,124 @@ class API {
         )
 
 
-        // GET ENDPOINTS
-        // ----------------------------------------------------------------------------
-        app.get('/api/games', (req, res) => {
-            const gamesDIR = path.join(__dirname + '/games')
-            const games = fs.readdirSync(gamesDIR)
+        // ---------------------------------------------------------------
+        // Historical Game Data (and Utilities)
 
-            res.json(games)
+        // returns all user/agent ids
+        app.get('/api/agents', (_, res) => {
+            this.server.getQueryResult(this.server.queryAgents)
+                .then((agents) => {
+                    res.json({agents});
+                });
+        });
+
+        // returns all bot agents
+        app.get('/api/bots', (_, res) => {
+            this.server.getQueryResult(this.server.queryAgents, { studentNumber: this.Server.defaultAgentToken })
+                .then((bots) => {
+                    res.json({bots});
+                });
+        });
+
+        // returns all games played
+        app.get('/api/games', (_, res) => {
+            this.server.getQueryResult(this.server.queryGames)
+                .then((games) => {
+                    res.json({games});
+                });
+        });
+
+        // return all games for a given user
+        app.get('/api/agent-games', (req, res) => {
+            const { agentId } = req.query;
+            this.server.getQueryResult(this.server.queryGames, { agentScores: agentId })
+                .then((games) => {
+                    res.json({games});
+                });
+        });
+
+        // ---------------------------------------------------------------
+        // Statistics (batch)
+        // if no agents have played sufficient games this returns an empty list
+        // @TODO: after tournament system we can look into rankings as well?
+
+        // all agents sorted by winrate
+        app.get('/api/top-winrate', (_, res) => {
+            this.server.getQueryResult(this.server.queryTopWinrate)
+                .then((winrate) => {
+                    res.json({ winrate })
+                });
+        });
+
+        // all agents sorted by which improved the most since its first game
+        app.get('/api/most-improved', (_, res) => {
+            this.server.getQueryResult(this.server.queryMostImproved)
+                .then((improvement) => {
+                    res.json({ improvement })
+                });
+        });
+
+        // all the agents sorted by which improved the most in its past few games
+        app.get('/api/most-improving', (_, res) => {
+            // @TODO: implement the correct query for this
+            this.server.getQueryResult(this.server.queryMostImproved)
+                .then((improvement) => {
+                    res.json({ improvement })
+                });
+        });
+
+        // ---------------------------------------------------------------
+        // game statistics: single agent
+        // @TODO: implement by reusing cached batch query results
+
+        // winrate of given agent
+        // returns null if not enough games played
+        app.get('/api/winrate', (req, res) => {
+            const { agentId } = req.query;
+            this.server.getQueryResult(this.server.queryTopWinrate, {agentId})
+                .then((winrateArray) => {
+                    const winrate = winrateArray?.[0] || null;
+                    res.json({ winrate })
+                });
+        });
+
+        // improvement of agent since its first game
+        // returns null if not enough games played
+        app.get('/api/improvement', (req, res) => {
+            const { agentId } = req.query;
+            this.server.getQueryResult(this.server.queryMostImproved, {agentId})
+                .then((improvementArray) => {
+                    const improvement = improvementArray?.[0] || null;
+                    res.json({ improvement })
+                });
+        });
+
+        // improvement of agent in its recent few games
+        // returns null if not enough games played
+        app.get('/api/improvement-rate', (req, res) => {
+            const { agentId } = req.query;
+            this.server.getQueryResult(this.server.queryMostImproved, {agentId})
+                .then((improvementArray) => {
+                    const improvement = improvementArray?.[0] || null;
+                    res.json({ improvement })
+                });
+        });
+
+        // ---------------------------------------------------------------
+        // lobby management
+
+        // @TODO: this should be a POST
+        app.get('/client/join/:lobby', (req, _) => {
+            const lobbyId = parseInt(req.params.lobby);
+            const {token, ...options} = req.query;
+            console.log(`Agent ${token} attempting to join lobby ${lobbyId === -1 ? '(auto)' : lobbyId}`);
+            this.server.lobbyManager.joinLobby(lobbyId, token, options);
         })
 
+
+        // GET ENDPOINTS
+        // Specifically for gamestate, turn, and methods
+        // ----------------------------------------------------------------------------
         app.get('/api/state', (req, res) => {
             const { agentToken } = req.query
             res.json({ gamestate: "gamestate" })

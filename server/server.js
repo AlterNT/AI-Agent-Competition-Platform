@@ -51,8 +51,8 @@ export default class Server {
     }
 
     async loadTestData() {
-        const numAgents = 100;
-        const gamesPerAgent = 20;
+        const numAgents = 8;
+        const gamesPerAgent = 2;
         const agentsPerGame = 4;
         const numGames = numAgents * gamesPerAgent;
 
