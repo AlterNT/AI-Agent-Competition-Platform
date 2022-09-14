@@ -1,4 +1,5 @@
 import Card from './card.js'
+import Action from './action.js'
 
 /**
  * This class represents the observable state of the game.
@@ -170,7 +171,15 @@ class State {
      **/ 
     legalAction(act, drawn) {
         if (act === null) { return false }
+        if (!act.card) {
+            try {
+                act = Action[act.action](...act.params)
+                drawn = new Card(drawn.value, drawn.name, drawn.count)
+            } catch { return false }
+        }
         try {
+            console.log(act)
+            console.log(drawn)
             this.isLegalAction(act.player, act.target, act.card, drawn)
         } catch { return false }
         return true

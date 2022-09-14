@@ -15,12 +15,12 @@ class LobbyManager {
     }
 
     joinLobby(agentToken, gameID) {
-        const currentGame =  this.gameMap[agentToken];
+        const currentGame =  this.gameMap[agentToken]
         if (currentGame) {
             if (!currentGame.result) {
                 return false;
             } else {
-                delete this.gameMap[agentToken];
+                delete this.gameMap[agentToken]
             }
         }
         // console.log('???', agentToken, gameID)
@@ -31,7 +31,7 @@ class LobbyManager {
 
         const previousAllocation = this.lobbyMap[agentToken]
         if (previousAllocation) {
-            previousAllocation.removeAgent(agentToken);
+            previousAllocation.removeAgent(agentToken)
         }
 
         const lobby = this.lobbies[gameID];
@@ -40,20 +40,18 @@ class LobbyManager {
         this.lobbyMap[agentToken] = lobby
 
         if (lobby.agents.length === lobby.gameSettings.maxPlayers) {
-            const game = lobby.startGame();
-            console.log('Starting!', lobby.agents);
+            const game = lobby.startGame()
+            console.log('Starting!', lobby.agents)
             for (const agent of lobby.agents) {
-                this.gameMap[agent] = game;
+                this.gameMap[agent] = game
             }
             lobby.agents.forEach((token) => {
                 delete this.lobbyMap[token];
             })
-            delete this.lobbies[gameID];
+            delete this.lobbies[gameID]
         }
 
-        console.log(this.lobbies)
-
-        return success;
+        return success
     }
 
     action(agentToken, action) {

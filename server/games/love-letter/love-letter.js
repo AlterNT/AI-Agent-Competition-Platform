@@ -16,7 +16,7 @@ class LoveLetter {
      * @param stream a iostream to record the events of the game
      **/
     constructor(agents, seed=0, stream=process.stdout) {
-        this.agents = agents = [
+        this.agents = [
             new RandomAgent(agents[0], seedrandom(0)), 
             new RandomAgent(agents[1], seedrandom(1)), 
             new RandomAgent(agents[2], seedrandom(2)), 
@@ -30,7 +30,14 @@ class LoveLetter {
         this.promise = null
         this.resolve = null
 
+        this.turn = null
         this.topCard = null
+        this.indexMap = {}
+        agents.forEach((token, i) => this.indexMap[token] = i)       
+    }
+
+    getPlayerIndexInitial(agentToken) {
+        return this.indexMap[agentToken]
     }
 
     /**
@@ -45,7 +52,7 @@ class LoveLetter {
 
         const timeout = setTimeout(() => {
             this.resolve(null)
-        }, 3000)
+        }, 10000)
 
         const move = await this.pending
         clearTimeout(timeout)
@@ -77,8 +84,19 @@ class LoveLetter {
                     const topCard = gameState.drawCard()
                     this.topCard = topCard
                     console.log("Player " + gameState.getNextPlayer() + " draws the " + topCard.name + " card.")
-                    let action = await this.awaitEvent()
-                    console.log(action)
+                    this.turn = this.agents[gameState.getNextPlayer()].name
+                    this.pending = new Promise((resolve) => {
+                        this.resolve = resolve
+                    })
+            
+                    const timeout = setTimeout(() => {
+                        this.resolve(null)
+                    }, 30000)
+            
+                    const action = await this.pending
+                    clearTimeout(timeout)
+            
+                    // let action = await this.awaitEvent()
                     let act = Action[action.action](...action.params)
                     try {
                         this.stream.write(gameState.update(act, topCard) + '\n')
@@ -105,9 +123,9 @@ class LoveLetter {
         }
     }
 
-    main() {
-        this.playGame(this.agents)
-        const results = this.stream.write("The final scores are: \n")
+    async main() {
+        const results = await this.playGame(this.agents)
+        this.stream.write("The final scores are: \n")
         for (const i in this.agents) {
             this.stream.write("\t Agent "+i+", \""+this.agents[i]+"\":\t "+results[i]+"\n")
         }

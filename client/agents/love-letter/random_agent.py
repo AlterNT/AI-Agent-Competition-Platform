@@ -7,55 +7,59 @@ class RandomAgent:
         self.agentIO = AgentIO(token)
         self.token = token
         self.state = None
-        self.index = None
+        
+    def initialiseState(self):
+        index = self.agentIO.getPlayerIndexInitial()
+        self.state = self.agentIO.getState(index)
         
     def getState(self):
-        self.state = self.agentIO.getState()
+        self.state = self.agentIO.getState(self.state['player'])
     
     def playCard(self):
         self.getState()
+        player_index = self.state['player']
         card = self.agentIO.getTopCard()
         action = None
         play = None
-        while not self.agentIO.legalAction(action, card):
-            play = random.choice(card, self.agentIO.getCard(self.index))
+        while not self.agentIO.legalAction(player_index, action, card):
+            play = random.choice([card, self.agentIO.getCard(player_index)])
             target = random.randrange(0, self.state['num'])
             try:
-                if play == 'GUARD':
-                    guess = random.choice(['GUARD', 'PRIEST', 'BARON', 'HANDMAID', 'PRINCE', 'KING', 'COUNTESS'])
+                if play['name'] == 'Guard':
+                    guess = random.choice(['Guard', 'Priest', 'Baron', 'Handmaid', 'Prince', 'King', 'Countess'])
                     action = {
                         'action': 'playGuard',
-                        'params': [target, guess]
+                        'params': [player_index, target, guess]
                     }
-                if play == 'PRIEST':
+                elif play['name'] == 'Priest':
                     action = {
                         'action': 'playPriest',
-                        'params': [target]
+                        'params': [player_index, target]
                     }
-                if play == 'BARON':
+                elif play['name'] == 'Baron':
                     action = {
                         'action': 'playBaron',
-                        'params': [target]
+                        'params': [player_index, target]
                     }
-                if play == 'HANDMAID':
+                elif play['name'] == 'Handmaid':
                     action = {
                         'action': 'playHandmaid',
-                        'params': []
+                        'params': [player_index]
                     }
-                if play == 'PRINCE':
+                elif play['name'] == 'Prince':
                     action = {
                         'action': 'playPrince',
-                        'params': [target]
+                        'params': [player_index, target]
                     }
-                if play == 'KING':
+                elif play['name'] == 'King':
                     action = {
                         'action': 'playKing',
-                        'params': [target]
+                        'params': [player_index, target]
                     }
-                if play == 'COUNTESS':
+                elif play['name'] == 'Countess':
                     action = {
                         'action': 'playCountess',
-                        'params': []
+                        'params': [player_index]
                     }
                 else:
                     action = None
@@ -75,12 +79,14 @@ def main():
         
             while True: # wait for turn
                 is_turn = agent.agentIO.is_turn()
-                print(is_turn)
                 time.sleep(1)
                 
                 if is_turn:
                     break
             
+            if agent.state == None:
+                agent.initialiseState()
+                
             agent.playCard()
         
         time.sleep(1)

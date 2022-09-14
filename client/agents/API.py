@@ -38,13 +38,13 @@ class API:
                 'method': method,
                 'params': params
             })
-            return response.json()
+            return response.json()['data']
         except requests.exceptions.ConnectionError:
             raise requests.exceptions.ConnectionError
     
     def is_turn(self):
         try:
-            response = requests.get(self.server_path('api/turn'), json={
+            response = requests.get(self.server_path('api/turn'), params={
                 'agentToken': self.agentToken
             })
             return response.json().get('turn', False)

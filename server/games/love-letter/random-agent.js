@@ -20,6 +20,12 @@ class RandomAgent {
         this.state = state
     }
 
+    getState() {
+        const agentState = {...this.state}
+        delete agentState.agents
+        return agentState
+    }
+
     playCard(card) {
         let action = null
         let play = null

@@ -21,12 +21,12 @@ class AgentIO(API):
         # unseenCards
         # score
         
-    def legalAction(self, action, drawn):
-        response = self.request_method(['agents', self.agentToken, 'state'], 'legalAction', [action, drawn])
+    def legalAction(self, player_index, action, drawn):
+        response = self.request_method(['agents', player_index, 'state'], 'legalAction', [action, drawn])
         return response
         
     def getCard(self, player_index):
-        response = self.request_method(['agents', self.agentToken, 'state'], 'getCard', [player_index])
+        response = self.request_method(['agents', player_index, 'state'], 'getCard', [player_index])
         return response
     
     def getPlayerIndex(self):
@@ -53,8 +53,12 @@ class AgentIO(API):
         response = self.request_method([], 'getTopCard', [])
         return response
     
-    def getState(self):
-        response = self.request_method(['agents', self.agentToken, 'state'], 'getState', [])
+    def getState(self, player_index):
+        response = self.request_method(['agents', player_index], 'getState', [])
+        return response
+    
+    def getPlayerIndexInitial(self):
+        response = self.request_method([], 'getPlayerIndexInitial', [self.agentToken])
         return response
     
     def score():

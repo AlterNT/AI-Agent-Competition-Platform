@@ -52,7 +52,7 @@ class API {
             res.json({ data })
         })
 
-        // GET ENPOINTS
+        // GET ENDPOINTS
         // Specifically for accessing State, Action and Card Modal.
         // ----------------------------------------------------------------------------
 
@@ -74,9 +74,9 @@ class API {
         // redundant - can be included within the game logic server side 
         // would require player to return a (card & target) pair for playCard rather that a action object 
         app.get('/api/action/create', (req, res) => {
-            const {agentToken, target, card, guess} = req.body;
-            const action = 0;
-            res.json({action});
+            const {agentToken, target, card, guess} = req.body
+            const action = 0
+            res.json({action})
         })
 
         // POST ENDPOINTS
@@ -88,9 +88,8 @@ class API {
         })
 
         app.post('/api/action', (req, res) => {
-            const { agentToken, action } = req.body;
-            console.log(`!!!${action}`)
-            this.lobbyManager.action(agentToken, action);
+            const { agentToken, action } = req.body
+            this.lobbyManager.action(agentToken, action)
             res.json({ success: true })
         })
     }
