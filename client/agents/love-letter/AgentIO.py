@@ -9,17 +9,8 @@ from API import API
 class AgentIO(API):
     def join_lobby(self):
         return super().join_lobby('love-letter')
-        
-    # Below is a list of all possible calls a user can make from the client end on the state object.
-        # legalaction 
-        # getCard
-        # getPlayerIndex
-        # eliminated
-        # getNextPlayer
-        # name
-        # decksize
-        # unseenCards
-        # score
+
+    # love letter methods used by agent
         
     def legalAction(self, player_index, action, drawn):
         response = self.request_method(['agents', player_index, 'state'], 'legalAction', [action, drawn])
@@ -33,21 +24,7 @@ class AgentIO(API):
         response = self.request_method(['agents', self.agentToken, 'state'], 'getPlayerIndex', [])
         return response
     
-    def eliminated(self, player):
-        response = self.request_method(['agents', self.agentToken, 'state'], 'eliminated', [player])
-        return response
-    
-    def name(self, player_index):
-        response = self.request_method(['agents', self.agentToken, 'state'], 'name', [player_index])
-        return response
-    
-    def decksize(self):
-        response = self.request_method(['agents', self.agentToken, 'state'], 'decksize', [])
-        return response
-    
-    def unseenCards(self):
-        response = self.request_method(['agents', self.agentToken, 'state'], 'unseenCards', [])
-        return response
+    # extra methods added to love-letter game to work
     
     def getTopCard(self):
         response = self.request_method([], 'getTopCard', [])
