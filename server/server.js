@@ -3,33 +3,16 @@ import fs from 'fs';
 import Neode from 'neode';
 
 import Models from './models/index.js';
-import LobbyManager from './lobby-manager.js';
-import GameManager from './game-manager.js';
-import Game from './game/game.js';
-import PaperScissorsRock from './game/psr.js';
 import TokenGenerator from './token-generator.js';
-import 'process';
 import DBSync from './db-sync.js';
+import 'process';
 
 export default class Server {
     /** @type {Server} */
     static instance;
 
-    /** @type {LobbyManager} */
-    lobbyManager = new LobbyManager();
-    /** @type {GameManager} */
-    gameManager = new GameManager();
-
     /** @type {[String]} */
     static defaultAgentToken = '00000000';
-
-
-    //TODO? How will this work. Config file?
-    /** @type {[String]} */
-    games;
-
-    /** @type {typeof Game}} */
-    Game = PaperScissorsRock;
 
     constructor() {
         if (Server.instance) {
