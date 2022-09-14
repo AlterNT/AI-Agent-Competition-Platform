@@ -34,9 +34,9 @@ class Lobby {
         }
 
         if (this.gameID == 'love-letter') {
-            game = new LoveLetter(this.agents) 
+            game = new LoveLetter(this.agents)
         }
-        
+
         game.main()
         return game
     }
