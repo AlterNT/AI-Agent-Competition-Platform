@@ -1,12 +1,15 @@
 from AgentIO import AgentIO
 import random
 import time
+import sys
 
 class RandomAgent:
     def __init__(self, token):
         self.agentIO = AgentIO(token)
         self.token = token
         self.state = None
+
+        print(f'Starting agent with token: {self.token}')
         
     def initialiseState(self):
         index = self.agentIO.getPlayerIndexInitial()
@@ -69,7 +72,7 @@ class RandomAgent:
         self.agentIO.send_action(action)
     
 def main():
-    token = f'token{random.randrange(1000)}'
+    token = len(sys.argv) > 1 and sys.argv[1] or f'token{random.randrange(1000)}'
     agent = RandomAgent(token)
 
     while True: # multiple games

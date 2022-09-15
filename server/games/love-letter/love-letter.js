@@ -1,6 +1,7 @@
 import State from "./state.js"
 import RandomAgent from './random-agent.js'
 import Action from './action.js'
+import Server from "../../server.js";
 
 import seedrandom from 'seedrandom'
 
@@ -128,8 +129,16 @@ class LoveLetter {
         const results = await this.playGame(this.agents)
         this.stream.write("The final scores are: \n")
         for (const i in this.agents) {
-            this.stream.write("\t Agent "+i+", \""+this.agents[i]+"\":\t "+results[i]+"\n")
+            this.stream.write("\t Agent "+i+", \"" + this.agents[i]+"\":\t " + results[i]+"\n")
         }
+
+        const scores = {};
+        this.agents.forEach(({ name }, i) => {
+            scores[name] = results[i];
+        });
+
+        const server = Server.instance;
+        await server.recordGame(scores)
     }
 }
 

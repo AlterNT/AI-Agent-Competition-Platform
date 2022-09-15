@@ -232,7 +232,7 @@ export default class Server {
         const game = await this.createGameNode();
 
         const relationMappings = [];
-        for (let [ userToken, score ] of Object.entries(gameOutcome)) {
+        for (const [ userToken, score ] of Object.entries(gameOutcome)) {
             // Might need score to be set
             const agent = await this.getUserAgent(userToken);
             const agentRelation = agent.relateTo(game, 'playedIn', { score });
@@ -269,8 +269,10 @@ export default class Server {
         const studentData = tokengen.computeStudentTokens(studentNumbers);
 
         for (const { studentNumber, authToken } of studentData) {
-            await this.createUser(studentNumber, authToken);
+            await this.createUserAndAgent(studentNumber, authToken);
         }
+
+        return studentData;
     }
 
     /**

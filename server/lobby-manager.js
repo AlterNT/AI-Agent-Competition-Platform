@@ -23,7 +23,7 @@ class LobbyManager {
                 delete this.gameMap[agentToken]
             }
         }
-        // console.log('???', agentToken, gameID)
+
         // checks if there is a lobby for this game and creates one if there isnt
         if (this.lobbies[gameID] == undefined) {
             this.createLobby(gameID)
