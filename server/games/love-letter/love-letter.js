@@ -34,6 +34,7 @@ class LoveLetter {
         this.turn = null
         this.topCard = null
         this.indexMap = {}
+        this.result = null
         agents.forEach((token, i) => this.indexMap[token] = i)       
     }
 
@@ -126,19 +127,23 @@ class LoveLetter {
     }
 
     async main() {
-        const results = await this.playGame(this.agents)
+        this.result = await this.playGame(this.agents)
         this.stream.write("The final scores are: \n")
         for (const i in this.agents) {
-            this.stream.write("\t Agent "+i+", \"" + this.agents[i]+"\":\t " + results[i]+"\n")
+            this.stream.write("\t Agent "+i+", \"" + this.agents[i]+"\":\t " + this.result[i]+"\n")
         }
 
         const scores = {};
         this.agents.forEach(({ name }, i) => {
-            scores[name] = results[i];
+            scores[name] = this.result[i];
         });
 
         const server = Server.instance;
         await server.recordGame(scores)
+    }
+
+    finished() {
+        return { finished: !!this.result }
     }
 }
 
