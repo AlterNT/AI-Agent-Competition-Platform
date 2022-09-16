@@ -1,4 +1,5 @@
 import Lobby from './lobby.js';
+import Server from './server.js';
 
 const MAX_PLAYERS = 4
 
@@ -14,7 +15,12 @@ class LobbyManager {
         this.lobbies[gameID] = lobby
     }
 
-    joinLobby(agentToken, gameID) {
+    async joinLobby(agentToken, gameID) {
+        const eligibility = await Server.instance.isUserEligibleToPlay(agentToken)
+        if (!eligibility) {
+            return false;
+        }
+
         const currentGame =  this.gameMap[agentToken]
         if (currentGame) {
             if (!currentGame.result) {

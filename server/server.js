@@ -221,7 +221,11 @@ export default class Server {
      * @return {Boolean}
      */
     async isUserEligibleToPlay(userToken) {
-        return !!await this.getUserAgent(userToken);
+        const user = await this.dbInstance.find(
+            'User', userToken
+        );
+
+        return !!user && !!await this.getUserAgent(userToken);
     }
 
     /**

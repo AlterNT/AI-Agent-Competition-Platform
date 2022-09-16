@@ -17,7 +17,7 @@ const help = () => {
 
 const server = new Server();
 await server.init();
-const api = new API(server);
+const api = new API();
 
 switch (process.argv[2]) {
     case 'tokens':
