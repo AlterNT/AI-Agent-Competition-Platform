@@ -47,6 +47,16 @@ class API {
                 });
         });
 
+        // returns a single game
+        // TODO: update docs
+        app.get('/api/game', (req, res) => {
+            const { gameId } = req.query;
+            Server.instance.getQueryResult(Server.instance.queryGames, { id: gameId })
+                .then((games) => {
+                    res.json({games});
+                });
+        });
+
         // return all games for a given user
         app.get('/api/agent-games', (req, res) => {
             const { agentId } = req.query;
