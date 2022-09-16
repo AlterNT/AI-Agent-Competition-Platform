@@ -33,7 +33,7 @@ export default class Server {
             this.queryMostImproved,
         ];
 
-        const timeoutDurationMilliseconds = 10_000;
+        const timeoutDurationMilliseconds = 4_000;
 
         /** @type {DBSync} */
         this.dbSync = new DBSync();
