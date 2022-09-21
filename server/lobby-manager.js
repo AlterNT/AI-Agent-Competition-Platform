@@ -19,7 +19,7 @@ class LobbyManager {
      * @param {String} lobbyID 
      * @returns {Boolean} If the user successfully joined a lobby.
      */
-    async joinLobby(agentToken, lobbyID, gameID) {
+    async joinLobby(agentToken, gameID, lobbyID = 0) {
         // Denies a player joining a lobby until their current game is over.
         const eligibility = await Server.instance.isUserEligibleToPlay(agentToken)
         if (!eligibility) {
@@ -33,19 +33,6 @@ class LobbyManager {
             } else {
                 delete this.gameMap[agentToken];
             }
-        }
-
-        // Automatically allocate a numeric lobby if requested ID is 'auto'.
-        if (lobbyID === 'auto') {
-            let freeID = 0;
-            while (
-                freeID in this.lobbies && 
-                this.lobbies[freeID].gameSettings.maxPlayers === this.lobbies[freeID].tokens.length
-                // TODO: && (lobby not private)
-                ) { 
-                freeID++; 
-            }
-            lobbyID = freeID;
         }
 
         // Checks if the provided lobbyID exists and creates a new lobby if there isn't.

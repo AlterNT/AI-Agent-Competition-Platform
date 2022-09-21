@@ -1,39 +1,4 @@
-undefined (2)
-Player undefined (2) discards the Guard.
-
-
-
-undefined (0)
-Player undefined (0) discards the Baron.
-
-undefined (2)
-Player undefined (2) does not have the Guard.
-
 undefined (3)
-Player undefined (3) does not have the Baron.
-
-undefined (3)
-Player undefined (2) and player undefined (3) swap cards.
-
-undefined (1)
-Player undefined (1) does not have the Prince.
-
-undefined (2)
-Player undefined (0) sees player undefined (2)'s card.
-
-Player 3 wins the round.
-undefined (1)
-Player undefined (1) does not have the Prince.
-
-undefined (1)
-Player undefined (1) does not have the Baron.
-
-undefined (3)
-Player undefined (1) holds the lesser card: Priest, and is eliminated.
-
-
-
-undefined (2)
-Player undefined (2) is protected by the Handmaid.
+Player undefined (3) discards the Prince.
 
 
