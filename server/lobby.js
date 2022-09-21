@@ -12,8 +12,6 @@ class Lobby {
     gameID = Server.instance.config.currentGame;
     /** @type {{}} Settings of current game. */
     gameSettings = Server.instance.config.games[this.gameID].settings;
-    /** @type {typeof(IGame)} The current game to be run. */
-    Game;
 
     /**
      * Adds agent tokens if they aren't already in the lobby.
@@ -32,20 +30,25 @@ class Lobby {
         this.tokens = this.tokens.filter((token) => token !== agentToken);
     }
 
-    gameSettings() {
-        const gameSettings = JSON.parse(fs.readFileSync(`./games/${this.gameID}/settings.json`));
-        return gameSettings;
-    }
-
     async startGame() {
-        this.Game = (await import(`./games/${Server.instance.config.games[this.gameID].path}`)).default;
-        let agents = []
-        // TODO: Stub.
-        for (let token in this.tokens) {
-            agents.push(new this.Game.Bot(token))
+        let gameClass = (await import(`./games/${Server.instance.config.games[this.gameID].path}`)).default;
+        let agents = [];
+
+        // Agent Proxy for logging.
+        for (let token of this.tokens) {
+            agents.push(new Proxy(
+                new gameClass.Agent(token),
+                {
+                    apply: (methodName, _, args) => {
+                        //TODO: EVENT SYSTEM.
+                    }
+                }
+            ));
         }
 
-        return new this.Game(agents);
+        let game = new gameClass(agents, 0, fs.createWriteStream('./test.txt'));
+        game.playGame();
+        return game;
     }
 }
 

@@ -45,7 +45,7 @@ class LoveLetter extends IGame {
         this.topCard = null
         this.indexMap = {}
         this.result = null
-        agents.forEach((token, i) => this.indexMap[token] = i)       
+        agents.forEach((agent, i) => this.indexMap[agent.token] = i)       
     }
 
     getPlayerIndexInitial(agentToken) {
@@ -78,18 +78,17 @@ class LoveLetter extends IGame {
 
     /**
      * Plays a game of LoveLetter.
-     * @param agents The players in the game.
      * @return Scores of each agent as an array of integers.
      **/
-    async playGame(agents) {
-        const numPlayers = agents.length;
-        const gameState = new State(this.random, agents);
+    async playGame() {
+        const numPlayers = this.agents.length;
+        const gameState = new State(this.random, this.agents);
         const playerStates = [];
         try {
             while (!gameState.gameOver()) {
                 for (let i = 0; i < numPlayers; i++) {
                     playerStates[i] = gameState.playerState(i);
-                    agents[i].newRound(playerStates[i]);
+                    this.agents[i].newRound(playerStates[i]);
                 }
                 while (!gameState.roundOver()) {
                     console.log(`Cards are:
@@ -100,24 +99,16 @@ player 3: ${JSON.stringify(gameState.getCard(3))}`);
                     const topCard = gameState.drawCard();
                     this.topCard = topCard;
                     console.log(`Player ${gameState.getNextPlayer()} draws the ${topCard.name} card.`);
-                    this.turn = this.agents[gameState.getNextPlayer()].name;
-                    this.pending = new Promise((resolve) => {
-                        this.resolve = resolve;
-                    });
+                    
+                    this.turn = this.agents[gameState.getNextPlayer()].token;
+                    console.log(this.turn);
 
-                    const timeout = setTimeout(() => {
-                        this.resolve(null);
-                    }, 20000);
-
-                    const action = await this.pending;
-                    clearTimeout(timeout);
-
-                    // let action = await this.awaitEvent()
+                    const action = await this.awaitEvent()
                     let act = Action[action.action](...action.params);
                     try {
                         this.stream.write(gameState.update(act, topCard) + '\n');
                     } catch {
-                        this.stream.write(`Illegal action performed by player ${agents[gameState.getNextPlayer()]} (${gameState.player[0]}).
+                        this.stream.write(`Illegal action performed by player ${this.agents[gameState.getNextPlayer()]} (${gameState.player[0]}).
 Random Move Substituted.
 `);
                         this.randomAgent.newRound(gameState.playerState(gameState.getNextPlayer()));
@@ -125,7 +116,7 @@ Random Move Substituted.
                         console.log('Random action.', act);
                         this.stream.write(gameState.update(action, topCard) + '\n');
                     }
-                    for (let i = 0; i < numPlayers; i++) { agents[i].see(act, playerStates[i]); }
+                    for (let i = 0; i < numPlayers; i++) { this.agents[i].see(act, playerStates[i]); }
                 }
                 console.log(`New round, scores are:
                 

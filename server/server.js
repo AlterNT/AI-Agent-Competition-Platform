@@ -27,7 +27,9 @@ export default class Server {
         }
     }).search().config;
 
+    /** @type {API} */
     api = new API();
+    /** @type {LobbyManager} */
     lobbyManager = new LobbyManager();
 
     constructor() {

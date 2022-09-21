@@ -1,9 +1,6 @@
 import Lobby from './lobby.js';
 import Server from './server.js';
 
-// TODO: Unify game definition. This should be a game property.
-const MAX_PLAYERS = 4;
-
 class LobbyManager {
 
     /** @type {Object.<String, Lobby>} */
@@ -54,19 +51,17 @@ class LobbyManager {
 
         console.log(`Player ${agentToken} successfully joined ${lobbyID}! (${lobby.tokens.length}/${lobby.gameSettings.maxPlayers})`)
 
-        this.lobbyMap[agentToken] = lobby;
-
         // Starts the game once the lobby is full.
         if (lobby.tokens.length === lobby.gameSettings.maxPlayers) {
             const game = await lobby.startGame();
-            console.log('Starting!', lobby.tokens);
+
             for (const token of lobby.tokens) {
                 this.gameMap[token] = game;
             }
             lobby.tokens.forEach((token) => {
                 delete this.lobbyMap[token];
             })
-            delete this.lobbies[lobbyID];
+            delete this.lobbies[lobbyID]
         }
 
         return success;

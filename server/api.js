@@ -140,8 +140,8 @@ class API {
         });
 
         app.get('/api/method', (req, res) => {
-            const { agentToken, keys, method, params } = req.body
-            const data = this.lobbyManager.method(agentToken, keys, method, params)
+            const { agentToken, keys, method, params } = req.body;
+            const data = Server.instance.lobbyManager.runMethod(agentToken, keys, method, params);
             res.json({ data })
         })
 
@@ -153,7 +153,7 @@ class API {
                 .joinLobby(agentToken, lobbyID)
                 .then((success) => {
                     res.json({ success })
-                })
+                });
         })
 
         app.post('/api/action', (req, res) => {

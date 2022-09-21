@@ -9,12 +9,17 @@ class IGame {
     /** @type {typeof(IAgent)} SmartBot class to be instantiated */
     static SmartBot;
 
-    /** @type {IAgent} List of all agents playing. */
+    /** @type {IAgent[]} List of all agents playing. */
     agents;
     
     constructor(agents) {
         this.agents = agents;
     }
+
+    async playGame() {}
+
+    
+    
 }
 
 export default IGame;
