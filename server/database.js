@@ -260,12 +260,20 @@ class Database {
 
         const tokengen = new TokenGenerator();
         const studentData = tokengen.computeStudentTokens(studentNumbers);
+        const userData = [];
 
         for (const { studentNumber, authToken } of studentData) {
-            await this.createUserAndAgent(studentNumber, authToken);
+            const user = await this.dbInstance.find(
+                'User', studentNumber
+            );
+
+            if (!user) {
+                await this.createUserAndAgent(studentNumber, authToken);
+                userData.push({ studentNumber, authToken });
+            }
         }
 
-        return studentData;
+        return userData;
     }
 
     /**
