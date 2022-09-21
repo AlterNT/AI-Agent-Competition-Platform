@@ -34,7 +34,7 @@ async function main() {
 
     if (argv._[0] == 'tokens') {
         const tokens = await Database.generateUserTokens(argv.f);
-        console.log(tokens)
+        console.log('New Tokens Created:', tokens)
         process.exit(0)
     }
 }
