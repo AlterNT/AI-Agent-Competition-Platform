@@ -1,49 +1,51 @@
-import Agent from './agent.js'
+import Agent from './agent.js';
 
 const MOVES = {
     'PAPER': 1,
     'SCISSORS': 2,
     'ROCK': 3,
-}
+};
 
-class PaperScizzorsRock {
+export default class PaperScizzorsRock {
+
+    agentTokens;
+    moves = [];
+    turn = null;
+    result = null;
+    pending = null;
+    resolve = null;
+
     constructor(agentTokens) {
-        this.agents = agentTokens
-        this.moves = []
-        this.turn = null
-        this.result = null
-
-        this.pending = null
-        this.resolve = null
+        this.agents = agentTokens;
     }
 
     async awaitEvent() {
         this.pending = new Promise((resolve) => {
-            this.resolve = resolve
-        })
+            this.resolve = resolve;
+        });
 
         const timeout = setTimeout(() => {
-            this.resolve(null)
-        }, 3000)
+            this.resolve(null);
+        }, 3000);
 
-        const move = await this.pending
-        clearTimeout(timeout)
+        const move = await this.pending;
+        clearTimeout(timeout);
 
-        return move
+        return move;
     }
 
     async main() {
         for (const agent of this.agents) {
-            this.turn = agent
+            this.turn = agent;
             
-            const move = await this.awaitEvent()
+            const move = await this.awaitEvent();
 
             if (!move) {
-                this.result = `TIMED OUT: ${agent}`
-                break
+                this.result = `TIMED OUT: ${agent}`;
+                break;
             }
 
-            this.moves.push(move)
+            this.moves.push(move);
         }
 
         if (!this.result) {
@@ -53,27 +55,25 @@ class PaperScizzorsRock {
             const modulo = (move0 - move1 + 3) % 3;
             switch (modulo) {
                 case 0:
-                    this.result = 'DRAW'
-                    break
+                    this.result = 'DRAW';
+                    break;
                 case 1:
-                    this.result = `WINNER: ${this.agents[0]}`
-                    break
+                    this.result = `WINNER: ${this.agents[0]}`;
+                    break;
                 case 2:
-                    this.result = `WINNER: ${this.agents[1]}`
-                    break
+                    this.result = `WINNER: ${this.agents[1]}`;
+                    break;
             }
         }
 
-        console.log(this.result)
+        console.log(this.result);
     }
 
     finished() {
-        return { finished: !!this.result }
+        return { finished: !!this.result };
     }
 
     see() {
-        return { state: this.moves }
+        return { state: this.moves };
     }
 }
-
-export default PaperScizzorsRock

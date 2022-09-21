@@ -17,7 +17,6 @@ const help = () => {
 
 const server = new Server();
 await server.init();
-const api = new API();
 
 switch (process.argv[2]) {
     case 'tokens':
@@ -67,6 +66,5 @@ switch (process.argv[2]) {
         process.exit(0);
 
     default:
-        api.run();
         break;
 }

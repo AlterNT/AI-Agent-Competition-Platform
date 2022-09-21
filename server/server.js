@@ -1,9 +1,13 @@
 import 'process';
 import fs from 'fs';
 import Neode from 'neode';
+import { cosmiconfigSync } from 'cosmiconfig';
+import JSON5 from 'json5';
 
 import Models from './models/index.js';
 import TokenGenerator from './token-generator.js';
+import API from './api.js';
+import LobbyManager from './lobby-manager.js';
 import DBSync from './db-sync.js';
 import 'process';
 
@@ -14,6 +18,18 @@ export default class Server {
     /** @type {[String]} */
     static defaultAgentToken = '00000000';
 
+    config = cosmiconfigSync('config', {
+        searchPlaces: [
+            'config.json5'
+        ],
+        loaders: {
+            '.json5': (_, data) => JSON5.parse(data),
+        }
+    }).search().config;
+
+    api = new API();
+    lobbyManager = new LobbyManager();
+
     constructor() {
         if (Server.instance) {
             return Server.instance;
@@ -23,6 +39,7 @@ export default class Server {
     }
 
     async init() {
+        this.api.run();
         /** @type {Neode} */
         this.dbInstance = Neode.fromEnv().with(Models);
 

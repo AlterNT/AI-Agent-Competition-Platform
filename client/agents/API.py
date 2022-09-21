@@ -9,11 +9,11 @@ class API:
     def server_path(self, path):
         return f'{self.server_url}/{path}'
 
-    def join_lobby(self, gameID):
+    def join_lobby(self, lobbyID):
         try:
             response = requests.post(self.server_path('api/join'), json={
                 'agentToken': self.agentToken,
-                'gameID': gameID
+                'lobbyID': lobbyID
             })
             response_json = response.json()
             return response_json['success']

@@ -1,45 +1,52 @@
-import fs from 'fs'
-import PaperScissorsRock from './games/paper-scissors-rock/paper-scissors-rock.js'
-import LoveLetter from './games/love-letter/love-letter.js'
+import fs from 'fs';
+import PaperScissorsRock from './games/paper-scissors-rock/paper-scissors-rock.js';
+import LoveLetter from './games/love-letter/love-letter.js';
+import Server from './server.js';
+import IGame from './games/i-game.js';
 
 class Lobby {
-    constructor(gameID) {
-        this.gameID = gameID
-        this.agents = []
-        this.gameSettings = this.gameSettings(gameID)
-    }
 
+    /** @type {[String]} Array of agent tokens. */
+    tokens = [];
+    /** @type {String} ID of game. */
+    gameID = Server.instance.config.currentGame;
+    /** @type {{}} Settings of current game. */
+    gameSettings = Server.instance.config.games[this.gameID].settings;
+    /** @type {typeof(IGame)} The current game to be run. */
+    Game;
+
+    /**
+     * Adds agent tokens if they aren't already in the lobby.
+     * @param {String} agentToken All tokens to be added.
+     * @returns If the agent was added successfully.
+     */
     addAgent(agentToken) {
-        if (!this.agents.includes(agentToken)) {
-            this.agents.push(agentToken)
+        if (!this.tokens.includes(agentToken)) {
+            this.tokens.push(agentToken);
             return true;
         }
-
         return false;
     }
 
     removeAgent(agentToken) {
-        this.agents = this.agents.filter((token) => token !== agentToken);
+        this.tokens = this.tokens.filter((token) => token !== agentToken);
     }
 
     gameSettings() {
-        const gameSettings = JSON.parse(fs.readFileSync(`./games/${this.gameID}/settings.json`))
-        return gameSettings
+        const gameSettings = JSON.parse(fs.readFileSync(`./games/${this.gameID}/settings.json`));
+        return gameSettings;
     }
 
-    startGame() {
-        let game = null
-        if (this.gameID == 'paper-scissors-rock') {
-            game = new PaperScissorsRock(this.agents)
+    async startGame() {
+        this.Game = (await import(`./games/${Server.instance.config.games[this.gameID].path}`)).default;
+        let agents = []
+        // TODO: Stub.
+        for (let token in this.tokens) {
+            agents.push(new this.Game.Bot(token))
         }
 
-        if (this.gameID == 'love-letter') {
-            game = new LoveLetter(this.agents)
-        }
-
-        game.main()
-        return game
+        return new this.Game(agents);
     }
 }
 
-export default Lobby
+export default Lobby;

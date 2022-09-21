@@ -8,7 +8,7 @@ from API import API
 
 class AgentIO(API):
     def join_lobby(self):
-        return super().join_lobby('love-letter')
+        return super().join_lobby('1')
 
     # love letter methods used by agent
         

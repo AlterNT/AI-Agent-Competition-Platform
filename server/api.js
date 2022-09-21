@@ -7,17 +7,17 @@ import Server from './server.js'
 const PORT = 8080
 
 class API {
-    constructor() {
-        this.lobbyManager = new LobbyManager()
-    }
 
     run() {
+        let host = Server.instance.config.host;
+        let port = Server.instance.config.port;
+
         const app = express()
         app.use(bodyParser.json());
         app.listen(
-            PORT,
-            () => { console.log(`listening at http://localhost:${PORT}`) }
-        )
+            port,
+            () => { console.log(`Listening at http://${host}:${port}!`) }
+        );
 
 
         // ---------------------------------------------------------------
@@ -133,13 +133,11 @@ class API {
                 });
         });
 
-        // GET ENDPOINTS
-        // ----------------------------------------------------------------------------
         app.get('/api/turn', (req, res) => {
-            const { agentToken } = req.query
-            const turn = this.lobbyManager.isTurn(agentToken)
-            res.json({ turn })
-        })
+            const { agentToken } = req.query;
+            const turn = Server.instance.lobbyManager.isTurn(agentToken);
+            res.json({ turn });
+        });
 
         app.get('/api/method', (req, res) => {
             const { agentToken, keys, method, params } = req.body
@@ -150,20 +148,20 @@ class API {
         // POST ENDPOINTS
         // ----------------------------------------------------------------------------
         app.post('/api/join', (req, res) => {
-            const { agentToken, gameID } = req.body
-            this.lobbyManager
-                .joinLobby(agentToken, gameID)
+            const { agentToken, lobbyID } = req.body
+            Server.instance.lobbyManager
+                .joinLobby(agentToken, lobbyID)
                 .then((success) => {
                     res.json({ success })
                 })
         })
 
         app.post('/api/action', (req, res) => {
-            const { agentToken, action } = req.body
-            this.lobbyManager.action(agentToken, action)
-            res.json({ success: true })
-        })
+            const { agentToken, action } = req.body;
+            Server.instance.lobbyManager.action(agentToken, action);
+            res.json({ success: true });
+        });
     }
 }
 
-export default API
+export default API;
