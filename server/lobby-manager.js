@@ -1,92 +1,127 @@
-import Lobby from './lobby.js';
-
-const MAX_PLAYERS = 4
+import { Lobby, PrivateLobby, TournamentLobby } from './lobbies/lobbies.js'
+import Database from './database.js'
 
 class LobbyManager {
-    constructor() {
-        this.lobbies = {}
-        this.gameMap = {}
-        this.lobbyMap = {}
-    }
+    static lobbies = {}
+    static agentLobby = {}
+    static agentGame = {}
 
-    createLobby(gameID) {
-        const lobby = new Lobby(gameID)
-        this.lobbies[gameID] = lobby
-    }
+    /**
+     * adds agent to lobby
+     * @param {string} agentToken agent token
+     * @param {string} gameID id of game to be played
+     * @param {boolean, object} privateMode for private games
+     * @param {boolean, object} tournamentMode for tournament games
+     * @returns true if agent successfully added to lobby, false otherwise
+     */
+    static async joinLobby(agentToken, gameID, privateMode=false, tournamentMode=false) {
+        // authorisation
+        const authorised = await Database.isUserEligibleToPlay(agentToken)
+        if (!authorised) { return false }
 
-    joinLobby(agentToken, gameID) {
-        const currentGame =  this.gameMap[agentToken];
+        console.log('success')
+
+        // if agent already in game
+        const currentGame = this.agentGame[agentToken]
         if (currentGame) {
-            if (!currentGame.result) {
-                return false;
-            } else {
-                delete this.gameMap[agentToken];
-            }
-        }
-        // console.log('???', agentToken, gameID)
-        // checks if there is a lobby for this game and creates one if there isnt
-        if (this.lobbies[gameID] == undefined) {
-            this.createLobby(gameID)
+            if (!currentGame.finished) { return false }
+            delete this.agentGame[agentToken]
         }
 
-        const previousAllocation = this.lobbyMap[agentToken]
-        if (previousAllocation) {
-            previousAllocation.removeAgent(agentToken);
+        // if agent already in lobby
+        const currentLobby = this.agentLobby[agentToken]
+        if (currentLobby) { currentLobby.removeAgent(agentToken) }
+
+        // join generic lobby
+        if (!privateMode && !tournamentMode) {
+            const lobby = this.lobbies[gameID] ? this.lobbies[gameID] : new Lobby(gameID, gameID)
+            const success = lobby.addAgent(agentToken)
+            if (!success) { return false }
+            this.lobbies[gameID] = lobby
+            this.agentLobby[agentToken] = lobby
         }
 
-        const lobby = this.lobbies[gameID];
-        const success = lobby.addAgent(agentToken)
+        // join private lobby
+        if (privateMode) {
+            const privateLobby = this.lobbies[privateMode.lobbyID] ? this.lobbies[privateMode.lobbyID] : new PrivateLobby(gameID, privateMode.lobbyID, privateMode.password)
+            const success = privateLobby.addAgent(agentToken, privateMode.password)
+            if (!success) { return false }
+            this.lobbies[privateMode.lobbyID] = privateLobby
+            this.agentLobby[agentToken] = privateLobby
+        }
 
-        this.lobbyMap[agentToken] = lobby
+        // join tournament lobby
+        if (tournamentMode) {
+            const tournamentLobby = this.lobbies[tournamentMode.lobbyID] ? this.lobbies[tournamentMode.lobbyID] : new TournamentLobby(gameID, tournamentMode.lobbyID, tournamentMode.password)
+            const success = tournamentLobby.addAgent(agentToken, tournamentMode.password)
+            if (!success) { return false }
+            this.lobbies[tournament.tournamentMode] = tournamentLobby
+            this.agentLobby[agentToken] = tournamentLobby
 
-        if (lobby.agents.length === lobby.gameSettings.maxPlayers) {
-            const game = lobby.startGame();
-            console.log('Starting!', lobby.agents);
-            for (const agent of lobby.agents) {
-                this.gameMap[agent] = game;
-            }
-            lobby.agents.forEach((token) => {
-                delete this.lobbyMap[token];
+        }
+
+        // attempt to start game
+        const lobby = this.agentLobby[agentToken]
+        const game = lobby.startGame()
+
+        if (game) {
+            console.log(`Game Started (${lobby.gameID}): `, lobby.agentTokens)
+            lobby.agentTokens.forEach((agentToken) => { 
+                this.agentGame[agentToken] = game 
+                delete this.agentLobby[agentToken]
             })
-            delete this.lobbies[gameID];
+            delete this.lobbies[lobby.lobbyID]
         }
 
-        return success;
+        return true
     }
 
-    action(agentToken, action) {
-        if (!(agentToken in this.gameMap)) {
-            return
+    static gameStarted(agentToken) {
+        const started = this.agentGame[agentToken] !== undefined
+        return started
+    }
+
+    static gameFinished(agentToken) {
+        const game = this.agentGame[agentToken]
+
+        if (!game) { return true }
+
+        const gameFinished = game.gameFinished()
+
+        if (gameFinished) {
+            const agentTokens = game.agentTokens
+            agentTokens.forEach((agentToken) => delete this.agentGame[agentToken])
         }
 
-        const game = this.gameMap[agentToken]
-        if (!this.isTurn(agentToken)) {
-            return
-        }
+        return gameFinished
+    }
 
-        game.turn = null;
+    static isTurn(agentToken) {
+        const game = this.agentGame[agentToken]
+        const isTurn = game.isTurn(agentToken)
+        return isTurn
+    }
+
+    static getState(agentToken) {
+        const game = this.agentGame[agentToken]
+        const state = game.getState(agentToken)
+        return state
+    }
+
+    static action(agentToken, action) {
+        const game = this.agentGame[agentToken]
         game.resolve(action)
+        const success = true
+        return success
     }
 
-    method(agentToken, keys, method, params) {
-        if (!(agentToken in this.gameMap)) {
-            return { error: 'game not started' }
-        }
+    static method(agentToken, keys, method, params) {
+        const game = this.agentGame[agentToken]
 
-        const game = this.gameMap[agentToken]
         let object = game
         keys.forEach((key) => object = object[key])
-        const data = object[method](...params)
-        return data
-    }
-
-    isTurn(agentToken) {
-        if (agentToken in this.gameMap) {
-            const game = this.gameMap[agentToken]
-            return game.turn == agentToken
-        }
-
-        return false
+        const result = object[method](...params)
+        return result
     }
 }
 

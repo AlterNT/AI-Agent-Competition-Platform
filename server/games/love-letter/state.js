@@ -1,4 +1,5 @@
 import Card from './card.js'
+import Action from './action.js'
 
 /**
  * This class represents the observable state of the game.
@@ -131,7 +132,7 @@ class State {
      * @throws IllegalActionException if any of these conditions hold.
      **/      
     isLegalAction(a, t, c, drawn) {
-        if (this.hand[a] != c && drawn != c) {
+        if (this.hand[a].name != c.name && drawn.name != c.name) {
             throw new Error("Player does not hold the played card")
         }
         if (this.nextPlayer[0] != a) {
@@ -170,6 +171,12 @@ class State {
      **/ 
     legalAction(act, drawn) {
         if (act === null) { return false }
+        if (!act.card) {
+            try {
+                act = Action[act.action](...act.params)
+                drawn = new Card(drawn.value, drawn.name, drawn.count)
+            } catch { return false }
+        }
         try {
             this.isLegalAction(act.player, act.target, act.card, drawn)
         } catch { return false }
