@@ -8,6 +8,7 @@ const GAMES = ['paper-scissors-rock', 'love-letter']
 
 async function main() {
     const argv = yargs(process.argv)
+    .usage('Usage: $0 <options>')
     .option('token', {
         alias: 't',
         description: 'Agent authentication token',

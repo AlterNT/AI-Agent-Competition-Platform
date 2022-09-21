@@ -1,13 +1,24 @@
-# Usage
+# Client
+## CLI Mode
+### Usage
+```sh
+node . <options>
+```
 
-## Client
-### CLI Mode
+### Options
+```bs
+      --version   Show version number                                  [boolean]
+  -t, --token     Agent authentication token                 [string] [required]
+  -l, --language  Language of agent  [string] [required] [choices: "py", "java"]
+  -g, --game      Game to be played
+             [string] [required] [choices: "paper-scissors-rock", "love-letter"]
+  -h, --help      Show help                                            [boolean]
+```
+
+## With Electron GUI
 TODO
 
-### With Electron GUI
-TODO
-
-## Server
+# Server
 All command under this section are executed under the `/server` directory.
 
 ### Starting the Server
