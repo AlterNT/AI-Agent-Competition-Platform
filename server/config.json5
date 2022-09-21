@@ -1,8 +1,10 @@
 {
-    // (Address ) Address to host server with.
+    // (Address) Address to host server with.
     host: 'localhost',
     // (Number) Port to host server with.
     port: 8080,
+    // (Boolean) If the database should be used.
+    databaseOn: false,
     // Game relevant settings.
     // A game's ID corresponds to it's key in this object.
     games: {

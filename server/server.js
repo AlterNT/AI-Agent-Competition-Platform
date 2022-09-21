@@ -43,7 +43,24 @@ export default class Server {
     async init() {
         this.api.run();
         /** @type {Neode} */
-        this.dbInstance = Neode.fromEnv().with(Models);
+        // Intercepts neode calls if database is disabled.
+        this.dbInstance = new Proxy(Neode.fromEnv().with(Models), {
+            get: (neode, property) => {
+                if (this.config.databaseOn) {
+                    return neode[property];
+                }
+                // Error message for getQuery()
+                if (property === 'getQueryResult') {
+                    return { error: 'Database is disabled!'};
+                }
+                // Prevent null() method calls.
+                if (typeof Reflect.get(neode, property) === 'function') {
+                    return () => null;
+                }
+                // Return null for regular properties.
+                return null;
+            }
+        });
 
         const batchQueries = [
             this.queryGames,
@@ -137,8 +154,8 @@ export default class Server {
         });
 
         await Promise.all([
-            user.relateTo(agent, 'controls'),
-            agent.relateTo(user, 'controls'),
+            user?.relateTo(agent, 'controls'),
+            agent?.relateTo(user, 'controls'),
         ]);
 
         return await this.dbInstance.find('User', Server.defaultAgentToken);
@@ -150,7 +167,7 @@ export default class Server {
      */
     async getDefaultAgent() {
         const user = await this.getDefaultUser();
-        const agent = user.get('controls').endNode();
+        const agent = user?.get('controls').endNode();
         return agent;
     }
 
@@ -184,11 +201,11 @@ export default class Server {
         });
 
         await Promise.all([
-            user.relateTo(agent, 'controls'),
-            agent.relateTo(user, 'controls'),
+            user?.relateTo(agent, 'controls'),
+            agent?.relateTo(user, 'controls'),
         ]);
 
-        return await this.dbInstance.find('Agent', agent.id());
+        return await this.dbInstance.find('Agent', agent?.id());
     }
 
     /**
@@ -213,12 +230,12 @@ export default class Server {
             'User', userToken
         );
 
-        const edge = user.get('controls');
+        const edge = user?.get('controls');
         if (!edge) {
             return null;
         }
 
-        const agent = edge.endNode();
+        const agent = edge?.endNode();
         return agent;
     }
 
@@ -228,7 +245,7 @@ export default class Server {
      */
     async getUserGames(userToken) {
         const agent = await this.getUserAgent(userToken);
-        const games = agent.get('playedIn').endNode();
+        const games = agent?.get('playedIn').endNode();
 
         return games;
     }
@@ -258,8 +275,8 @@ export default class Server {
         for (const [ userToken, score ] of Object.entries(gameOutcome)) {
             // Might need score to be set
             const agent = await this.getUserAgent(userToken);
-            const agentRelation = agent.relateTo(game, 'playedIn', { score });
-            const gameRelation = game.relateTo(agent, 'playedIn', { score });
+            const agentRelation = agent?.relateTo(game, 'playedIn', { score });
+            const gameRelation = game?.relateTo(agent, 'playedIn', { score });
 
             relationMappings.push(agentRelation);
             relationMappings.push(gameRelation);
@@ -303,7 +320,7 @@ export default class Server {
      */
      async queryGames() {
         const res = await this.dbInstance.all('Game')
-        return res.map((_, i) => {
+        return res?.map((_, i) => {
             const game = res.get(i);
             const agentEdges = game.get('playedIn');
             const agentScores = {};
@@ -328,10 +345,10 @@ export default class Server {
      */
      async queryAgents() {
         const res = await this.dbInstance.all('User')
-        const allUsers = res.map((_, i) => {
-            const user = res.get(i);
-            const agentId = user.get('controls')?.endNode()?.get('id');
-            const { studentNumber } = user.properties();
+        const allUsers = res?.map((_, i) => {
+            const user = res?.get(i);
+            const agentId = user?.get('controls')?.endNode()?.get('id');
+            const { studentNumber } = user?.properties();
 
             return {
                 studentNumber,
@@ -339,7 +356,7 @@ export default class Server {
             };
         });
 
-        const usersWithAgent = allUsers.filter(({ agentId }) => agentId);
+        const usersWithAgent = allUsers?.filter(({ agentId }) => agentId);
         return usersWithAgent;
     }
 
@@ -357,7 +374,7 @@ export default class Server {
             ORDER BY WinPercent DESC;
         `);
 
-        return res.records.map((record) => ({
+        return res?.records.map((record) => ({
             agentId: record.get('AgentId').toString(),
             gamesPlayed: record.get('GamesPlayed').toInt(),
             wins: record.get('Wins').toInt(),
@@ -389,7 +406,7 @@ export default class Server {
             LIMIT 10;
         `);
 
-        return res.records.map((record) => ({
+        return res?.records.map((record) => ({
             agentId: record.get('AgentId').toString(),
             initialWinPercent: record.get('InitialWinPercent').toInt(),
             lastWinPercent: record.get('LastWinPercent').toInt(),
@@ -410,7 +427,7 @@ export default class Server {
             RETURN a as Agent, g as Games;
         `);
 
-        return res.records.map((record) => record.get('Games').toString());
+        return res?.records.map((record) => record.get('Games').toString());
     };
 
     /**
@@ -427,7 +444,7 @@ export default class Server {
         `);
 
         // @TODO: this return is wrong
-        return res.records.map((record) => ({
+        return res?.records.map((record) => ({
             agentId: record.get('AgentId').toString(),
             initialWinPercent: record.get('InitialWinPercent').toInt(),
             lastWinPercent: record.get('LastWinPercent').toInt(),
@@ -447,7 +464,7 @@ export default class Server {
             RETURN a as Agent, Games[0..5] as MostRecentGames;
         `);
 
-        return res.records.map((record) => record.get('MostRecentGames'));
+        return res?.records.map((record) => record.get('MostRecentGames'));
     }
 
     /**
@@ -461,7 +478,7 @@ export default class Server {
             RETURN u as User, a as Agents;
         `);
 
-        return res.records.map((record) => record.get('Agents'));
+        return res?.records.map((record) => record.get('Agents'));
     }
 
     /**
@@ -474,6 +491,6 @@ export default class Server {
             RETURN u as User, a as Agents;
         `);
 
-        return res.records.map((record) => record.get('Agents'));
+        return res?.records.map((record) => record.get('Agents'));
     }
 }

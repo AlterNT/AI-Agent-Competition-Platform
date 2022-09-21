@@ -30,8 +30,8 @@ class API {
         });
 
         // returns all user/agent ids
-        app.get('/api/agents', (_, res) => {
-            Server.instance.getQueryResult(Server.instance.queryAgents)
+        app.get('/api/agents', async (_, res) => {
+            agents = await Server.instance.getQueryResult(Server.instance.queryAgents)
                 .then((agents) => {
                     res.json({agents});
                 });
