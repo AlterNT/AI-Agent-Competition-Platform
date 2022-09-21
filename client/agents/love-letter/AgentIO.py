@@ -7,8 +7,8 @@ sys.path.append(str(root))
 from API import API
 
 class AgentIO(API):
-    def join_lobby(self):
-        return super().join_lobby('1')
+    def join_lobby(self, gameID):
+        return super().join_lobby('auto', gameID)
 
     # love letter methods used by agent
         

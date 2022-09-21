@@ -9,9 +9,14 @@ class Lobby {
     /** @type {[String]} Array of agent tokens. */
     tokens = [];
     /** @type {String} ID of game. */
-    gameID = Server.instance.config.currentGame;
+    gameID;
     /** @type {{}} Settings of current game. */
-    gameSettings = Server.instance.config.games[this.gameID].settings;
+    gameSettings;
+
+    constructor(gameID) {
+        this.gameID = gameID;
+        this.gameSettings = Server.instance.config.games[gameID].settings;
+    }
 
     /**
      * Adds agent tokens if they aren't already in the lobby.

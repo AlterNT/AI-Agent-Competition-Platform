@@ -9,13 +9,16 @@ class API:
     def server_path(self, path):
         return f'{self.server_url}/{path}'
 
-    def join_lobby(self, lobbyID):
+    def join_lobby(self, lobbyID, gameID):
         try:
             response = requests.post(self.server_path('api/join'), json={
                 'agentToken': self.agentToken,
-                'lobbyID': lobbyID
+                'lobbyID': lobbyID,
+                'gameID': gameID
             })
             response_json = response.json()
+            if response_json['success']:
+                print('Successfully joined lobby: ' + str(response_json['lobbyID']))
             return response_json['success']
         except requests.exceptions.ConnectionError:
             raise requests.exceptions.ConnectionError

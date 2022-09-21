@@ -8,8 +8,8 @@ class LobbyManager {
     gameMap = {};
     lobbyMap = {};
 
-    createLobby(lobbyID) {
-        const lobby = new Lobby(lobbyID);
+    createLobby(lobbyID, gameID) {
+        const lobby = new Lobby(gameID);
         this.lobbies[lobbyID] = lobby;
     }
 
@@ -19,7 +19,7 @@ class LobbyManager {
      * @param {String} lobbyID 
      * @returns {Boolean} If the user successfully joined a lobby.
      */
-    async joinLobby(agentToken, lobbyID) {
+    async joinLobby(agentToken, lobbyID, gameID) {
         // Denies a player joining a lobby until their current game is over.
         const eligibility = await Server.instance.isUserEligibleToPlay(agentToken)
         if (!eligibility) {
@@ -35,9 +35,22 @@ class LobbyManager {
             }
         }
 
+        // Automatically allocate a numeric lobby if requested ID is 'auto'.
+        if (lobbyID === 'auto') {
+            let freeID = 0;
+            while (
+                freeID in this.lobbies && 
+                this.lobbies[freeID].gameSettings.maxPlayers === this.lobbies[freeID].tokens.length
+                // TODO: && (lobby not private)
+                ) { 
+                freeID++; 
+            }
+            lobbyID = freeID;
+        }
+
         // Checks if the provided lobbyID exists and creates a new lobby if there isn't.
-        if (this.lobbies[lobbyID] == undefined) {
-            this.createLobby(lobbyID);
+        if (this.lobbies[lobbyID] === undefined) {
+            this.createLobby(lobbyID, gameID);
         }
 
         // Allows a player to leave a lobby after already joining one.
@@ -49,7 +62,7 @@ class LobbyManager {
         const lobby = this.lobbies[lobbyID];
         const success = lobby.addAgent(agentToken);
 
-        console.log(`Player ${agentToken} successfully joined ${lobbyID}! (${lobby.tokens.length}/${lobby.gameSettings.maxPlayers})`)
+        console.log(`Player ${agentToken} successfully joined lobby ${lobbyID}! (${lobby.tokens.length}/${lobby.gameSettings.maxPlayers})`)
 
         // Starts the game once the lobby is full.
         if (lobby.tokens.length === lobby.gameSettings.maxPlayers) {
@@ -64,7 +77,7 @@ class LobbyManager {
             delete this.lobbies[lobbyID]
         }
 
-        return success;
+        return { success, lobbyID };
     }
 
     action(agentToken, action) {

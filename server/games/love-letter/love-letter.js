@@ -101,7 +101,6 @@ player 3: ${JSON.stringify(gameState.getCard(3))}`);
                     console.log(`Player ${gameState.getNextPlayer()} draws the ${topCard.name} card.`);
                     
                     this.turn = this.agents[gameState.getNextPlayer()].token;
-                    console.log(this.turn);
 
                     const action = await this.awaitEvent()
                     let act = Action[action.action](...action.params);

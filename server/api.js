@@ -147,13 +147,10 @@ class API {
 
         // POST ENDPOINTS
         // ----------------------------------------------------------------------------
-        app.post('/api/join', (req, res) => {
-            const { agentToken, lobbyID } = req.body
-            Server.instance.lobbyManager
-                .joinLobby(agentToken, lobbyID)
-                .then((success) => {
-                    res.json({ success })
-                });
+        app.post('/api/join', async (req, res) => {
+            const { agentToken, lobbyID, gameID } = req.body
+            const result = await Server.instance.lobbyManager.joinLobby(agentToken, lobbyID, gameID);
+            res.json(result);
         })
 
         app.post('/api/action', (req, res) => {

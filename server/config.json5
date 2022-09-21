@@ -3,8 +3,8 @@
     host: 'localhost',
     // (Number) Port to host server with.
     port: 8080,
-    // (String) ID of the game to use.
-    currentGame: 'LoveLetter',
+    // Game relevant settings.
+    // A game's ID corresponds to it's key in this object.
     games: {
         LoveLetter: {
             path: 'love-letter/love-letter.js',

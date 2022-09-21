@@ -76,7 +76,7 @@ def main():
     agent = RandomAgent(token)
 
     while True: # multiple games
-        agent.agentIO.join_lobby()
+        agent.agentIO.join_lobby('LoveLetter')
         
         while True: # multiple moves
         
