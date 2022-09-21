@@ -23,6 +23,12 @@ class API {
         // ---------------------------------------------------------------
         // Historical Game Data (and Utilities)
 
+        // returns all available gameIDs to play.
+        app.get('/api/available-games', (_, res) => {
+            const gameIDs = Object.keys(Server.instance.config.games);
+            res.json({ gameIDs });
+        });
+
         // returns all user/agent ids
         app.get('/api/agents', (_, res) => {
             Server.instance.getQueryResult(Server.instance.queryAgents)
