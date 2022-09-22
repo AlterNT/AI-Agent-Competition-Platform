@@ -1,9 +1,10 @@
-import fs from 'fs'
+import 'dotenv/config.js'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
 import API from './api.js'
 import Database from './database.js'
+
 
 async function main() {
     const argv = yargs(hideBin(process.argv))

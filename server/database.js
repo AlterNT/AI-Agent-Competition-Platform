@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import fs from 'fs';
 import Neode from 'neode';
 
@@ -5,7 +6,7 @@ import Models from './models/index.js';
 import TokenGenerator from './token-generator.js';
 import DBSync from './db-sync.js';
 
-class Database {
+class Neo4jDatabase {
     /** @type {[String]} */
     static defaultAgentToken = '00000000';
     static dbInstance
@@ -455,5 +456,33 @@ class Database {
         return res.records.map((record) => record.get('Agents'));
     }
 }
+
+const getMockDatabase = () => {
+    console.log(chalk.red(
+        `Running Server With Database Disabled,\n` +
+        `If Not Intentional Please Add \`DATABASE_ENABLED=1\` to the \`.env\`\n`
+    ));
+
+    const isUserEligibleToPlay = Neo4jDatabase.isUserEligibleToPlay.name;
+    const getQueryResult = Neo4jDatabase.getQueryResult.name;
+
+    return new Proxy(Neo4jDatabase, {
+        get(target, property) {
+            if (property === getQueryResult) {
+                return async () => ({ error: 'Database not implemented' });
+            }
+
+            if (property === isUserEligibleToPlay) {
+                return async () => true;
+            }
+
+            return async () => {};
+        }
+    });
+}
+
+const Database = (process.env.DATABASE_ENABLED === '1') ?
+    Neo4jDatabase :
+    getMockDatabase();
 
 export default Database
