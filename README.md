@@ -5,7 +5,7 @@
 Installation tutorials:
 - [node.js](https://enterflash.io/posts/how-to-install-nodejs-and-npm-on-windows-mac-or-linux)
 - [python](https://www.tutorialsteacher.com/python/install-python)
-  - must be added to path during the installation or the client won't work
+  - must be added to path during the installation or the agent won't work
 
 ### Versions
 Required:
@@ -19,7 +19,7 @@ Optional (do not install unless deploying, or developing):
 
 ## Server
 All command under this section are executed under the `/server` directory.
-First change to the client directory and install dependencies:
+First change to the server directory and install dependencies:
 ```bash
 cd server
 npm i
@@ -30,7 +30,7 @@ npm i
 node . start
 ```
 ## Client Program
-All command under this section are executed under the `/server` directory.
+All command under this section are executed under the `/client` directory.
 First change to the client directory and install dependencies:
 ```bash
 cd client
