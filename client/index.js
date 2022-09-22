@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import commandExists from 'command-exists'
 import child_process from 'child_process'
 import yargs from 'yargs'
@@ -72,7 +73,7 @@ async function main() {
     switch (language) {
         case 'py':
             try {
-                fp = child_process.spawn(await getPythonPath(), ['./agents/python/main.py', token, game])
+                fp = child_process.spawn(await getPythonPath(), ['-u', './agents/python/main.py', token, game])
             } catch (pathError) {
                 console.error(pathError)
                 return
@@ -89,6 +90,10 @@ async function main() {
     }
     fp.stdout.on('data', (data) => {
         console.log(`${data}`)
+    })
+
+    fp.stderr.on('data', (data) => {
+        console.log(chalk.red(`${data}`))
     })
 }
 

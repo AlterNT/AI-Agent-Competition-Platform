@@ -1,6 +1,7 @@
 {
   "type": "module",
   "dependencies": {
+    "chalk": "^5.0.1",
     "command-exists": "^1.2.9",
     "node-fetch": "^3.2.10",
     "yargs": "^17.5.1"

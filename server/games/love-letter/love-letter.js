@@ -73,7 +73,7 @@ class LoveLetter {
 
         const timeout = setTimeout(() => {
             this.resolve(null)
-        }, 10000)
+        }, 3_000)
 
         const move = await this.pending
         clearTimeout(timeout)
