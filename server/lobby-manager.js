@@ -98,7 +98,7 @@ class LobbyManager {
 
     static isTurn(agentToken) {
         const game = this.agentGame[agentToken]
-        const isTurn = game.isTurn(agentToken)
+        const isTurn = game?.isTurn(agentToken) || false
         return isTurn
     }
 

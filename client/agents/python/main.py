@@ -37,9 +37,9 @@ def main():
                     move = agent.move()
                     agent.agent_io.send_action(move)
 
-                time.sleep(0.5)
+                time.sleep(0.1)
 
-        time.sleep(5)
+        time.sleep(1)
 
                     
                 
