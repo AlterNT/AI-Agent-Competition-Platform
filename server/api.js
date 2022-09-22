@@ -16,6 +16,16 @@ class API {
         // ---------------------------------------------------------------
         // Historical Game Data and Utilities
 
+        // TODO: replace games
+        // page: Int > 1
+        app.get('/api/paginate', (req, res) => {
+            const { page } = req.query;
+            Database.paginateGames(page)
+                .then((games) => {
+                    res.json({games})
+                });
+        });
+
         // returns all user/agent ids
         app.get('/api/agents', (_, res) => {
             Database.getQueryResult(Database.queryAgents)

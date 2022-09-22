@@ -302,6 +302,40 @@ class Neo4jDatabase {
     }
 
     /**
+     * @param {Integer} page
+     * @return {any[]} array of all games
+     */
+    static async paginateGames(page) {
+        const gamesPerPage = 100;
+        const res = await this.dbInstance.cypher(`
+            MATCH (g:Game)<-[rel]-(a:Agent)
+            WITH g, collect({score: rel.score, agent: a.id}) as scores
+            RETURN g, scores
+            ORDER BY g.timePlayed DESC
+            SKIP (toInteger($page) - 1) * toInteger($gamesPerPage)
+            LIMIT toInteger($gamesPerPage);
+        `, {
+            gamesPerPage, page
+        });
+
+        return res.records.map((res) => {
+            const game = res.get('g');
+            const scores = res.get('scores');
+            const agentScores = {};
+            scores.forEach(({ score, agent }) => {
+                agentScores[agent] = score;
+            })
+            const gameProperties = {...game.properties};
+            gameProperties.timePlayed = gameProperties.timePlayed.toString();
+
+            return {
+                ...gameProperties,
+                agentScores,
+            }
+        });
+    }
+
+    /**
      * @TODO remove token from users
      * @return {any[]} array of all user and agents id
      */
@@ -467,7 +501,7 @@ const getMockDatabase = () => {
     const getQueryResult = Neo4jDatabase.getQueryResult.name;
 
     return new Proxy(Neo4jDatabase, {
-        get(target, property) {
+        get(_, property) {
             if (property === getQueryResult) {
                 return async () => ({ error: 'Database not implemented' });
             }
