@@ -13,6 +13,15 @@ class API {
             () => { console.log(`listening at http://localhost:${this.port}`) }
         )
 
+        // Allow CORS, everything should be application JSON
+        // TODO: Test this doesn't break the bots
+        app.use((req, res, next) => {
+            res.header('Content-Type','application/json');
+            res.header('Access-Control-Allow-Origin', '*');
+            res.header('Access-Control-Allow-Headers', '*');
+            next();
+        });
+
         // ---------------------------------------------------------------
         // Historical Game Data and Utilities
 
