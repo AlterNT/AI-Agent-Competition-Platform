@@ -1,8 +1,8 @@
 import fs from 'fs';
-import PaperScissorsRock from './game/paper-scissors-rock/paper-scissors-rock.js';
-import LoveLetter from './game/love-letter/love-letter.js';
+import PaperScissorsRock from './games/paper-scissors-rock/paper-scissors-rock.js';
+import LoveLetter from './games/love-letter/love-letter.js';
 import Server from './server.js';
-import IGame from './game/i-game.js';
+import IGame from './games/i-game.js';
 
 class Lobby {
 
