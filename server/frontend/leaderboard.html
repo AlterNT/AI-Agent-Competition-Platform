@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title>AI Agent Competition Platform</title>
+    <link rel="icon" type="image/x-icon" href="assets/icon.png"/>
+
+    <!--FA Import-->
+    <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+
+    <!--Google Fonts Import-->
+    <link rel="preconnect" href="https://fonts.gstatic.com"/>
+    <link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+    <!--CSS (includes Bootstrap)-->
+    <link href="styles.css" rel="stylesheet"/>
+
+    <script src="">
+
+    </script>
+</head>
+
+<body onload="renderTable('/api/top-winrate')">
+    <!-- Background Video-->
+    <video class="bg-video" playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop">
+        <source src="assets/mp4/bg.mp4" type="video/mp4"/>
+    </video>
+
+    <!-- Masthead-->
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Main</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="leaderboard.html">Leaderboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Query</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" style="border-top-right-radius: 0.25rem;">About</a>
+        </li>
+      </ul>
+    <div class="masthead">
+        <div class="masthead-content text-white">
+                <div class="d-inline-flex justify-content-center">
+                    <div class="tableWrapper">
+                        <table id="excelDataTable"></table>
+                    </div>
+                </div>
+                    <br><br>
+                <div class="d-inline-flex justify-content-center">
+                    <button class='btn btn-outline-primary'onclick="download_table_as_csv('excelDataTable')">Export</button>
+                </div>
+        </div>
+    </div> 
+
+    </div>
+    <!-- Social Icons-->
+    <div class="social-icons">
+        <div class="d-flex flex-row flex-lg-column justify-content-center align-items-center h-100 mt-3 mt-lg-0">
+            <a class="btn btn-dark m-3" href="https://github.com/AlterNT/AI-Agent-Competition-Platform" target="_blank"><i class="fab fa-github"></i></a>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core theme JS-->
+    <script src="./js/scripts.js"></script>
+    <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+
+    <!-- Import Main Scripts-->
+    <script type="text/javascript" src="./js/scripts.js">
+        window.onload = renderTable();
+        window.onload = download_table_as_csv();
+    </script>
+
+    <!-- JQuery -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+</body>

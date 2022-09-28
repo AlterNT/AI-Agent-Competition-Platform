@@ -34,6 +34,8 @@ async function tabulateFromEndpoint(endpoint) {
     const resultJson = await result.json();
     const values = Object.values(resultJson)[0];
     const headers = Object.keys(values[0])
+    headers.unshift('#');
+    console.log(headers);
 
     function addAllColumnHeaders() {
         var headerTr$ = $('<tr/>');
@@ -43,10 +45,13 @@ async function tabulateFromEndpoint(endpoint) {
 
     function buildHtmlTable() {
         addAllColumnHeaders();
-
         //For each item
         values.forEach((obs, i) => {
+            console.log(obs)
             const row = $('<tr/>');
+            const rowNum = (i + 1).toString();
+            obs['#'] = rowNum;
+
             headers.forEach((header) => {
                 const cellValue = $('<td/>').html(obs[header] ?? '')
                 row.append(cellValue);
@@ -58,7 +63,6 @@ async function tabulateFromEndpoint(endpoint) {
     buildHtmlTable();
 }
 
-// TODO: NOT TESTED/FIXED
 async function download_table_as_csv(table_id, separator = ',') {
     console.log('#' + table_id)
 
@@ -82,7 +86,7 @@ async function download_table_as_csv(table_id, separator = ',') {
     var csv_string = csv.join('\n');
     
     // Download Table
-    var filename = 'AI_Platform' + 'data' + '.csv';
+    var filename = 'AI_Platform_Data' + '.csv';
     var link = document.createElement('a');
     link.style.display = 'none';
     link.setAttribute('target', '_blank');
@@ -93,6 +97,6 @@ async function download_table_as_csv(table_id, separator = ',') {
     document.body.removeChild(link);
 };
 
-async function renderTable() {
-    tabulateFromEndpoint('/api/agents');
+async function renderTable(query) {
+    tabulateFromEndpoint(query);
 }
