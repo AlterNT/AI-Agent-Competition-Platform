@@ -22,6 +22,7 @@ All command under this section are executed under the `/server` directory.
 First change to the server directory and install dependencies:
 ```bash
 cd server
+cp .env-example .env
 npm i
 ```
 
