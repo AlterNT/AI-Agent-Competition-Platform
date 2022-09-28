@@ -8,14 +8,14 @@ Installation tutorials:
   - must be added to path during the installation or the agent won't work
 
 ### Versions
-Required:
-- node: v14.19.3
-- python: 3.10.4
+Recommended:
+- node: >14
+- python: >3.6
 
 Optional (do not install unless deploying, or developing):
-- java: openjdk version 11 (or equivalent)
-- neo4j: 4.4.10
-- apoc: 4.4.0.8
+- java: openjdk version >11 (or equivalent)
+- neo4j: >4.4
+- apoc: >4.4
 
 ## Server
 All command under this section are executed under the `/server` directory.
@@ -36,6 +36,12 @@ First change to the client directory and install dependencies:
 ```bash
 cd client
 npm i
+
+# if using python3:
+pip3 install -r requirements.txt
+
+# if using python:
+pip install -r requirements.txt
 ```
 
 ### CLI-Mode
