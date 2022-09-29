@@ -53,7 +53,7 @@ class LoveLetter extends IGame {
     }
 
     getState(agentToken) {
-        const index = this.agentIndex[agentToken]
+        const index = this.indexMap[agentToken]
         const state = { ...this.agents[index].state }
         delete state.agents
 
@@ -149,9 +149,8 @@ Player 3: ${gameState.score(3)}
         this.result = await this.playGame(this.agents)
         this.stream.write("The final scores are: \n")
         for (const i in this.agents) {
-            this.stream.write(`\t Agent ${i}, '${this.agents[i]}':\t ${results[i]}\n`);
+            this.stream.write(`\t Agent ${i}, '${this.agents[i]}':\t ${this.result[i]}\n`);
         }
-
         const scores = {};
         this.agents.forEach(({ name }, i) => {
             scores[name] = this.result[i]

@@ -1,3 +1,4 @@
+from asyncio import sleep
 import sys
 import time
 import requests
@@ -25,7 +26,7 @@ def main():
 
                 # wait for game to start
                 while not agent.agent_io.game_started():
-                    pass
+                    time.sleep(1)
 
                 print('game started')
                 

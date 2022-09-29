@@ -172,6 +172,12 @@ class API {
         // game statistics: single agent
         // @TODO: implement by reusing cached batch query results
 
+        app.get('/api/started', (req, res) => {
+            const agentToken = req.query.agentToken;
+            const gameStarted = LobbyManager.gameStarted(agentToken)
+            res.json({ gameStarted })
+        });
+
         app.get('/api/finished', (req, res) => {
             const agentToken = req.query.agentToken
             const gameFinished = LobbyManager.gameFinished(agentToken)
