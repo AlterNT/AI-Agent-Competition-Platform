@@ -13,13 +13,13 @@ class IGame {
     agents;
 
     /** @type {Boolean} If the current game is finished. */
-    #finished = false;
+    finished = false;
 
     /**
      * @returns If the game is finished.
      */
     gameFinished() {
-        return this.#finished
+        return this.finished
     }
     
     constructor(agents) {
