@@ -1,4 +1,3 @@
-import 'dotenv/config.js'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import API from './api.js'

@@ -493,8 +493,8 @@ class Neo4jDatabase {
 
 const getMockDatabase = () => {
     console.log(chalk.red(
-        `Running Server With Database Disabled,\n` +
-        `If Not Intentional Please Add \`DATABASE_ENABLED=1\` to the \`.env\`\n`
+        `Running Server with Database disabled.\n` +
+        `If this is not intentional, please set database.enabled to true in 'config.json5'!\n`
     ));
 
     const isUserEligibleToPlay = Neo4jDatabase.isUserEligibleToPlay.name;
