@@ -354,10 +354,9 @@ class Neo4jDatabase {
         const allUsers = res.map((_, i) => {
             const user = res.get(i);
             const agentId = user.get('controls')?.endNode()?.get('id');
-            const { studentNumber, displayName } = user.properties();
+            const { displayName } = user.properties();
 
             return {
-                studentNumber,
                 agentId,
                 displayName,
             };
@@ -375,18 +374,17 @@ class Neo4jDatabase {
     static async queryTopWinrate() {
         const res = await this.dbInstance.cypher(`
             MATCH (u:User)-[:CONTROLS]->(a:Agent)-[p:PLAYED_IN]-> (g:Game)
-            WITH a, u, count(g) AS GamesPlayed, collect(p.score) AS scores
-            WITH a, u, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
-            RETURN a.id as AgentId, u.displayName as DisplayName, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
+            WITH a, u.displayName as DisplayName, count(g) AS GamesPlayed, collect(p.score) AS scores
+            WITH a, DisplayName, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
+            RETURN a.id as AgentId, DisplayName, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
             ORDER BY WinPercent DESC;
         `);
 
         return res.records.map((record) => ({
-            agentId: record.get('AgentId').toString(),
+            displayName: record.get('DisplayName').toString(),
             gamesPlayed: record.get('GamesPlayed').toInt(),
             wins: record.get('Wins').toInt(),
             winPercent: record.get('WinPercent').toNumber().toFixed(2),
-            displayName: record.get('DisplayName').toString(),
         }));
     }
 
@@ -396,17 +394,20 @@ class Neo4jDatabase {
      */
     static async queryMostImproved() {
         const res = await this.dbInstance.cypher(`
-            MATCH (a:Agent)-[p:PLAYED_IN]-> (g:Game)
-            WITH a, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
-            WITH a, Scores[0..5] as FFGS, Scores[-5..] as LFGS, Games[0..5] as FFG, Games[-5..] as LFG
+            MATCH (u:User)-[:CONTROLS]->(a:Agent)-[p:PLAYED_IN]-> (g:Game)
+            WITH a, u.displayName as DisplayName, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
+            WITH a, DisplayName, Scores[0..5] as FFGS, Scores[-5..] as LFGS, Games[0..5] as FFG, Games[-5..] as LFG
             WITH a,
+                DisplayName,
                 size(FFG) as FFGSize, size(LFG) as LFGSize,
                 size([i in FFGS WHERE i=1]) as FFGWins,
                 size([i in LFGS WHERE i=1]) as LFGWins
             WITH a,
+                DisplayName,
                 100 * FFGWins/FFGSize as InitialWinPercent,
                 100 * LFGWins/LFGSize as LastWinPercent
             RETURN a.id as AgentId,
+                DisplayName,
                 InitialWinPercent,
                 LastWinPercent,
                 LastWinPercent - InitialWinPercent as PercentageImprovement
@@ -415,7 +416,7 @@ class Neo4jDatabase {
         `);
 
         return res.records.map((record) => ({
-            agentId: record.get('AgentId').toString(),
+            displayName: record.get('DisplayName').toString(),
             initialWinPercent: record.get('InitialWinPercent').toInt(),
             lastWinPercent: record.get('LastWinPercent').toInt(),
             percentageImproved: record.get('PercentageImprovement').toInt(),
@@ -437,57 +438,6 @@ class Neo4jDatabase {
 
         return res.records.map((record) => record.get('Games').toString());
     };
-
-    /**
-     * @param {String} agentId
-     * @return {any[]} winrate of all agents
-     */
-    static async queryAgentWinrate() {
-        const res = await this.dbInstance.cypher(`
-            MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"}) -[p:PLAYED_IN]-> (g:Game)
-            WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
-            WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
-            RETURN a.id AS AgentId, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
-            ORDER BY WinPercent DESC;
-        `);
-
-        // @TODO: this return is wrong
-        return res.records.map((record) => ({
-            agentId: record.get('AgentId').toString(),
-            initialWinPercent: record.get('InitialWinPercent').toInt(),
-            lastWinPercent: record.get('LastWinPercent').toInt(),
-            percentageImproved: record.get('PercentageImprovement').toInt(),
-        }));
-    }
-
-    /**
-     * @param {String} agentId
-     * @param {Number} lookbehind number of games to seek
-     * @return {any[]} all x recent games of agents
-     */
-    static async queryAgentRecentGames() {
-        const res = await this.dbInstance.cypher(`
-            MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"})
-            WITH a, apoc.coll.sortNodes([(a)-[:PLAYED_IN]->(g:Game) | g ], 'timePlayed') as Games
-            RETURN a as Agent, Games[0..5] as MostRecentGames;
-        `);
-
-        return res.records.map((record) => record.get('MostRecentGames'));
-    }
-
-    /**
-     * @param {String} studentNumber
-     * @return {any[]} all agents of user
-     */
-    static async queryUserAgents() {
-        const res = await this.dbInstance.cypher(`
-            MATCH (u:User)-[c:CONTROLS]->(a:Agent)
-            WHERE u.studentNumber = "20070000"
-            RETURN u as User, a as Agents;
-        `);
-
-        return res.records.map((record) => record.get('Agents'));
-    }
 
     /**
      * @return {any[]} array of all bot agents
