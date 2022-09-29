@@ -45,7 +45,7 @@ class Neo4jDatabase {
         return await this.dbSync.getQueryResult(query, filters || {});
     }
 
-    static async TestData() {
+    static async loadTestData() {
         const numAgents = 8;
         const gamesPerAgent = 2;
         const agentsPerGame = 4;
