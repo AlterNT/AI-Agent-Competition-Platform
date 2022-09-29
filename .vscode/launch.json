@@ -1,0 +1,45 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Server",
+      "cwd": "${workspaceFolder}/server",
+      "program": "./index.js",
+      "request": "launch",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "args": [
+        "start"
+      ],
+      "type": "node",
+      "outputCapture": "std",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Run Client",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/client",
+      "runtimeExecutable": "${workspaceFolder}/client/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}/client/node_modules/.bin/electron.cmd"
+      },
+      "args": [
+        ".",
+        "--cli",
+        "${input:args}"
+      ],
+      "outputCapture": "std",
+      "console": "integratedTerminal"
+    },
+  ],
+  "inputs": [
+    {
+      "id": "args",
+      "description": "",
+      "default": "",
+      "type": "promptString"
+    }
+  ]
+}

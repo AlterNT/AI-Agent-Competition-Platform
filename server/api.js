@@ -124,6 +124,12 @@ class API {
             });
         });
 
+        // returns all available gameIDs to play.
+        app.get('/api/available-games', (_, res) => {
+            const gameIDs = Object.keys(Server.instance.config.games);
+            res.json({ gameIDs });
+        });
+
         // improvement of agent in its recent few games
         // returns null if not enough games played
         app.get('/api/improvement-rate', (req, res) => {
@@ -145,20 +151,9 @@ class API {
             res.json({ authorised })
         })
 
-        app.post('/api/join', (req, res) => {
-            const { agentToken, gameID } = req.body
-            console.log('joined', agentToken, gameID)
-            LobbyManager.joinLobby(agentToken, gameID)
-            .then((success) => {
-                res.json({ success })
-            })
-        })
-
-        app.get('/api/started', (req, res) => {
-            const agentToken = req.query.agentToken
-            const gameStarted = LobbyManager.gameStarted(agentToken)
-            res.json({ gameStarted })
-        })
+        // ---------------------------------------------------------------
+        // game statistics: single agent
+        // @TODO: implement by reusing cached batch query results
 
         app.get('/api/finished', (req, res) => {
             const agentToken = req.query.agentToken
@@ -189,7 +184,13 @@ class API {
             const result = LobbyManager.method(agentToken, keys, method, params)
             res.json({ result })
         })
+
+        app.post('/api/join', async (req, res) => {
+            const { agentToken, gameID, lobbyID } = req.body
+            const result = await LobbyManager.joinLobby(agentToken, gameID, lobbyID);
+            res.json(result);
+        })
     }
 }
 
-export default API
+export default API;

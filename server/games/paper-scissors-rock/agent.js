@@ -1,7 +1,8 @@
-class Agent {
+export default class Agent {
+
+    token;
+
     constructor(agentToken) {
-        this.token = agentToken
+        this.token = agentToken;
     }
 }
-
-export default Agent

@@ -1,0 +1,76 @@
+{
+    // Database settings.
+    database: {
+        // (Boolean) If the database is enabled.
+        enabled: false,
+        protocol: 'neo4j',
+        host: 'localhost',
+        port: 7687,
+        username: 'neo4j',
+        password: 'pass',
+    },
+    // Game-specific settings.
+    // A game's ID corresponds to it's key in this object.
+    games: {
+        LoveLetter: {
+            path: 'love-letter/love-letter.js',
+            settings: {
+                maxPlayers: 4,
+                minPlayers: 2,
+                timeout: 10000,
+                failClause: 'substitute',
+                bot: 'bot',
+            },
+            tournament: {
+                matchmaker: 'round-robin',
+                minGames: 500,
+            },
+        },
+        PaperScizzorsRock: {
+            path: 'paper-scissors-rock/paper-scissors-rock.js',
+            settings: {
+                maxPlayers: 2,
+                minPlayers: 2,
+                timeout: 1000,
+                failClause: 'terminate',
+                bot: 'bot',
+            },
+            tournament: {
+                matchmaker: 'round-robin',
+                minGames: 10,
+            }
+        },
+        /* Template:
+        <Game Name Here>: {
+            // The file which exports a game implementing IGame.
+            // This is relative to the game directory.
+            path: <Path>,               REQUIRED
+            // Settings related to the game.
+            settings: {                 REQUIRED
+                // Maximum players per game.
+                maxPlayers: <Number>,   REQUIRED
+                // Minimum players per game.
+                minPlayers: <Number>,   REQUIRED
+                // How long until a move times out.
+                timeout: <Number>,      REQUIRED
+                // What to do when an agent makes an invalid move.
+                // 'substitute' replaces actions with a bot move.
+                // 'terminate' ends the game. 
+                failClause: <'terminate' (DEFAULT)|'substitute'>,
+                // The agent to use as a bot.
+                // 'bot' uses the class defined in <Game>.BOT
+                // 'smart-bot' uses the class defined in <Game>.SMARTBOT
+                bot: <'bot' (DEFAULT)|'smart-bot'>,
+            },
+            // Settings related to tournament mode.
+            tournament: {
+                // The matchmaker to use.
+                // 'round-robin' A round-robin type matchmaker.
+                matchmaker: <'round-robin'>,
+                // Minimum number of rounds for a qualifying entry.
+                minGames: <Number>,
+            }
+        }
+        */
+    }
+}

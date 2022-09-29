@@ -5,6 +5,7 @@ import Neode from 'neode';
 import Models from './models/index.js';
 import TokenGenerator from './token-generator.js';
 import DBSync from './db-sync.js';
+import Config from './config.js';
 
 class Neo4jDatabase {
     /** @type {[String]} */
@@ -14,7 +15,11 @@ class Neo4jDatabase {
 
     static async init() {
         /** @type {Neode} */
-        this.dbInstance = Neode.fromEnv().with(Models);
+        this.dbInstance = new Neode(
+            `${Config.database.protocol}://${Config.database.host}:${Config.database.port}`,
+            Config.database.username,
+            Config.database.password
+        ).with(Models);
 
         const batchQueries = [
             this.queryGames,
@@ -40,7 +45,7 @@ class Neo4jDatabase {
         return await this.dbSync.getQueryResult(query, filters || {});
     }
 
-    static async loadTestData() {
+    static async TestData() {
         const numAgents = 8;
         const gamesPerAgent = 2;
         const agentsPerGame = 4;
@@ -481,7 +486,7 @@ const getMockDatabase = () => {
     });
 }
 
-const Database = (process.env.DATABASE_ENABLED === '1') ?
+const Database = Config.database.enabled ?
     Neo4jDatabase :
     getMockDatabase();
 

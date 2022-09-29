@@ -1,54 +1,59 @@
-import fs from 'fs'
-import { PaperScissorsRock, LoveLetter } from '../games/games.js'
+import fs from 'fs';
+import Config from '../config.js';
 
 class Lobby {
-    constructor(gameID, lobbyID) {
-        this.gameID = gameID
-        this.lobbyID = lobbyID
-        this.agentTokens = []
-        this.settings = this.loadSettings()
+
+    /** @type {[String]} Array of agent tokens. */
+    tokens = [];
+    /** @type {String} ID of game. */
+    gameID;
+    /** @type {{}} Settings of current game. */
+    gameSettings;
+    /** @type {{}} Lobby options. */
+    options;
+
+    constructor(gameID, options) {
+        this.options = options;
+        this.gameID = gameID;
+        this.gameSettings = Config.games[gameID].settings;
     }
 
-    loadSettings() {
-        const settings = JSON.parse(fs.readFileSync(`./games/${this.gameID}/settings.json`))
-        return settings
-    }
-
+    /**
+     * Adds agent tokens if they aren't already in the lobby.
+     * @param {String} agentToken All tokens to be added.
+     * @returns If the agent was added successfully.
+     */
     addAgent(agentToken) {
-        // lobby full (should not be possible)
-        if (this.agentTokens.length >= this.settings.maxPlayers) { return false }
-
-        // lobby already has agent
-        if (this.agentTokens.includes(agentToken)) { return false }
-
-        this.agentTokens.push(agentToken)
-
-        return true
+        if (!this.tokens.includes(agentToken)) {
+            this.tokens.push(agentToken);
+            return true;
+        }
+        return false;
     }
 
     removeAgent(agentToken) {
-        this.agentTokens = this.agentTokens.filter((token) => token != agentToken)
+        this.tokens = this.tokens.filter((token) => token !== agentToken);
     }
 
-    startGame() {
-        // too few players
-        if (this.agentTokens.length < this.settings.minPlayers) { return false }
+    async initGame() {
+        let gameClass = (await import(`../games/${Config.games[this.gameID].path}`)).default;
+        let agents = [];
 
-        // too many players (should not be possible)
-        if (this.agentTokens.length > this.settings.maxPlayers) { return false }
-        
-        let game
-        if (this.gameID == 'paper-scissors-rock') {
-            game = new PaperScissorsRock(this.agentTokens)
+        // Agent Proxy for logging.
+        for (let token of this.tokens) {
+            agents.push(new Proxy(
+                new gameClass.Agent(token),
+                {
+                    apply: (methodName, _, args) => {
+                        //TODO: EVENT SYSTEM.
+                    }
+                }
+            ));
         }
 
-        if (this.gameID == 'love-letter') {
-            game = new LoveLetter(this.agentTokens)
-        }
-
-        game.main()
-        return game
+        let game = new gameClass(agents, 0, fs.createWriteStream('./test.txt'));
+        return game;
     }
 }
 
-export default Lobby
+export default Lobby;
