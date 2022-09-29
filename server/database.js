@@ -30,6 +30,20 @@ class Neo4jDatabase {
         await this.dbSync.start(batchQueries, timeoutDurationMilliseconds);
     }
 
+    // Has a 1.6% chance for a collision given 200 students
+    static generateRandomName() {
+        const words =  JSON.parse(fs.readFileSync('./wordlists.json'));
+        const randRange = (low, high) => Math.floor((high - low) * Math.random() + low);
+        const randElement = (arr) => arr[randRange(0, arr.length)];
+
+        const adjective = randElement(words.adjectives);
+        const colour = randElement(words.colours);
+        const fruit = randElement(words.fruit);
+        const number = `${randRange(0, 9)}${randRange(0, 9)}`;
+
+        return `${adjective}${colour}${fruit}${number}`;
+    }
+
     /**
      * Returns whatever has been cached for the result of the query
      * @param {Function | String} query
@@ -42,7 +56,7 @@ class Neo4jDatabase {
 
     static async loadTestData() {
         const numAgents = 8;
-        const gamesPerAgent = 2;
+        const gamesPerAgent = 10;
         const agentsPerGame = 4;
         const numGames = numAgents * gamesPerAgent;
 
@@ -54,6 +68,7 @@ class Neo4jDatabase {
 
         console.log('Generating User Data...');
         const studentNumbers = [...new Array(numAgents)].map((_, i) => String(10000 * i + 20000000));
+        studentNumbers.push(this.defaultAgentToken);
 
         const tokengen = new TokenGenerator();
         const userData = tokengen.computeStudentTokens(studentNumbers);
@@ -102,7 +117,7 @@ class Neo4jDatabase {
             return defaultAgent;
         }
 
-        const user = await this.createUser(Database.defaultAgentToken, '000000');
+        const user = await this.createUser(Database.defaultAgentToken, '000000', 'DefaultBotAgent');
         const agent = await this.dbInstance.create('Agent', {
             srcPath: '???',
         });
@@ -137,7 +152,8 @@ class Neo4jDatabase {
      * @param {String | Number} studentNumber
      * @returns {Neode.Node<Models.User>}
      */
-    static async createUser(studentNumber, authToken, displayName='-') {
+    static async createUser(studentNumber, authToken, selectedDisplayName=null) {
+        const displayName = selectedDisplayName || this.generateRandomName();
         return await this.dbInstance.create('User', {
             studentNumber: String(studentNumber),
             authToken,
