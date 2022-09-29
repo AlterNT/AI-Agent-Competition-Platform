@@ -19,9 +19,7 @@ async function main() {
     .help()
     .argv
 
-    const server = new Server();
-    await server.init();
-
+    await Database.init();
     if (argv._[0] == 'load-test-data') {
         await Database.loadTestData();
         process.exit(0);
@@ -37,6 +35,9 @@ async function main() {
         console.log('New Tokens Created:', tokens)
         process.exit(0)
     }
+
+    const server = new Server();
+    await server.init();
 }
 
 main();

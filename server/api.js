@@ -42,7 +42,7 @@ class API {
         });
 
         // returns all games played
-        app.get('/api/games', (_, res) => {
+        app.get('/api/games', (req, res) => {
             const { page } = req.query;
             Database.paginateGames(page)
                 .then((games) => {

@@ -152,9 +152,10 @@ Player 3: ${gameState.score(3)}
             this.stream.write(`\t Agent ${i}, '${this.agents[i]}':\t ${this.result[i]}\n`);
         }
         const scores = {};
-        this.agents.forEach(({ name }, i) => {
-            scores[name] = this.result[i]
+        this.agents.forEach(({ token }, i) => {
+            scores[token] = this.result[i]
         })
+        console.log(this.agents)
         this.finished = true
         await Database.recordGame(scores)
     }

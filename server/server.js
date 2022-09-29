@@ -26,7 +26,6 @@ export default class Server {
 
     async init() {
         API.init();
-        await Database.init();
     }
 
 }
