@@ -35,12 +35,20 @@ class API {
                 });
         });
 
+        app.get('/api/count-pages', (req, res) => {
+            Database.countPages()
+                .then((numPages) => {
+                    res.json({numPages});
+                });
+
+        });
+
         // returns all user/agent ids
         app.get('/api/agents', (_, res) => {
             Database.getQueryResult(Database.queryAgents)
-            .then((agents) => {
-                res.json({agents});
-            });
+                .then((agents) => {
+                    res.json({agents});
+                });
         });
 
         // returns all bot agents

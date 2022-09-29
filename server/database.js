@@ -311,7 +311,7 @@ class Neo4jDatabase {
             MATCH (g:Game)<-[rel]-(a:Agent)
             WITH g, collect({score: rel.score, agent: a.id}) as scores
             RETURN g, scores
-            ORDER BY g.timePlayed DESC
+            ORDER BY g.timePlayed ASC
             SKIP (toInteger($page) - 1) * toInteger($gamesPerPage)
             LIMIT toInteger($gamesPerPage);
         `, {
@@ -333,6 +333,15 @@ class Neo4jDatabase {
                 agentScores,
             }
         });
+    }
+
+    static async countPages() {
+        const res = await this.dbInstance.cypher(`
+            MATCH (g:Game)
+            RETURN count(g) as pages;
+        `);
+
+        return res.records[0].get('pages').toInt();
     }
 
     /**
