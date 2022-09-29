@@ -37,9 +37,6 @@ async function main() {
         console.log('New Tokens Created:', tokens)
         process.exit(0)
     }
-
-    const server = new Server();
-    await server.init();
 }
 
 main();

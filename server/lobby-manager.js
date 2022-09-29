@@ -72,7 +72,7 @@ class LobbyManager {
                     this.agentGame[agentToken] = game 
                     delete this.agentLobby[agentToken]
                 })
-                delete this.lobbies[lobby.lobbyID]
+                delete this.lobbies[lobbyID]
                 console.log(`Game Started (${lobby.gameID}): `, lobby.tokens)
                 game.main();
             }

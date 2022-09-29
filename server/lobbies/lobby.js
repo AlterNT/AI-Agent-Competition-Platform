@@ -24,7 +24,6 @@ class Lobby {
      * @returns If the agent was added successfully.
      */
     addAgent(agentToken) {
-        console.log(this.tokens)
         if (!this.tokens.includes(agentToken)) {
             this.tokens.push(agentToken);
             return true;

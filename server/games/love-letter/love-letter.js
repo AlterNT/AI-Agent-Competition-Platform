@@ -155,7 +155,6 @@ Player 3: ${gameState.score(3)}
         this.agents.forEach(({ token }, i) => {
             scores[token] = this.result[i]
         })
-        console.log(this.agents)
         this.finished = true
         await Database.recordGame(scores)
     }
