@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <h1>Rendered</h1>
+    <body>
+        <button id="renderer" onclick="renderTable()">Render</button>
+        <table id="excelDataTable"></table>
+    </body>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+
+    <script type="text/javascript" src="./js/scripts.js">
+        window.onload = renderTable();
+        window.onload = download_table_as_csv();
+    </script>
+</html>
