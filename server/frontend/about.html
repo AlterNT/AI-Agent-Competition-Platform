@@ -34,25 +34,22 @@
           <a class="nav-link" href="index.html">Main</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="leaderboard.html">Leaderboard</a>
+          <a class="nav-link" aria-current="page" href="leaderboard.html">Leaderboard</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">Query</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="about.html">About</a>
+            <a class="nav-link active" aria-current="page" href="about.html">About</a>
         </li>
       </ul>
     <div class="masthead">
         <div class="masthead-content text-white">
                 <div class="d-inline-flex justify-content-center">
-                    <div class="tableWrapper">
-                        <table id="excelDataTable"></table>
-                    </div>
+                    <div class="container">
+                    <h1 class="fst-normal lh-1 mb-4" style="font-family: sans-serif">AI Agent Competition Platform</h1>
+                    <p class="mb-5">talk about rules with the love letter game?</p>
                 </div>
-                    <br><br>
-                <div class="d-inline-flex justify-content-center">
-                    <button class='btn btn-outline-primary'onclick="download_table_as_csv('excelDataTable')">Export</button>
                 </div>
         </div>
     </div> 
@@ -71,12 +68,6 @@
     <!-- Core theme JS-->
     <script src="./js/scripts.js"></script>
     <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
-
-    <!-- Import Main Scripts-->
-    <script type="text/javascript" src="./js/scripts.js">
-        window.onload = renderTable();
-        window.onload = download_table_as_csv();
-    </script>
 
     <!-- JQuery -->
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
