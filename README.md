@@ -1,12 +1,67 @@
-# Client
-## CLI Mode
-### Usage
-```sh
-node . <options>
+# Running The Project
+## Dependencies
+`node.js`/`npm` and `python` (3) are the only required dependencies.
+
+Installation tutorials:
+- [node.js](https://enterflash.io/posts/how-to-install-nodejs-and-npm-on-windows-mac-or-linux)
+- [python](https://www.tutorialsteacher.com/python/install-python)
+  - must be added to path during the installation or the agent won't work
+
+### Versions
+Required:
+- node: v14.19.3
+- python: 3.10.4
+
+Optional (do not install unless deploying, or developing):
+- java: openjdk version 11 (or equivalent)
+- neo4j: 4.4.10
+- apoc: 4.4.0.8
+
+## Server
+All command under this section are executed under the `/server` directory.
+First change to the server directory and install dependencies:
+```bash
+cd server
+npm i
 ```
 
-### Options
-```bs
+### Starting the Server
+```bash
+node . start
+```
+## Client Program
+All command under this section are executed under the `/client` directory.
+First change to the client directory and install dependencies:
+```bash
+cd client
+npm i
+```
+
+### CLI-Mode
+```bash
+node . <options>
+
+# options required for a game,
+# change the -t flag to be different for each agent
+node . -t 1 -l py -g love-letter
+```
+
+Run 4 agent processes as above with the `-t` flag being different in each case.
+Agent processes should all be run in their own terminal for readability.
+
+Alternatively you can run them all as background processes **(not recommended)**:
+```bash
+node . -t 1 -l py -g love-letter &\
+   node . -t 2 -l py -g love-letter &\
+   node . -t 3 -l py -g love-letter &\
+   node . -t 4 -l py -g love-letter
+```
+
+The client process quits if it detects the server is not running so cleanup of dangling processes is not an issue.
+
+### CLI-Options
+If you would like to change the options:
+```bash
       --version   Show version number                                  [boolean]
   -t, --token     Agent authentication token                 [string] [required]
   -l, --language  Language of agent  [string] [required] [choices: "py", "java"]
@@ -15,19 +70,38 @@ node . <options>
   -h, --help      Show help                                            [boolean]
 ```
 
-## With Electron GUI
-TODO
+<!-- ## With Electron GUI
+TODO -->
+
+**INFORMATION BELOW THIS LINE ONLY APPLICABLE TO DEVELOPERS OR IF DEPLOYING**
+---
 
 # Server
 All command under this section are executed under the `/server` directory.
+First change to the client directory and install dependencies:
+```bash
+cd server
+npm i
+```
 
 ### Starting the Server
-```zsh
+```bash
 node . start
 ```
 
+# Development and DevOps
+## Server
+### Generating Test Data
+WARNING: running this will CLEAR your database, do NOT use it on the same machine as a running server
+
+In case of an error on the delete operation: run the command again until it works.
+```bash
+node . load-test-data
+```
+
 ### Token Generation
-```zsh
+```bash
+# in /server
 node . tokens <path-to-token-file>
 ```
 
@@ -39,15 +113,6 @@ StudentNumber3
 ...
 ```
 
-# Development
-## Server
-### Generating Test Data
-WARNING: running this will CLEAR your database, do NOT use it on the same machine as a running server
-
-In case of an error on the delete operation: run the command again until it works.
-```zsh
-node . load-test-data
-```
 
 ### Connection to DB Instance With Neo4j Browser
 1. Start Neo4j

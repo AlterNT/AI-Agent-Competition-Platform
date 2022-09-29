@@ -71,8 +71,8 @@ class LoveLetter extends IGame {
         });
 
         const timeout = setTimeout(() => {
-            this.resolve(null);
-        }, 10000);
+            this.resolve(null)
+        }, 10000)
 
         const move = await this.pending;
         clearTimeout(timeout);

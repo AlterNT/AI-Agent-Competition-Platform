@@ -28,9 +28,9 @@ class API {
         // returns all user/agent ids
         app.get('/api/agents', (_, res) => {
             Database.getQueryResult(Database.queryAgents)
-            .then((agents) => {
-                res.json({agents});
-            });
+                .then((agents) => {
+                    res.json({agents});
+                });
         });
 
         // returns all bot agents
@@ -43,10 +43,27 @@ class API {
 
         // returns all games played
         app.get('/api/games', (_, res) => {
-            Database.getQueryResult(Database.queryGames)
-            .then((games) => {
-                res.json({games});
-            });
+            const { page } = req.query;
+            Database.paginateGames(page)
+                .then((games) => {
+                    res.json({games})
+                });
+        });
+
+        // returns number of pages for the games query
+        app.get('/api/count-game-pages', (_, res) => {
+            Database.countPages()
+                .then((numPages) => {
+                    res.json({numPages});
+                });
+        });
+
+        app.post('/api/set-display-name', (req, res) => {
+            const { userToken, displayName } = req.query;
+            Database.setDisplayName(userToken, displayName)
+                .then((success) => {
+                    res.json({success});
+                });
         });
 
         // returns a single game
