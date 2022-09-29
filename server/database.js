@@ -353,11 +353,12 @@ class Neo4jDatabase {
         const allUsers = res.map((_, i) => {
             const user = res.get(i);
             const agentId = user.get('controls')?.endNode()?.get('id');
-            const { studentNumber } = user.properties();
+            const { studentNumber, displayName } = user.properties();
 
             return {
                 studentNumber,
                 agentId,
+                displayName,
             };
         });
 
@@ -372,10 +373,10 @@ class Neo4jDatabase {
      */
     static async queryTopWinrate() {
         const res = await this.dbInstance.cypher(`
-            MATCH (a:Agent)-[p:PLAYED_IN]-> (g:Game)
-            WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
-            WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
-            RETURN a.id as AgentId, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
+            MATCH (u:User)-[:CONTROLS]->(a:Agent)-[p:PLAYED_IN]-> (g:Game)
+            WITH a, u, count(g) AS GamesPlayed, collect(p.score) AS scores
+            WITH a, u, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
+            RETURN a.id as AgentId, u.displayName as DisplayName, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
             ORDER BY WinPercent DESC;
         `);
 
@@ -384,6 +385,7 @@ class Neo4jDatabase {
             gamesPlayed: record.get('GamesPlayed').toInt(),
             wins: record.get('Wins').toInt(),
             winPercent: record.get('WinPercent').toNumber().toFixed(2),
+            displayName: record.get('DisplayName')?.toString() || null,
         }));
     }
 
@@ -497,6 +499,23 @@ class Neo4jDatabase {
         `);
 
         return res.records.map((record) => record.get('Agents'));
+    }
+
+    static async setDisplayName(userToken, displayName) {
+        const user = await this.dbInstance.find('User', userToken);
+        if (!user) {
+            return {
+                success: false,
+                error: `userToken ${userToken} does not exist in the database`,
+            };
+        }
+
+        user.update({ displayName });
+
+        return {
+            success: true,
+            error: null,
+        };
     }
 }
 

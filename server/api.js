@@ -56,7 +56,14 @@ class API {
                 .then((numPages) => {
                     res.json({numPages});
                 });
+        });
 
+        app.post('/api/set-display-name', (req, res) => {
+            const { userToken, displayName } = req.query;
+            Database.setDisplayName(userToken, displayName)
+                .then((success) => {
+                    res.json({success});
+                });
         });
 
         // returns a single game
