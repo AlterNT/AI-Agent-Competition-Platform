@@ -15,7 +15,7 @@ export default {
     },
     displayName: {
         type: 'string',
-        required: false,
+        required: true,
         unique: false,
     },
     controls: {
