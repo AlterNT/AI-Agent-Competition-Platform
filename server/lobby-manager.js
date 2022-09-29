@@ -74,7 +74,7 @@ class LobbyManager {
                 })
                 delete this.lobbies[lobby.lobbyID]
                 console.log(`Game Started (${lobby.gameID}): `, lobby.tokens)
-                game.playGame();
+                game.main();
             }
         }
 
@@ -83,7 +83,6 @@ class LobbyManager {
 
     static gameStarted(agentToken) {
         const started = this.agentGame[agentToken] !== undefined
-        console.log(started);
         return started
     }
 

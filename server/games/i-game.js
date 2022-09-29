@@ -26,7 +26,7 @@ class IGame {
         this.agents = agents;
     }
 
-    async playGame() {}
+    async main() {}
 
 }
 

@@ -73,6 +73,7 @@ class State {
      * @throws IllegalActionException if this is a player state.
      **/
     newRound() {
+        if (this.gameOver()) { return }
         if (this.player != -1) { throw new Error('Operation not permitted in player\'s state.'); }
         this.deck = Card.createDeck(this.random);
         this.discards = new Array(this.num);

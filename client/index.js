@@ -42,7 +42,7 @@ async function main() {
     let fp
     switch (language) {
         case 'py':
-            fp = child_process.spawn('python3', ['./agents/python/main.py', token, game])
+            fp = child_process.spawn('python', ['./agents/python/main.py', token, game])
             break
         case 'java':
             fp = child_process.spawn('java', ['./agents/java/Main.java', token, game])
