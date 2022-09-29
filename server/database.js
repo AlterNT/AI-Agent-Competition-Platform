@@ -385,7 +385,7 @@ class Neo4jDatabase {
             gamesPlayed: record.get('GamesPlayed').toInt(),
             wins: record.get('Wins').toInt(),
             winPercent: record.get('WinPercent').toNumber().toFixed(2),
-            displayName: record.get('DisplayName')?.toString() || null,
+            displayName: record.get('DisplayName')?.toString() || '-',
         }));
     }
 
