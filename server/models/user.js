@@ -13,6 +13,11 @@ export default {
         required: true,
         unique: true,
     },
+    displayName: {
+        type: 'string',
+        required: true,
+        unique: false,
+    },
     controls: {
         type: 'relationship',
         relationship: 'CONTROLS',

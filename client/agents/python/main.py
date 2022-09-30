@@ -1,5 +1,7 @@
+from asyncio import sleep
 import sys
 import time
+import requests
 
 import love_letter
 import paper_scissors_rock
@@ -16,32 +18,34 @@ def main():
 
     # multiple games loop
     while True:
-        joined_lobby = agent.agent_io.join_lobby()
+        try:
+            joined_lobby = agent.agent_io.join_lobby()
 
-        if (joined_lobby):
-            print('joined lobby')
-            
-            # wait for game to start
-            while not agent.agent_io.game_started():
-                pass
+            if (joined_lobby):
+                print('joined lobby')
 
-            print('game started')
-            
-            # main game loop
-            while not agent.agent_io.game_finished():
-                is_turn = agent.agent_io.is_turn()
+                # wait for game to start
+                while not agent.agent_io.game_started():
+                    time.sleep(1)
+
+                print('game started')
                 
-                if (is_turn):
-                    print('making move')
-                    agent.state = agent.agent_io.get_state()
-                    move = agent.move()
-                    agent.agent_io.send_action(move)
+                # main game loop
+                while not agent.agent_io.game_finished():
+                    is_turn = agent.agent_io.is_turn()
 
-                time.sleep(0.1)
+                    if (is_turn):
+                        print('making move')
+                        agent.state = agent.agent_io.get_state()
+                        move = agent.move()
+                        agent.agent_io.send_action(move)
 
-        time.sleep(1)
+                    time.sleep(0.5)
+        except requests.exceptions.ConnectionError:
+            print('Cannot connect to server,\nplease check that it\'s running')
+            exit(1)
 
-                    
-                
+        time.sleep(2)
+
 if __name__ == '__main__':
     main()

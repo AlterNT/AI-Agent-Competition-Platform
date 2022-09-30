@@ -1,3 +1,5 @@
+import chalk from 'chalk'
+import commandExists from 'command-exists'
 import child_process from 'child_process'
 import yargs from 'yargs'
 
@@ -5,6 +7,34 @@ import API from './api.js'
 
 const LANGUAGES = ['py', 'java']
 const GAMES = ['paper-scissors-rock', 'love-letter']
+
+const pathLookup = async (lookupList) => {
+    for (const programName of lookupList) {
+        try {
+            await commandExists(programName)
+            return programName
+        } catch {}
+    }
+
+    throw new Error('None of options in path')
+}
+
+const getPythonPath = async () => {
+    try {
+        return await pathLookup(['python3', 'python'])
+    } catch {
+        throw new Error('Python not installed? Please check that `python3` or `python` is in path.')
+    }
+}
+
+const getJavaPath = async () => {
+    throw new Error('Java Agents Not Implemented Yet: Try Python Agents')
+    try {
+        return await pathLookup(['java'])
+    } catch {
+        throw new Error('Java not installed or not in path?')
+    }
+}
 
 async function main() {
     const argv = yargs(process.argv)
@@ -42,14 +72,28 @@ async function main() {
     let fp
     switch (language) {
         case 'py':
-            fp = child_process.spawn('python3', ['./agents/python/main.py', token, game])
+            try {
+                fp = child_process.spawn(await getPythonPath(), ['-u', './agents/python/main.py', token, game])
+            } catch (pathError) {
+                console.error(pathError)
+                return
+            }
             break
         case 'java':
-            fp = child_process.spawn('java', ['./agents/java/Main.java', token, game])
+            try {
+                fp = child_process.spawn(await getJavaPath(), ['./agents/java/Main.java', token, game])
+            } catch (pathError) {
+                console.error(pathError)
+                return
+            }
             break
     }
     fp.stdout.on('data', (data) => {
         console.log(`${data}`)
+    })
+
+    fp.stderr.on('data', (data) => {
+        console.log(chalk.red(`${data}`))
     })
 }
 

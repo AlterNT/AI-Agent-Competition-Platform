@@ -1,10 +1,16 @@
-import Card from './card.js'
+import Card from './card.js';
 
 /**
  * An abstract class to represent actions in the game LoveLetter.
  * The class is designed to be immutable.
  **/
-class Action {
+export default class Action {
+
+    card;
+    player;
+    target;
+    guess;
+
     /**
      * Private constructor for creating a new action.
      * Called by the static play methods.
@@ -15,13 +21,13 @@ class Action {
      * @throws Error if an illegal action.
      **/
     constructor(card, player, target, guess) {
-        if (player < 0 || player > 3) { throw new Error("Player out of range") }
-        if (card == null) { throw new Error("Null card specified in action") }
-        if (target < -1 || target > 3) { throw new Error("Player out of range") }
-        this.card = card
-        this.player = player
-        this.target = target
-        this.guess = guess
+        if (player < 0 || player > 3) { throw new Error('Player out of range.'); }
+        if (card == null) { throw new Error('Null card specified in action.'); }
+        if (target < -1 || target > 3) { throw new Error('Player out of range.'); }
+        this.card = card;
+        this.player = player;
+        this.target = target;
+        this.guess = guess;
     }
 
     /**
@@ -29,21 +35,23 @@ class Action {
      * @return a string representation of the action
      **/
     makeString(player, target) {
-        let str = "Player " + player + " played the " + this.card.name
+        let str = `Player ${player} played the ${this.card.name}`;
         switch (this.card) {
-            case Card.GUARD: return str + " and guessed player " + target + " held the " + this.guess + "."
-            case Card.PRIEST: return str + " and asked to see player " + target + "'s card."
-            case Card.BARON: return str + " and challenged player " + target + "."
-            case Card.HANDMAID: return str + "."
-            case Card.PRINCE: return str + " and asked player " + target + " to discard."
-            case Card.KING: return str + " and asked player " + target + " to swap cards."
-            case Card.COUNTESS: return str + "."
-            case Card.PRINCESS: return str + "."
-            default: return str + "."
+            case Card.GUARD: return str + ` and guessed player ${target} held the ${this.guess}.`;
+            case Card.PRIEST: return str + ` and asked to see player ${target}'s card.`;
+            case Card.BARON: return str + ` and challenged player ${target} .`;
+            case Card.HANDMAID: return str + '.';
+            case Card.PRINCE: return str + ` and asked player ${target} to discard.`;
+            case Card.KING: return str + ` and asked player ${target} to swap cards.`;
+            case Card.COUNTESS: return str + '.';
+            case Card.PRINCESS: return str + '.';
+            default: return str + '.';
         }
     }
 
-    toString() { return this.makeString("" + this.player, "" + this.target) }
+    toString() {
+        return this.makeString('' + this.player, '' + this.target);
+    }
 
     /**
      * Constructs a GUARD action from the player guessing the targets card.
@@ -54,11 +62,11 @@ class Action {
      * @throws IllegalActionException if an illegal action.
      **/
     static playGuard(player, target, guess) {
-        if (target === -1) { throw new Error("Target must be specified") }
-        if (player === target) { throw new Error("A player cannot target themselves") }
-        if (guess == null) { throw new Error("Player cannot guess a null card") }
-        if (guess == "GUARD") { throw new Error("Player cannot guess a guard") }
-        return new Action(Card.GUARD, player, target, guess)
+        if (target === -1) { throw new Error('Target must be specified.'); }
+        if (player === target) { throw new Error('A player cannot target themselves.'); }
+        if (guess == null) { throw new Error('Player cannot guess a null card.'); }
+        if (guess == 'GUARD') { throw new Error('Player cannot guess a guard.'); }
+        return new Action(Card.GUARD, player, target, guess);
     }
 
     /**
@@ -69,9 +77,9 @@ class Action {
      * @throws IllegalActionException if an illegal action.
      **/
     static playPriest(player, target) {
-        if (target === -1) { throw new Error("Target must be specified") }
-        if (player === target) { throw new Error("A player cannot target themselves") }
-        return new Action(Card.PRIEST, player, target, null)
+        if (target === -1) { throw new Error('Target must be specified.'); }
+        if (player === target) { throw new Error('A player cannot target themselves.'); }
+        return new Action(Card.PRIEST, player, target, null);
     }
 
     /**
@@ -82,9 +90,9 @@ class Action {
      * @throws IllegalActionException if an illegal action.
      **/
     static playBaron(player, target) {
-        if (target === -1) { throw new Error("Target must be specified") }
-        if (player === target) { throw new Error("A player cannot target themselves") }
-        return new Action(Card.BARON, player, target, null)
+        if (target === -1) { throw new Error('Target must be specified.'); }
+        if (player === target) { throw new Error('A player cannot target themselves.'); }
+        return new Action(Card.BARON, player, target, null);
     }
 
     /**
@@ -93,7 +101,7 @@ class Action {
      * @return the action object
      **/
     static playHandmaid(player) {
-        return new Action(Card.HANDMAID, player, -1, null)
+        return new Action(Card.HANDMAID, player, -1, null);
     }
 
     /**
@@ -106,8 +114,8 @@ class Action {
      * @throws Error if an illegal action.
      **/
     static playPrince(player, target) {
-        if (target === -1) { throw new Error("Target must be specified") }
-        return new Action(Card.PRINCE, player, target, null)
+        if (target === -1) { throw new Error('Target must be specified.'); }
+        return new Action(Card.PRINCE, player, target, null);
     }
 
     /**
@@ -119,9 +127,9 @@ class Action {
      * @throws Error if an illegal action.
      **/
     static playKing(player, target) {
-        if (target === -1) { throw new Error("Target must be specified") }
-        if (player === target) { throw new Error("A player cannot target themselves") }
-        return new Action(Card.KING, player, target, null)
+        if (target === -1) { throw new Error('Target must be specified.'); }
+        if (player === target) { throw new Error('A player cannot target themselves.'); }
+        return new Action(Card.KING, player, target, null);
     }
 
     /**
@@ -131,7 +139,7 @@ class Action {
      * @throws Error if the player is out of range
      **/
     static playCountess(player) {
-        return new Action(Card.COUNTESS, player, -1, null)
+        return new Action(Card.COUNTESS, player, -1, null);
     }
 
     /**
@@ -141,8 +149,6 @@ class Action {
      * @throws Error if the player is out of range
      **/
     static playPrincess(player) {
-        return new Action(Card.PRINCESS, player, -1, null)
+        return new Action(Card.PRINCESS, player, -1, null);
     }
 }
-
-export default Action

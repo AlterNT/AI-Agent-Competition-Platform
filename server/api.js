@@ -28,9 +28,9 @@ class API {
         // returns all user/agent ids
         app.get('/api/agents', (_, res) => {
             Database.getQueryResult(Database.queryAgents)
-            .then((agents) => {
-                res.json({agents});
-            });
+                .then((agents) => {
+                    res.json({agents});
+                });
         });
 
         // returns all bot agents
@@ -42,11 +42,28 @@ class API {
         });
 
         // returns all games played
-        app.get('/api/games', (_, res) => {
-            Database.getQueryResult(Database.queryGames)
-            .then((games) => {
-                res.json({games});
-            });
+        app.get('/api/games', (req, res) => {
+            const { page } = req.query;
+            Database.paginateGames(page)
+                .then((games) => {
+                    res.json({games})
+                });
+        });
+
+        // returns number of pages for the games query
+        app.get('/api/count-game-pages', (_, res) => {
+            Database.countPages()
+                .then((numPages) => {
+                    res.json({numPages});
+                });
+        });
+
+        app.post('/api/set-display-name', (req, res) => {
+            const { userToken, displayName } = req.query;
+            Database.setDisplayName(userToken, displayName)
+                .then((success) => {
+                    res.json({success});
+                });
         });
 
         // returns a single game
@@ -124,6 +141,12 @@ class API {
             });
         });
 
+        // returns all available gameIDs to play.
+        app.get('/api/available-games', (_, res) => {
+            const gameIDs = Object.keys(Server.instance.config.games);
+            res.json({ gameIDs });
+        });
+
         // improvement of agent in its recent few games
         // returns null if not enough games played
         app.get('/api/improvement-rate', (req, res) => {
@@ -145,20 +168,15 @@ class API {
             res.json({ authorised })
         })
 
-        app.post('/api/join', (req, res) => {
-            const { agentToken, gameID } = req.body
-            console.log('joined', agentToken, gameID)
-            LobbyManager.joinLobby(agentToken, gameID)
-            .then((success) => {
-                res.json({ success })
-            })
-        })
+        // ---------------------------------------------------------------
+        // game statistics: single agent
+        // @TODO: implement by reusing cached batch query results
 
         app.get('/api/started', (req, res) => {
-            const agentToken = req.query.agentToken
+            const agentToken = req.query.agentToken;
             const gameStarted = LobbyManager.gameStarted(agentToken)
             res.json({ gameStarted })
-        })
+        });
 
         app.get('/api/finished', (req, res) => {
             const agentToken = req.query.agentToken
@@ -189,7 +207,13 @@ class API {
             const result = LobbyManager.method(agentToken, keys, method, params)
             res.json({ result })
         })
+
+        app.post('/api/join', async (req, res) => {
+            const { agentToken, gameID, lobbyID } = req.body
+            const result = await LobbyManager.joinLobby(agentToken, gameID, lobbyID);
+            res.json(result);
+        })
     }
 }
 
-export default API
+export default API;
