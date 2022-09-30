@@ -7,7 +7,7 @@
         host: 'localhost',
         port: 7687,
         username: 'neo4j',
-        password: 'pass',
+        password: 'password',
     },
     // Game-specific settings.
     // A game's ID corresponds to it's key in this object.
