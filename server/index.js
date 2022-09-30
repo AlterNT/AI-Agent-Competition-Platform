@@ -1,8 +1,7 @@
-import 'dotenv/config.js'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
+import API from './api.js'
 import Database from './database.js'
-import Server from './server.js'
 
 
 async function main() {
@@ -19,7 +18,9 @@ async function main() {
     .help()
     .argv
 
+    API.init();
     await Database.init();
+
     if (argv._[0] == 'load-test-data') {
         await Database.loadTestData();
         process.exit(0);
@@ -35,9 +36,6 @@ async function main() {
         console.log('New Tokens Created:', tokens)
         process.exit(0)
     }
-
-    const server = new Server();
-    await server.init();
 }
 
 main();

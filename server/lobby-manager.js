@@ -22,7 +22,7 @@ class LobbyManager {
         // if agent already in game
         const currentGame = this.agentGame[agentToken]
         if (currentGame) {
-            if (!currentGame.finished) { return {success: false} }
+            if (!currentGame.gameFinished()) { return {success: false} }
             delete this.agentGame[agentToken]
         }
 
@@ -72,7 +72,7 @@ class LobbyManager {
                     this.agentGame[agentToken] = game 
                     delete this.agentLobby[agentToken]
                 })
-                delete this.lobbies[lobby.lobbyID]
+                delete this.lobbies[lobbyID]
                 console.log(`Game Started (${lobby.gameID}): `, lobby.tokens)
                 game.main();
             }
@@ -94,8 +94,8 @@ class LobbyManager {
         const gameFinished = game.gameFinished()
 
         if (gameFinished) {
-            const agentTokens = game.agentTokens
-            agentTokens.forEach((agentToken) => delete this.agentGame[agentToken])
+            const agents = game.agents
+            agents.forEach((agent) => delete this.agentGame[agent.token])
         }
 
         return gameFinished
