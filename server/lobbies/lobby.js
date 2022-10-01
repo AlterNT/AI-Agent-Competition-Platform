@@ -1,5 +1,5 @@
 import fs from 'fs';
-import Config from '../config.js';
+import config from '../config.js';
 
 class Lobby {
 
@@ -15,7 +15,7 @@ class Lobby {
     constructor(gameID, options) {
         this.options = options;
         this.gameID = gameID;
-        this.gameSettings = Config.games[gameID].settings;
+        this.gameSettings = config.games[gameID].settings;
     }
 
     /**
@@ -36,7 +36,7 @@ class Lobby {
     }
 
     async initGame() {
-        let gameClass = (await import(`../games/${Config.games[this.gameID].path}`)).default;
+        let gameClass = (await import(`../games/${config.games[this.gameID].path}`)).default;
         let agents = [];
 
         // Agent Proxy for logging.
