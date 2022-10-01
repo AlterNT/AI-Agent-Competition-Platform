@@ -122,7 +122,7 @@ class Neo4jDatabase {
             return defaultAgent;
         }
 
-        const user = await this.createUser(Database.defaultAgentToken, '000000', 'DefaultBotAgent');
+        const user = await this.createUser(Database.defaultAgentToken, '000000', 'DefaultBotAgent', true);
         const agent = await this.dbInstance.create('Agent', {
             srcPath: '???',
         });
@@ -155,14 +155,17 @@ class Neo4jDatabase {
     /**
      * @param {String} userToken
      * @param {String | Number} studentNumber
+     * @param {String | null} selectedDisplayName
+     * @param {Boolean} isBot
      * @returns {Neode.Node<Models.User>}
      */
-    static async createUser(studentNumber, authToken, selectedDisplayName=null) {
+    static async createUser(studentNumber, authToken, selectedDisplayName=null, isBot=false) {
         const displayName = selectedDisplayName || this.generateRandomName();
         return await this.dbInstance.create('User', {
             studentNumber: String(studentNumber),
             authToken,
             displayName,
+            isBot,
         });
     }
 
@@ -375,10 +378,11 @@ class Neo4jDatabase {
         const allUsers = res.map((_, i) => {
             const user = res.get(i);
             const agentId = user.get('controls')?.endNode()?.get('id');
-            const { displayName } = user.properties();
+            const { isBot, displayName } = user.properties();
 
             return {
                 agentId,
+                isBot,
                 displayName,
             };
         });
@@ -395,14 +399,15 @@ class Neo4jDatabase {
     static async queryTopWinrate() {
         const res = await this.dbInstance.cypher(`
             MATCH (u:User)-[:CONTROLS]->(a:Agent)-[p:PLAYED_IN]-> (g:Game)
-            WITH a, u.displayName as DisplayName, count(g) AS GamesPlayed, collect(p.score) AS scores
-            WITH a, DisplayName, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
-            RETURN a.id as AgentId, DisplayName, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
+            WITH a, u, count(g) AS GamesPlayed, collect(p.score) AS scores
+            WITH a, u, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
+            RETURN a.id as AgentId, u.isBot as IsBot, u.displayName as DisplayName, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
             ORDER BY WinPercent DESC;
         `);
 
         return res.records.map((record) => ({
             displayName: record.get('DisplayName').toString(),
+            isBot: record.get('IsBot').toString(),
             gamesPlayed: record.get('GamesPlayed').toInt(),
             wins: record.get('Wins').toInt(),
             winPercent: record.get('WinPercent').toNumber().toFixed(2),

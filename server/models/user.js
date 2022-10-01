@@ -18,6 +18,12 @@ export default {
         required: true,
         unique: false,
     },
+    isBot: {
+        type: 'boolean',
+        required: true,
+        unique: false,
+        default: false,
+    },
     controls: {
         type: 'relationship',
         relationship: 'CONTROLS',
