@@ -4,6 +4,8 @@ import API from './api.js'
 import Database from './database.js'
 
 
+
+
 async function main() {
     const argv = yargs(hideBin(process.argv))
     .usage('Usage: $0 <command> [options]')

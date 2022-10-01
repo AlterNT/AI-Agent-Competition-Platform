@@ -44,7 +44,7 @@ class Lobby {
             agents.push(new Proxy(
                 new gameClass.Agent(token),
                 {
-                    apply: (methodName, _, args) => {
+                    get: (methodName, _, args) => {
                         //TODO: EVENT SYSTEM.
                     }
                 }
