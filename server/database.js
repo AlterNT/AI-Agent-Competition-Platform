@@ -460,19 +460,6 @@ class Neo4jDatabase {
         return res.records.map((record) => record.get('Games').toString());
     };
 
-    /**
-     * @return {any[]} array of all bot agents
-     */
-    static async queryBotAgents() {
-        const res = await this.dbInstance.cypher(`
-            MATCH (u:User)-[:CONTROLS]->(a:Agent)
-            WHERE u.authToken = "00000000"
-            RETURN u as User, a as Agents;
-        `);
-
-        return res.records.map((record) => record.get('Agents'));
-    }
-
     static async setDisplayName(userToken, displayName) {
         const user = await this.dbInstance.find('User', userToken);
         if (!user) {

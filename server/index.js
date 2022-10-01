@@ -1,6 +1,7 @@
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import API from './api.js'
+import Config from './config.js';
 import Database from './database.js'
 
 
@@ -18,7 +19,8 @@ async function main() {
     .help()
     .argv
 
-    API.init();
+    process.env.AI_PLATFORM_SECRET_KEY = Config.database.AI_PLATFORM_SECRET_KEY;
+
     await Database.init();
 
     if (argv._[0] == 'load-test-data') {
@@ -36,6 +38,8 @@ async function main() {
         console.log('New Tokens Created:', tokens)
         process.exit(0)
     }
+
+    API.init();
 }
 
 main();
