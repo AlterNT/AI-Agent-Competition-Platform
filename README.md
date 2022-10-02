@@ -82,6 +82,7 @@ First change to the client directory and install dependencies:
 ```bash
 cd server
 npm i
+cp config.json5.example config.json5
 ```
 
 ### Starting the Server
