@@ -515,7 +515,7 @@ const getMockDatabase = () => {
     });
 }
 
-const Database = Config.database.enabled ?
+const Database = process.env.NODE_ENV !== 'test' && Config.database.enabled ?
     Neo4jDatabase :
     getMockDatabase();
 
