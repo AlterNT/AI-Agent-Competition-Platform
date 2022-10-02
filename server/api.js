@@ -1,17 +1,20 @@
 import express from 'express'
 import LobbyManager from './lobby-manager.js'
 import Database from './database.js'
+import config from './config.js';
 
 class API {
+
+    /** @type {import('express').Application} */
+    static app;
+
     static port = 8080
 
-    static init() {
-        const app = express()
+    static async init() {
+        this.app = express()
+        const app = this.app
+
         app.use(express.json())
-        app.listen(
-            this.port,
-            () => { console.log(`listening at http://localhost:${this.port}`) }
-        )
 
         // Allow CORS, everything should be application JSON
         // TODO: Test this doesn't break the bots
@@ -143,7 +146,7 @@ class API {
 
         // returns all available gameIDs to play.
         app.get('/api/available-games', (_, res) => {
-            const gameIDs = Object.keys(Server.instance.config.games);
+            const gameIDs = Object.keys(config.games);
             res.json({ gameIDs });
         });
 
@@ -212,6 +215,16 @@ class API {
             const { agentToken, gameID, lobbyID } = req.body
             const result = await LobbyManager.joinLobby(agentToken, gameID, lobbyID);
             res.json(result);
+        })
+
+        return new Promise((resolve) => {
+            app.listen(
+                this.port,
+                () => {
+                    console.log(`listening at http://localhost:${this.port}`) 
+                    resolve()
+                }
+            )
         })
     }
 }

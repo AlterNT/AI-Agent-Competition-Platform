@@ -20,7 +20,7 @@ async function main() {
     .help()
     .argv
 
-    API.init();
+    await API.init();
     await Database.init();
 
     if (argv._[0] == 'load-test-data') {
