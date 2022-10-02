@@ -57,7 +57,10 @@ class API {
         app.get('/api/count-game-pages', (_, res) => {
             Database.countPages()
                 .then((numPages) => {
-                    res.json({numPages});
+                    const pages = numPages || {
+                        error: 'Database not implemented',
+                    }
+                    res.json({pages});
                 });
         });
 
