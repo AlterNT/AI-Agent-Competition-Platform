@@ -11,6 +11,8 @@ class API {
     static port = 8080
 
     static async init() {
+        const databaseDisabledError = { error: 'Database not implemented' };
+        const incorrectQueryParamsError = { error: 'Incorrect query parameters' };
         this.app = express()
         const app = this.app
 
@@ -47,8 +49,16 @@ class API {
         // returns all games played
         app.get('/api/games', (req, res) => {
             const { page } = req.query;
+
+            if (!page || !Number.isInteger(page)) {
+                const games = incorrectQueryParamsError;
+                res.json({games});
+                return;
+            }
+
             Database.paginateGames(page)
-                .then((games) => {
+                .then((result) => {
+                    const games = result || databaseDisabledError;
                     res.json({games})
                 });
         });
@@ -57,9 +67,7 @@ class API {
         app.get('/api/count-game-pages', (_, res) => {
             Database.countPages()
                 .then((numPages) => {
-                    const pages = numPages || {
-                        error: 'Database not implemented',
-                    }
+                    const pages = numPages || databaseDisabledError;
                     res.json({pages});
                 });
         });
