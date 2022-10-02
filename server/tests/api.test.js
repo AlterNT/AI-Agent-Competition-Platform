@@ -2,6 +2,9 @@ import request from "supertest";
 import API from "../api.js";
 import Database from "../database.js"
 
+const databaseDisabledError = { error: 'Database not implemented' };
+const incorrectQueryParamsError = { error: 'Incorrect query parameters' };
+
 beforeAll(async () => {
     process.env.DATABASE_ENABLED = true;
     await API.init();
@@ -30,21 +33,75 @@ describe('API', () => {
             expect(returnedKeys.length).toBe(1);
 
             const returnedObject = responseBody[returnedKeys];
-            expect(returnedObject).toEqual({ error: 'Database not implemented' });
+            expect(returnedObject).toEqual(databaseDisabledError);
         }
     });
 
-    // @TODO: fill out these tests
-    xdescribe('Endpoints With Arguments', () => {
+    // @TODO: fill out the rest of these tests
+    describe('Endpoints With Correct Arguments', () => {
         it('/api/games', async () => {
+            const response = await request(API.app)
+                .get('/api/games')
+                .query({ page: 1 });
+            const responseBody = JSON.parse(response.text);
+            const returnedKeys = Object.keys(responseBody);
+            expect(returnedKeys.length).toBe(1);
+
+            const returnedObject = responseBody[returnedKeys];
+            expect(returnedObject).toEqual(databaseDisabledError);
         });
-        it('/api/game', async () => {
+        xit('/api/game', async () => {
         });
-        it('/api/winrate', async () => {
+        xit('/api/winrate', async () => {
         });
-        it('/api/improvement', async () => {
+        xit('/api/improvement', async () => {
         });
-        it('/api/improvement-rate', async () => {
+        xit('/api/improvement-rate', async () => {
+        });
+    });
+
+    // TODO: Test it doesn't crash
+    describe('Endpoints With Missing Arguments', () => {
+        it('/api/games', async () => {
+            const response = await request(API.app).get('/api/games');
+            const responseBody = JSON.parse(response.text);
+            const returnedKeys = Object.keys(responseBody);
+            expect(returnedKeys.length).toBe(1);
+
+            const returnedObject = responseBody[returnedKeys];
+            expect(returnedObject).toEqual(incorrectQueryParamsError);
+        });
+        xit('/api/game', async () => {
+        });
+        xit('/api/winrate', async () => {
+        });
+        xit('/api/improvement', async () => {
+        });
+        xit('/api/improvement-rate', async () => {
+        });
+    });
+
+    // TODO: Test it doesn't crash
+    describe('Endpoints With Badly Typed Arguments', () => {
+        it('/api/games', async () => {
+            const response = await request(API.app)
+                .get('/api/games')
+                .query({ page: 'page 1' });
+            console.log(response.text)
+            // const responseBody = JSON.parse(response.text);
+            // const returnedKeys = Object.keys(responseBody);
+            // expect(returnedKeys.length).toBe(1);
+
+            // const returnedObject = responseBody[returnedKeys];
+            // expect(returnedObject).toEqual(incorrectQueryParamsError);
+        });
+        xit('/api/game', async () => {
+        });
+        xit('/api/winrate', async () => {
+        });
+        xit('/api/improvement', async () => {
+        });
+        xit('/api/improvement-rate', async () => {
         });
     });
 
