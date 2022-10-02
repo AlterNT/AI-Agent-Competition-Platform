@@ -48,7 +48,8 @@ class API {
 
         // returns all games played
         app.get('/api/games', (req, res) => {
-            const { page } = req.query;
+            let { page } = req.query;
+            page = Number(page);
 
             if (!page || !Number.isInteger(page)) {
                 const games = incorrectQueryParamsError;

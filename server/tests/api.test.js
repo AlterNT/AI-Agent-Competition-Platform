@@ -15,7 +15,7 @@ beforeEach(async () => {
 })
 
 describe('API', () => {
-    it('Persistent Endpoints Disabled', async () => {
+    it('Queries Not Needing Arguments', async () => {
         const persistentEndpoints = [
             '/api/agents',
             '/api/bots',
@@ -38,7 +38,7 @@ describe('API', () => {
     });
 
     // @TODO: fill out the rest of these tests
-    describe('Endpoints With Correct Arguments', () => {
+    describe('Queries With Correct Arguments', () => {
         it('/api/games', async () => {
             const response = await request(API.app)
                 .get('/api/games')
@@ -61,7 +61,7 @@ describe('API', () => {
     });
 
     // TODO: Test it doesn't crash
-    describe('Endpoints With Missing Arguments', () => {
+    describe('Queries With Missing Arguments', () => {
         it('/api/games', async () => {
             const response = await request(API.app).get('/api/games');
             const responseBody = JSON.parse(response.text);
@@ -82,18 +82,17 @@ describe('API', () => {
     });
 
     // TODO: Test it doesn't crash
-    describe('Endpoints With Badly Typed Arguments', () => {
+    describe('Queries With Badly Typed Arguments', () => {
         it('/api/games', async () => {
             const response = await request(API.app)
                 .get('/api/games')
                 .query({ page: 'page 1' });
-            console.log(response.text)
-            // const responseBody = JSON.parse(response.text);
-            // const returnedKeys = Object.keys(responseBody);
-            // expect(returnedKeys.length).toBe(1);
+            const responseBody = JSON.parse(response.text);
+            const returnedKeys = Object.keys(responseBody);
+            expect(returnedKeys.length).toBe(1);
 
-            // const returnedObject = responseBody[returnedKeys];
-            // expect(returnedObject).toEqual(incorrectQueryParamsError);
+            const returnedObject = responseBody[returnedKeys];
+            expect(returnedObject).toEqual(incorrectQueryParamsError);
         });
         xit('/api/game', async () => {
         });
