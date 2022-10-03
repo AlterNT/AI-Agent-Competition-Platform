@@ -1,4 +1,5 @@
 export default {
+    // TODO: refactor out
     id: {
       type: 'uuid',
       primary: true
