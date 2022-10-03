@@ -101,7 +101,6 @@ class Neo4jDatabase {
         }
 
         await Promise.all(gameRecordings);
-        console.log('Finished');
 
         return;
     }

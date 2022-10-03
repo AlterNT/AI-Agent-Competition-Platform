@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   server:
-    image: cits3200project
+    image: aicompetitionplatform
     build:
       context: server
       dockerfile: ./Dockerfile
@@ -10,6 +10,10 @@ services:
       NODE_ENV: production
     ports:
       - 8080:8080
+    depends_on:
+      - neo4j
+    links:
+      - "neo4j"
   neo4j: 
     image: neo4j
     ports:
