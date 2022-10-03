@@ -1,6 +1,14 @@
 version: '3.4'
 
 services:
+  neo4j:
+    image: neo4j
+    ports:
+    - "7474:7474"
+    - "7687:7687"
+    environment:
+      - NEO4J_AUTH=none
+      - NEO4JLABS_PLUGINS=["apoc"]
   server:
     image: aicompetitionplatform
     build:
@@ -14,11 +22,3 @@ services:
       - neo4j
     links:
       - "neo4j"
-  neo4j: 
-    image: neo4j
-    ports:
-    - "7474:7474"
-    - "7687:7687"
-    environment:
-      - NEO4J_AUTH=none
-      - NEO4JLABS_PLUGINS=["apoc"]
