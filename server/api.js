@@ -40,7 +40,7 @@ class API {
 
         // returns all bot agents
         app.get('/api/bots', (_, res) => {
-            Database.getQueryResult(Database.queryAgents, { studentNumber: Database.defaultAgentToken })
+            Database.getQueryResult(Database.queryAgents, { isBot: true })
             .then((bots) => {
                 res.json({bots});
             });
