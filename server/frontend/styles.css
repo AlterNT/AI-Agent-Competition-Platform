@@ -1,5 +1,17 @@
 @charset "UTF-8";
 
+/*Media Queries*/
+@media  screen and (min-width:992px) and (max-height: 760px) {
+
+  .tableWrapper {
+    height: 450px!important;
+  }
+
+}
+
+
+/*End Media Queries*/
+
 /*Table Styles*/
 td + td { 
   border-left: 1px rgba(255, 255, 255, 0.374) solid; 
