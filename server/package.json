@@ -12,7 +12,8 @@
     "yargs": "^17.5.1"
   },
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --verbose --coverage"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --verbose --coverage",
+    "start": "node . start"
   },
   "devDependencies": {
     "jest": "^29.1.2",
