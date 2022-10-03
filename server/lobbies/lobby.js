@@ -7,13 +7,13 @@ class Lobby {
     tokens = [];
     /** @type {String} ID of game. */
     gameID;
-    /** @type {{}} Settings of current game. */
+    /** @type {{maxPlayers: Number, minPlayers: Number}} Settings of current game. */
     gameSettings;
-    /** @type {{}} Lobby options. */
-    options;
+    /** @type {Number} */
+    bots;
 
     constructor(gameID, options) {
-        this.options = options;
+        this.bots = options.bots ?? 0;
         this.gameID = gameID;
         this.gameSettings = config.games[gameID].settings;
     }
@@ -24,7 +24,7 @@ class Lobby {
      * @returns If the agent was added successfully.
      */
     addAgent(agentToken) {
-        if (!this.tokens.includes(agentToken)) {
+        if (!this.tokens.includes(agentToken) && !this.isFull()) {
             this.tokens.push(agentToken);
             return true;
         }
@@ -54,6 +54,11 @@ class Lobby {
 
         let game = new gameClass(agents, 0, fs.createWriteStream('./test.txt'));
         return game;
+    }
+
+    isFull() {
+        console.log(this.bots)
+        return (this.bots + this.tokens.length) === this.gameSettings.maxPlayers
     }
 }
 
