@@ -23,8 +23,9 @@ async function main() {
 
     process.env.AI_PLATFORM_SECRET_KEY = Config.database.AI_PLATFORM_SECRET_KEY;
 
+    console.log('MAKE SURE BATCH QUERIES IS EMPTY IF CLEARING DATABASE')
     await Database.init();
-
+    
     if (argv._[0] == 'load-test-data') {
         await Database.loadTestData();
         process.exit(0);
@@ -40,6 +41,7 @@ async function main() {
         console.log('New Tokens Created:', tokens)
         process.exit(0)
     }
+
 
     API.init();
 }
