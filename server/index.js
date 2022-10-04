@@ -1,7 +1,7 @@
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import API from './api.js'
-import Config from './config.js';
+import config from './config.js';
 import Database from './database.js'
 
 
@@ -21,10 +21,11 @@ async function main() {
     .help()
     .argv
 
-    process.env.AI_PLATFORM_SECRET_KEY = Config.database.AI_PLATFORM_SECRET_KEY;
+    process.env.AI_PLATFORM_SECRET_KEY = config.database.AI_PLATFORM_SECRET_KEY;
 
+    console.log('MAKE SURE BATCH QUERIES IS EMPTY IF CLEARING DATABASE')
     await Database.init();
-
+    
     if (argv._[0] == 'load-test-data') {
         await Database.loadTestData();
         process.exit(0);
@@ -40,6 +41,7 @@ async function main() {
         console.log('New Tokens Created:', tokens)
         process.exit(0)
     }
+
 
     API.init();
 }

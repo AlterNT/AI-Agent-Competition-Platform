@@ -1,5 +1,33 @@
 @charset "UTF-8";
 
+/*Media Queries*/
+@media  screen and (min-width:992px) and (max-height: 760px) {
+  .tableWrapper {
+    height: 450px!important;
+  }
+}
+
+@media  screen and (min-width:992px) and (max-height: 610px) {
+  .tableWrapper {
+    height: 300px!important;
+  }
+}
+
+@media  screen and (min-width:992px) and (max-height: 460px) {
+  .tableWrapper {
+    height: 200px!important;
+  }
+}
+
+@media  screen and (min-width:992px) and (max-height: 380px) {
+  .tableWrapper {
+    visibility: hidden;
+  }
+}
+
+
+/*End Media Queries*/
+
 /*Table Styles*/
 td + td { 
   border-left: 1px rgba(255, 255, 255, 0.374) solid; 

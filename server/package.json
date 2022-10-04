@@ -1,14 +1,25 @@
 {
   "type": "module",
   "dependencies": {
-    "chalk": "^5.0.1",
     "body-parser": "^1.20.0",
+    "chalk": "^5.0.1",
     "cosmiconfig": "^7.0.1",
-    "json5": "^2.2.1",
     "crypto-js": "^4.1.1",
     "express": "^4.18.1",
+    "json5": "^2.2.1",
     "neode": "^0.4.8",
     "seedrandom": "^3.0.5",
     "yargs": "^17.5.1"
+  },
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --verbose --coverage",
+    "start": "node . start"
+  },
+  "devDependencies": {
+    "jest": "^29.1.2",
+    "supertest": "^6.2.4"
+  },
+  "jest": {
+    "transform": {}
   }
 }

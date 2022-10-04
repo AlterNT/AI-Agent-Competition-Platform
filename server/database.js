@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+//import chalk from 'chalk';
 import fs from 'fs';
 import Neode from 'neode';
 
@@ -484,10 +484,10 @@ class Neo4jDatabase {
 }
 
 const getMockDatabase = () => {
-    console.log(chalk.red(
+    console.log(//chalk.red(
         `Running Server with Database disabled.\n` +
         `If this is not intentional, please set database.enabled to true in 'config.json5'!\n`
-    ));
+    );
 
     const isUserEligibleToPlay = Neo4jDatabase.isUserEligibleToPlay.name;
     const getQueryResult = Neo4jDatabase.getQueryResult.name;
@@ -507,7 +507,7 @@ const getMockDatabase = () => {
     });
 }
 
-const Database = config.database.enabled ?
+const Database = process.env.NODE_ENV !== 'test' && config.database.enabled ?
     Neo4jDatabase :
     getMockDatabase();
 
