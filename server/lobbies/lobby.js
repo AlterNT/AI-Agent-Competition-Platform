@@ -68,7 +68,6 @@ class Lobby {
     }
 
     isFull() {
-        console.log(this.bots)
         return (this.bots + this.tokens.length) === this.gameSettings.maxPlayers
     }
 }
