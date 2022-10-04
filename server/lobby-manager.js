@@ -115,9 +115,7 @@ class LobbyManager {
 
     static action(agentToken, action) {
         const game = this.agentGame[agentToken]
-        game.resolve(action)
-        const success = true
-        return success
+        return game.action(agentToken, action)
     }
 
     static method(agentToken, keys, method, params) {

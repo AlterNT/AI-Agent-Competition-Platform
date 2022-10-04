@@ -1,4 +1,5 @@
 import IAgent from "../i-agent.js";
+import Action from "./action.js";
 
 class Agent extends IAgent {
 
@@ -17,8 +18,9 @@ class Agent extends IAgent {
         this.state = state;
     }
 
-    playCard(card) {
-        
+    async playCard(card) {
+        const action = await this.awaitEvent()
+        return Action[action.action](...action.params);
     }
 
     getState() {

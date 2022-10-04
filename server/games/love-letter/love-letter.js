@@ -19,11 +19,11 @@ class LoveLetter extends IGame {
 
     random;
     stream;
-    randomAgent;
+    randomAgent = new LoveLetter.Bot();
 
     turn = null;
     topCard = null;
-    indexMap = {};
+    result = null;
 
     /**
      * Constructs a LoveLetter game.
@@ -36,16 +36,6 @@ class LoveLetter extends IGame {
 
         this.random = seedrandom(seed);
         this.stream = process.stdout.pipe(stream);
-        this.randomAgent = new RandomAgent();
-
-        this.turn = null
-        this.topCard = null
-        this.indexMap = {}
-        this.result = null
-        agents.forEach((agent, i) => {
-            agent.index = i
-            this.indexMap[agent.token] = i
-        })
     }
 
     getPlayerIndexInitial(agentToken) {
@@ -59,7 +49,6 @@ class LoveLetter extends IGame {
 
         return state
     }
-
 
     getTopCard() {
         return this.topCard;
@@ -91,15 +80,15 @@ class LoveLetter extends IGame {
                     this.topCard = topCard;
                     console.log(`Player ${gameState.getNextPlayer()} draws the ${topCard.name} card.`);
 
-                    this.turn = this.agents[gameState.getNextPlayer()].token;
+                    let agent = this.agents[gameState.getNextPlayer()]
+                    this.turn = agent.token;
 
-                    const action = await this.awaitEvent()
-                    let act = Action[action.action](...action.params);
+                    const act = await agent.playCard(topCard)
                     try {
                         this.stream.write(gameState.update(act, topCard) + '\n');
                     } catch {
                         this.stream.write(
-                            `Illegal action performed by player ${this.agents[gameState.getNextPlayer()]} (${gameState.player[0]}).\n` +
+                            `Illegal action performed by player ${agent} (${gameState.player[0]}).\n` +
                             `Random Move Substituted.`
                         );
                         this.randomAgent.newRound(gameState.playerState(gameState.getNextPlayer()));

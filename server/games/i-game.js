@@ -3,7 +3,7 @@ import IAgent from "./i-agent.js";
 import fs from 'fs'
 
 class IGame {
-    
+
     /** @type {typeof(IAgent)} Agent class to be instantiated. */
     static Agent;
     /** @type {typeof(IAgent)} Bot class to be instantiated. */
@@ -13,19 +13,21 @@ class IGame {
 
     /** @type {IAgent[]} List of all agents playing. */
     agents;
-
+    /** @type {Function} Action resolver. */
+    resolve = null;
     /** @type {Boolean} If the current game is finished. */
     finished = false;
-    // Variables for receiving agent actions.
-    promise = null;
-    /** @type {Function} Action resolver. */
-
-    resolve = null;
     /** @type {{event: String, args: []}[]} Agent event record */
     events = [];
+    /** @type {Object.<String, Number>} */
+    indexMap = {};
 
     constructor(agents) {
         this.agents = agents;
+        agents.forEach((agent, i) => {
+            agent.index = i
+            this.indexMap[agent.token] = i
+        })
     }
 
     /**
@@ -34,14 +36,20 @@ class IGame {
     gameFinished() {
         return this.finished
     }
-    
-
 
     /**
      * Runs the game. Override this method.
      */
     async playGame() {
 
+    }
+
+    /**
+     * 
+     */
+    action(token, action) {
+        this.agents[this.indexMap[token]].resolve(action)
+        return true
     }
 
     /**
@@ -60,26 +68,6 @@ class IGame {
         fs.writeFileSync('./log.json', JSON.stringify(this.events))
         this.finished = true
         await Database.recordGame(scores)
-    }
-
-    /**
-     * Creates a new promise to await agent action.
-     * Timeouts if action is not received within time limit.
-     * @returns Action received from agent or null if timeout is exceeded.
-     */
-     async awaitEvent() {
-        this.pending = new Promise((resolve) => {
-            this.resolve = resolve;
-        });
-
-        const timeout = setTimeout(() => {
-            this.resolve(null)
-        }, 10000)
-
-        const move = await this.pending;
-        clearTimeout(timeout);
-
-        return move;
     }
 }
 
