@@ -1,3 +1,4 @@
+import Database from "../database.js";
 import IAgent from "./i-agent.js";
 
 class IGame {
