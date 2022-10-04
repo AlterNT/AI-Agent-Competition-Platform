@@ -49,8 +49,7 @@ class Lobby {
                         if (typeof target[event] == 'function') {
                             return (...args) => {
                                 // Agent method called.
-                                const clonedArgs = JSON.parse(JSON.stringify(args))
-                                const eventObj = { event, clonedArgs }
+                                const eventObj = { event, args }
                                 LobbyManager.agentGame[token].events.push(eventObj)
                                 //target.events.push(eventObj)
                                 return target[event](...args)
