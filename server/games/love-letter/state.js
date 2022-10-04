@@ -522,6 +522,24 @@ class State {
         }
         return -1;
     }
+
+    toJSON() {
+        return {
+            player: this.player,
+            num: this.num,
+            discards: this.discards,
+            discardCount: this.discardCount,
+            hard: this.hand,
+            deck: this.deck,
+            top: this.top,
+            known: this.known,
+            handmaid: this.handmaid,
+            scores: this.scores,
+            random: this.random,
+            nextPlayer: this.nextPlayer,
+            agents: this.agents.map(a => a.index)
+        }
+    }
 }
 
 export default State;

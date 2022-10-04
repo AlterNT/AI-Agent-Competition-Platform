@@ -2,6 +2,7 @@ import IAgent from "../i-agent.js";
 
 class Agent extends IAgent {
 
+    index;
     state;
 
     constructor(token) {

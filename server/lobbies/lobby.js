@@ -1,5 +1,6 @@
 import fs from 'fs';
 import config from '../config.js';
+import LobbyManager from '../lobby-manager.js';
 
 class Lobby {
 
@@ -45,20 +46,15 @@ class Lobby {
                 new gameClass.Agent(token),
                 {
                     get: (target, event, _) => {
-                        if (typeof target[event] == 'object') {
-                            // Intercept function calls with another proxy.
-                            return new Proxy(
-                                target[event],
-                                {
-                                    apply: (prop, _, args) => {
-                                        // Agent method called.
-                                        const eventObj = { token, event, args }
-                                        target.events.push(eventObj)
-                                        gameClass.events.push(eventObj)
-                                        return prop(...args)
-                                    }
-                                }
-                            )
+                        if (typeof target[event] == 'function') {
+                            return (...args) => {
+                                // Agent method called.
+                                const clonedArgs = JSON.parse(JSON.stringify(args))
+                                const eventObj = { token, event, clonedArgs }
+                                LobbyManager.agentGame[token].events.push(eventObj)
+                                //target.events.push(eventObj)
+                                return target[event](...args)
+                            }
                         } else {
                             // Return the property accessed.
                             return target[event]

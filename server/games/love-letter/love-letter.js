@@ -42,7 +42,10 @@ class LoveLetter extends IGame {
         this.topCard = null
         this.indexMap = {}
         this.result = null
-        agents.forEach((agent, i) => this.indexMap[agent.token] = i)
+        agents.forEach((agent, i) => {
+            agent.index = i
+            this.indexMap[agent.token] = i
+        })
     }
 
     getPlayerIndexInitial(agentToken) {

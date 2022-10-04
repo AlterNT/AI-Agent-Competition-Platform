@@ -57,7 +57,7 @@ class IGame {
             scores[token] = this.result[i]
         })
         this.finished = true
-        console.log(this.events)
+        console.log(JSON.stringify(this.events).length)
         await Database.recordGame(scores)
     }
 
