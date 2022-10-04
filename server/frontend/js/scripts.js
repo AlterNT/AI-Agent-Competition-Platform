@@ -123,9 +123,6 @@ function getQuery() {
     else {
         return starter + q
     }
-
-    console.log(qr)
-    return String(qr)
 }
 
 function updateInfo() {
