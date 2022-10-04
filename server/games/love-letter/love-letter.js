@@ -20,9 +20,6 @@ class LoveLetter extends IGame {
     random;
     stream;
     randomAgent;
-    // Variables for receiving agent actions.
-    promise = null;
-    resolve = null;
 
     turn = null;
     topCard = null;
@@ -45,7 +42,7 @@ class LoveLetter extends IGame {
         this.topCard = null
         this.indexMap = {}
         this.result = null
-        agents.forEach((agent, i) => this.indexMap[agent.token] = i)       
+        agents.forEach((agent, i) => this.indexMap[agent.token] = i)
     }
 
     getPlayerIndexInitial(agentToken) {
@@ -60,25 +57,6 @@ class LoveLetter extends IGame {
         return state
     }
 
-    /**
-     * Creates a new promise to await agent action.
-     * Timeouts if action is not received within time limit.
-     * @returns Action received from agent or null if timeout is exceeded.
-     **/
-    async awaitEvent() {
-        this.pending = new Promise((resolve) => {
-            this.resolve = resolve;
-        });
-
-        const timeout = setTimeout(() => {
-            this.resolve(null)
-        }, 10000)
-
-        const move = await this.pending;
-        clearTimeout(timeout);
-
-        return move;
-    }
 
     getTopCard() {
         return this.topCard;
@@ -99,15 +77,17 @@ class LoveLetter extends IGame {
                     this.agents[i].newRound(playerStates[i]);
                 }
                 while (!gameState.roundOver()) {
-                    console.log(`Cards are:
-player 0: ${JSON.stringify(gameState.getCard(0))}
-player 1: ${JSON.stringify(gameState.getCard(1))}
-player 2: ${JSON.stringify(gameState.getCard(2))}
-player 3: ${JSON.stringify(gameState.getCard(3))}`);
+                    console.log(
+                        `Cards are:\n` +
+                        `player 0: ${JSON.stringify(gameState.getCard(0))}\n` +
+                        `player 1: ${JSON.stringify(gameState.getCard(1))}\n` +
+                        `player 2: ${JSON.stringify(gameState.getCard(2))}\n` +
+                        `player 3: ${JSON.stringify(gameState.getCard(3))}`
+                    )
                     const topCard = gameState.drawCard();
                     this.topCard = topCard;
                     console.log(`Player ${gameState.getNextPlayer()} draws the ${topCard.name} card.`);
-                    
+
                     this.turn = this.agents[gameState.getNextPlayer()].token;
 
                     const action = await this.awaitEvent()
@@ -115,9 +95,10 @@ player 3: ${JSON.stringify(gameState.getCard(3))}`);
                     try {
                         this.stream.write(gameState.update(act, topCard) + '\n');
                     } catch {
-                        this.stream.write(`Illegal action performed by player ${this.agents[gameState.getNextPlayer()]} (${gameState.player[0]}).
-Random Move Substituted.
-`);
+                        this.stream.write(
+                            `Illegal action performed by player ${this.agents[gameState.getNextPlayer()]} (${gameState.player[0]}).\n` +
+                            `Random Move Substituted.`
+                        );
                         this.randomAgent.newRound(gameState.playerState(gameState.getNextPlayer()));
                         act = this.randomAgent.playCard(topCard);
                         console.log('Random action.', act);
@@ -125,13 +106,13 @@ Random Move Substituted.
                     }
                     for (let i = 0; i < numPlayers; i++) { this.agents[i].see(act, playerStates[i]); }
                 }
-                console.log(`New round, scores are:
-                
-Player 0: ${gameState.score(0)}
-Player 1: ${gameState.score(1)}
-Player 2: ${gameState.score(2)}
-Player 3: ${gameState.score(3)}
-`);
+                console.log(
+                    `New round, scores are:\n\n` +
+                    `Player 0: ${gameState.score(0)}\n` +
+                    `Player 1: ${gameState.score(1)}\n` +
+                    `Player 2: ${gameState.score(2)}\n` +
+                    `Player 3: ${gameState.score(3)}`
+                );
                 gameState.newRound();
             }
             this.stream.write(`Player ${gameState.gameWinner()} wins the Princess's heart!\n`);
@@ -143,20 +124,6 @@ Player 3: ${gameState.score(3)}
             process.error(e);
             return null;
         }
-    }
-
-    async main() {
-        this.result = await this.playGame(this.agents)
-        this.stream.write("The final scores are: \n")
-        for (const i in this.agents) {
-            this.stream.write(`\t Agent ${i}, '${this.agents[i]}':\t ${this.result[i]}\n`);
-        }
-        const scores = {};
-        this.agents.forEach(({ token }, i) => {
-            scores[token] = this.result[i]
-        })
-        this.finished = true
-        await Database.recordGame(scores)
     }
 }
 

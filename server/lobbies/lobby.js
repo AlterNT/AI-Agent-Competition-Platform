@@ -44,9 +44,26 @@ class Lobby {
             agents.push(new Proxy(
                 new gameClass.Agent(token),
                 {
-                    get: (target, method, _) => {
-                        // TODO: LOG EVENT HERE
-                        return target[method]
+                    get: (target, event, _) => {
+                        if (typeof target[event] == 'object') {
+                            // Intercept function calls with another proxy.
+                            return new Proxy(
+                                target[event],
+                                {
+                                    apply: (prop, _, args) => {
+                                        // Agent method called.
+                                        const eventObj = { token, event, args }
+                                        target.events.push(eventObj)
+                                        gameClass.events.push(eventObj)
+                                        return prop(...args)
+                                    }
+                                }
+                            )
+                        } else {
+                            // Return the property accessed.
+                            return target[event]
+                        }
+                        
                     }
                 }
             ));
