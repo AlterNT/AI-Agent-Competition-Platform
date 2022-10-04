@@ -529,7 +529,7 @@ class State {
             num: this.num,
             discards: this.discards,
             discardCount: this.discardCount,
-            hard: this.hand,
+            hand: this.hand,
             deck: this.deck,
             top: this.top,
             known: this.known,
