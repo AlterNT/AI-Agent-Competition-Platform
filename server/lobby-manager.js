@@ -63,7 +63,7 @@ class LobbyManager {
 
         const lobby = this.agentLobby[agentToken];
         // attempt to start game
-        if (lobby.tokens.length === lobby.gameSettings.maxPlayers) {
+        if (lobby.isFull()) {
             
             const game = await lobby.initGame()
 
