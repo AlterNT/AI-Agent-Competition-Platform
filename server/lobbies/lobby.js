@@ -50,8 +50,7 @@ class Lobby {
                             return (...args) => {
                                 // Agent method called.
                                 const eventObj = { event, args }
-                                LobbyManager.agentGame[token].events.push(eventObj)
-                                //target.events.push(eventObj)
+                                //LobbyManager.agentGame[token].events.push(eventObj)
                                 return target[event](...args)
                             }
                         } else {
