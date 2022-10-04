@@ -20,7 +20,7 @@ class IGame {
     /** @type {Function} Action resolver. */
 
     resolve = null;
-    /** @type {{token: String, event: String, args: []}[]} Agent event record */
+    /** @type {{event: String, args: []}[]} Agent event record */
     events = [];
 
     constructor(agents) {
