@@ -1,5 +1,6 @@
 import Database from "../database.js";
 import IAgent from "./i-agent.js";
+import fs from 'fs'
 
 class IGame {
     
@@ -56,8 +57,8 @@ class IGame {
         this.agents.forEach(({ token }, i) => {
             scores[token] = this.result[i]
         })
+        fs.writeFileSync('./log.json', JSON.stringify(this.events))
         this.finished = true
-        console.log(JSON.stringify(this.events).length)
         await Database.recordGame(scores)
     }
 
