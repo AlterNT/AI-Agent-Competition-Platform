@@ -22,7 +22,7 @@ class Neo4jDatabase {
                 this.dbInstance = new Neode(
                     `${config.database.protocol}://${config.database.host}:${config.database.port}`,
                     config.database.username,
-                    config.database.password
+                    config.database.password,
                 ).with(Models);
                 break;
             } catch (err) {
