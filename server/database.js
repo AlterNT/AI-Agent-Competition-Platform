@@ -15,11 +15,24 @@ class Neo4jDatabase {
 
     static async init() {
         /** @type {Neode} */
-        this.dbInstance = new Neode(
-            `${config.database.protocol}://${config.database.host}:${config.database.port}`,
-            config.database.username,
-            config.database.password
-        ).with(Models);
+
+        // TODO: test this
+        for (let i = 0; i < 3; i++) {
+            try {
+                this.dbInstance = new Neode(
+                    `${config.database.protocol}://${config.database.host}:${config.database.port}`,
+                    config.database.username,
+                    config.database.password,
+                ).with(Models);
+                break;
+            } catch (err) {
+                console.error(`Error while connecting to neo4j: ${err}\nTrying to connect to DB again...`)
+            }
+        }
+
+        if (!this.dbInstance) {
+            throw new Error('Could not connect to neo4j');
+        }
 
         const batchQueries = [
             this.queryGames,
@@ -101,7 +114,6 @@ class Neo4jDatabase {
         }
 
         await Promise.all(gameRecordings);
-        console.log('Finished');
 
         return;
     }

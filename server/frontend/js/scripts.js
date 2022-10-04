@@ -1,5 +1,8 @@
 'strict mode'
 
+document.getElementById('rt').addEventListener("click", getQuery);
+document.getElementById('query').addEventListener("change", updateInfo);
+
 async function apiResult(endpoint) {
     const serverUrl = 'http://localhost:8080';
     const apiCall = `${serverUrl}${endpoint}`
@@ -98,4 +101,41 @@ async function download_table_as_csv(table_id, separator = ',') {
 
 async function renderTable(query) {
     tabulateFromEndpoint(query);
+}
+
+function getQuery() {
+
+    $("tr").remove();
+
+    var starter = "/api/";
+    var q = $('#query').val();
+    var id = $('#single').val();
+    //console.log(q)
+    
+    const requestCalls = {'game': 'gameId', 'agent-games': 'agentId', 'winrate': 'agentId', 'improvement': 'agentId'};
+
+    if (q in requestCalls) {
+        console.log(requestCalls[q])
+        qr = starter + q + "?" + requestCalls[q] + '=' + id
+        console.log(qr)
+        return qr
+    }
+    else {
+        return starter + q
+    }
+}
+
+function updateInfo() {
+    var requestCallsList = ['game', 'agent-games', 'agentId', 'winrate', 'improvement', 'improvement-rate']
+    var selected = $('#query').val();
+
+    if (requestCallsList.includes(selected)) {
+        $('#single').prop('disabled', false);
+        console.log('in');
+    }
+    else {
+        $('#single').prop('disabled', true);
+        console.log('else');
+    }
+
 }

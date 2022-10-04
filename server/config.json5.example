@@ -2,13 +2,12 @@
     // Database settings.
     database: {
         // (Boolean) If the database is enabled.
-        enabled: false,
+        enabled: true,
         protocol: 'neo4j',
-        host: 'localhost',
+        host: 'neo4j',
         port: 7687,
         username: 'neo4j',
         password: 'password',
-        AI_PLATFORM_SECRET_KEY: 'example',
     },
     // Game-specific settings.
     // A game's ID corresponds to it's key in this object.

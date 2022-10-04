@@ -9,8 +9,18 @@ class CachedQuery {
      * @param {Function} queryFunction
      */
     async run(timeoutDuration, queryFunction) {
-        this.result = await queryFunction.bind(Database)();
-        setInterval(async () => this.result = await queryFunction.bind(Database)(), timeoutDuration);
+        try {
+            this.result = await queryFunction.bind(Database)();
+        } catch (err) {
+            console.error(`Database not available yet: ${err}`)
+        }
+        setInterval(async () => {
+            try {
+                this.result = await queryFunction.bind(Database)(), timeoutDuration
+            } catch (err) {
+                console.error(`Database not available: ${err}`)
+            }
+        });
     }
 }
 
