@@ -1,4 +1,4 @@
-package com.example;
+package com.example.loveletter;
 
 /**
  * A class for representing Illegal Actions in the game Love Letter

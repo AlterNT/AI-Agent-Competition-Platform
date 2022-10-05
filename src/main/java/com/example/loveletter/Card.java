@@ -1,4 +1,4 @@
-package com.example;
+package com.example.loveletter;
 
 import java.util.Random;
 

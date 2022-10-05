@@ -2,6 +2,9 @@ package com.example;
 
 import java.io.IOException;
 
+import com.example.agents.RandomAgent;
+import com.example.loveletter.Agent;
+
 /**
  * Hello world!
  *

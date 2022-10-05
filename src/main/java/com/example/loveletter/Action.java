@@ -1,4 +1,4 @@
-package com.example;
+package com.example.loveletter;
 
 /**
  * An abstract class to represent actions in the game LoveLetter.

@@ -1,4 +1,4 @@
-package com.example;
+package com.example.loveletter;
 
 /**
  * This class represents the observable state of the game.

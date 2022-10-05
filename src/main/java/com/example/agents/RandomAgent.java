@@ -1,6 +1,12 @@
-package com.example;
+package com.example.agents;
 
 import java.util.Random;
+
+import com.example.loveletter.Action;
+import com.example.loveletter.Agent;
+import com.example.loveletter.Card;
+import com.example.loveletter.IllegalActionException;
+import com.example.loveletter.State;
 
 /**
  * An interface for representing an agent in the game Love Letter

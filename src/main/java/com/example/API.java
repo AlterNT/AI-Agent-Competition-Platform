@@ -2,6 +2,14 @@ package com.example;
 
 import java.net.URL;
 
+import com.example.jsonobjects.gameFinished;
+import com.example.jsonobjects.gameStarted;
+import com.example.jsonobjects.getState;
+import com.example.jsonobjects.isTurn;
+import com.example.jsonobjects.joinLobby;
+import com.example.jsonobjects.sendAction;
+import com.example.loveletter.Action;
+import com.example.loveletter.Card;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 

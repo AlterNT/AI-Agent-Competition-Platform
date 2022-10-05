@@ -1,4 +1,4 @@
-package com.example;
+package com.example.loveletter;
 
 /**
  * An interface for representing an agent in the game Love Letter

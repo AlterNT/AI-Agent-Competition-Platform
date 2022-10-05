@@ -2,6 +2,9 @@ package com.example;
 
 import java.io.IOException;
 
+import com.example.loveletter.Action;
+import com.example.loveletter.Card;
+
 public class AIO {
 
     private API api;
