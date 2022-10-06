@@ -21,26 +21,32 @@ beforeEach(async () => {
 })
 
 describe('API', () => {
-    it('Queries Not Needing Arguments', async () => {
-        const persistentEndpoints = [
-            '/api/agents',
-            '/api/bots',
-            '/api/count-game-pages',
-            '/api/agent-games',
-            '/api/top-winrate',
-            '/api/most-improved',
-            '/api/most-improving',
-        ];
-
-        for (const endpoint of persistentEndpoints) {
-            const response = await request(API.app).get(endpoint);
+    describe('Queries Not Needing Arguments', () => {
+        Object.entries({
+            'agents': 10,
+            'bots': 1,
+            'most-improved': 9,
+            'most-improving': 9,
+            'top-winrate': 9, // TODO should this be 10?
+        }).forEach(([endpoint, length]) => {
+            it(`/api/${endpoint}`, async () => {
+                const response = await request(API.app).get(`/api/${endpoint}`);
             const responseBody = JSON.parse(response.text);
             const returnedKeys = Object.keys(responseBody);
             expect(returnedKeys.length).toBe(1);
+                const results = responseBody[returnedKeys[0]];     
+                expect(results.length).toBe(length);
+            });
+        });
 
-            const returnedObject = responseBody[returnedKeys];
-            expect(returnedObject).toEqual(databaseDisabledError);
-        }
+        it(`/api/count-game-pages`, async () => {
+            const response = await request(API.app).get(`/api/count-game-pages`);
+            const responseBody = JSON.parse(response.text);
+            const returnedKeys = Object.keys(responseBody);
+            expect(returnedKeys.length).toBe(1);    
+            const results = responseBody[returnedKeys[0]];     
+            expect(results).toBe(80);
+        });
     });
 
     // @TODO: fill out the rest of these tests
