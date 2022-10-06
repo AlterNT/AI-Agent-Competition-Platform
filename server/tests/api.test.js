@@ -74,8 +74,9 @@ describe('API', () => {
             it(`/api/${endpoint}`, async () => {
                 const response = await request(API.app)
                    .get(`/api/${endpoint}`)
-                   .query({ agentId: "fakeagent" });
+                   .query({ agentId: new Array(36).fill("A").join("") });
                    // a non existant agent returns the same as existant agents for most fields
+                   // only requirement is that it is 36 letters long
                 const responseBody = JSON.parse(response.text);
                 const returnedKeys = Object.keys(responseBody);
                 expect(returnedKeys.length).toBe(1);    
