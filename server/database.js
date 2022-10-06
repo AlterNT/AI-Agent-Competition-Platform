@@ -124,7 +124,9 @@ class Neo4jDatabase {
      * Drops every instance of every label from the db
      */
     static async deleteAll() {
-        await Promise.all(Object.keys(Models).map((label) => this.dbInstance.deleteAll(label)));
+        for (const label in Models) {
+            await this.dbInstance.deleteAll(label);
+        }
     }
 
     /**
@@ -374,6 +376,7 @@ class Neo4jDatabase {
         });
     }
 
+    // TODO this returns number of games, not number of pages
     static async countPages() {
         const res = await this.dbInstance.cypher(`
             MATCH (g:Game)
