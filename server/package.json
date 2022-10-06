@@ -12,7 +12,7 @@
     "yargs": "^17.5.1"
   },
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --verbose --coverage",
+    "test": "AI_PLATFORM_SECRET_KEY=test node --experimental-vm-modules node_modules/jest/bin/jest.js --verbose --coverage",
     "start": "node . start"
   },
   "devDependencies": {
@@ -20,6 +20,7 @@
     "supertest": "^6.2.4"
   },
   "jest": {
-    "transform": {}
+    "transform": {},
+    "testTimeout": 100000
   }
 }
