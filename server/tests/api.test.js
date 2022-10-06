@@ -31,9 +31,9 @@ describe('API', () => {
         }).forEach(([endpoint, length]) => {
             it(`/api/${endpoint}`, async () => {
                 const response = await request(API.app).get(`/api/${endpoint}`);
-            const responseBody = JSON.parse(response.text);
-            const returnedKeys = Object.keys(responseBody);
-            expect(returnedKeys.length).toBe(1);
+                const responseBody = JSON.parse(response.text);
+                const returnedKeys = Object.keys(responseBody);
+                expect(returnedKeys.length).toBe(1);    
                 const results = responseBody[returnedKeys[0]];     
                 expect(results.length).toBe(length);
             });
@@ -76,12 +76,12 @@ describe('API', () => {
                    .get(`/api/${endpoint}`)
                    .query({ agentId: "fakeagent" });
                    // a non existant agent returns the same as existant agents for most fields
-            const responseBody = JSON.parse(response.text);
-            const returnedKeys = Object.keys(responseBody);
-            expect(returnedKeys.length).toBe(1);
+                const responseBody = JSON.parse(response.text);
+                const returnedKeys = Object.keys(responseBody);
+                expect(returnedKeys.length).toBe(1);    
                 const results = responseBody[returnedKeys[0]];
                 expect(results).not.toBe(incorrectQueryParamsError);   
-        });
+            });
         })
     });
 
@@ -96,37 +96,37 @@ describe('API', () => {
         ].forEach(route => {
             it(`/api/${route}`, async () => {
                 const response = await request(API.app).get(`/api/${route}`);
-            const responseBody = JSON.parse(response.text);
-            const returnedKeys = Object.keys(responseBody);
-            expect(returnedKeys.length).toBe(1);
-
-            const returnedObject = responseBody[returnedKeys];
-            expect(returnedObject).toEqual(incorrectQueryParamsError);
-        });
+                const responseBody = JSON.parse(response.text);
+                const returnedKeys = Object.keys(responseBody);
+                expect(returnedKeys.length).toBe(1);
+    
+                const returnedObject = responseBody[returnedKeys];
+                expect(returnedObject).toEqual(incorrectQueryParamsError);
+            });
         })
     });
 
     // TODO: Test it doesn't crash
+    
     describe('Queries With Badly Typed Arguments', () => {
-        it('/api/games', async () => {
-            const response = await request(API.app)
-                .get('/api/games')
-                .query({ page: 'page 1' });
-            const responseBody = JSON.parse(response.text);
-            const returnedKeys = Object.keys(responseBody);
-            expect(returnedKeys.length).toBe(1);
-
-            const returnedObject = responseBody[returnedKeys];
-            expect(returnedObject).toEqual(incorrectQueryParamsError);
-        });
-        xit('/api/game', async () => {
-        });
-        xit('/api/winrate', async () => {
-        });
-        xit('/api/improvement', async () => {
-        });
-        xit('/api/improvement-rate', async () => {
-        });
+        Object.entries({
+            "games": { page: 'page 1' },
+            "game": { gameId: "stillnot36" },
+            "winrate": { agentId: "not36again" },
+            "improvement": { agentId: "not36" },
+            "improvement-rate": { agentId: "" },
+        }).forEach(([endpoint, query]) => {
+            it(`/api/${endpoint}`, async () => {
+                const response = await request(API.app)
+                    .get(`/api/${endpoint}`)
+                    .query(query);
+                const responseBody = JSON.parse(response.text);
+                const returnedKeys = Object.keys(responseBody);
+                expect(returnedKeys.length).toBe(1);
+                const returnedObject = responseBody[returnedKeys];
+                expect(returnedObject).toEqual(incorrectQueryParamsError);
+            });
+        })
     });
 
     describe('Static Returns', () => {
