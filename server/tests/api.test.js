@@ -55,21 +55,34 @@ describe('API', () => {
             const response = await request(API.app)
                 .get('/api/games')
                 .query({ page: 1 });
+            const games = JSON.parse(response.text).games;
+            expect(games.length).toBe(80);
+        });
+        it('/api/game', async () => {
+            const games = JSON.parse((await request(API.app).get("/api/games").query({ page: 1 })).text).games;
+            const response = await request(API.app)
+               .get('/api/game')
+               .query({ gameId: games[0].id });
+            expect(JSON.parse(response.text).games[0].id).toEqual(games[0].id);
+        });
+
+        [
+            "winrate",
+            "improvement",
+            "improvement-rate",
+        ].forEach(endpoint => {
+            it(`/api/${endpoint}`, async () => {
+                const response = await request(API.app)
+                   .get(`/api/${endpoint}`)
+                   .query({ agentId: "fakeagent" });
+                   // a non existant agent returns the same as existant agents for most fields
             const responseBody = JSON.parse(response.text);
             const returnedKeys = Object.keys(responseBody);
             expect(returnedKeys.length).toBe(1);
-
-            const returnedObject = responseBody[returnedKeys];
-            expect(returnedObject).toEqual(databaseDisabledError);
+                const results = responseBody[returnedKeys[0]];
+                expect(results).not.toBe(incorrectQueryParamsError);   
         });
-        xit('/api/game', async () => {
-        });
-        xit('/api/winrate', async () => {
-        });
-        xit('/api/improvement', async () => {
-        });
-        xit('/api/improvement-rate', async () => {
-        });
+        })
     });
 
     // TODO: Test it doesn't crash
