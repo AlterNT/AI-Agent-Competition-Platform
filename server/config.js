@@ -17,6 +17,10 @@ const readConfig = (searchPath) => {
 let path = process.env.NODE_ENV == "test" ? "config.test.json5" : "config.json5";
 let config = readConfig(path)
 
+// This is an extra safety measure to ensure that the tests can't be run
+// on the actual database since that would wipe all the data
+if (process.env.NODE_ENV == "test") config.database.database = "test";
+
 if (!config) {
     console.error('`config.json5` not found, defaulting to `config.json5.example`')
     config = readConfig('config.json5.example')
