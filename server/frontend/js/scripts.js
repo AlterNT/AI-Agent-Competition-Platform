@@ -30,10 +30,16 @@ async function apiResult(endpoint) {
 
 async function tabulateFromEndpoint(endpoint) {
 
-    $('#renderer').html('Running');
-
     const result = await apiResult(endpoint);
     const resultJson = await result.json();
+
+    console.log(resultJson);
+
+    if (endpoint[5] == 'i' || endpoint[5] == 'w') {
+        tabulateSingle(resultJson);
+        return
+    }
+    
     const values = Object.values(resultJson)[0];
     const headers = Object.keys(values[0])
     headers.unshift('#');
@@ -49,14 +55,24 @@ async function tabulateFromEndpoint(endpoint) {
         addAllColumnHeaders();
         //For each item
         values.forEach((obs, i) => {
-            console.log(obs)
             const row = $('<tr/>');
             const rowNum = (i + 1).toString();
             obs['#'] = rowNum;
 
             headers.forEach((header) => {
-                const cellValue = $('<td/>').html(obs[header] ?? '')
-                row.append(cellValue);
+                if (header == 'agentScores'){
+                    scores = ''
+                    for (let agent in obs[header]) {
+                        scores = scores + (agent + ":" + (obs[header])[agent] + '\n\n');
+                    }
+                    const cellValue = $('<td/>').html(scores)
+                    row.append(cellValue);
+                }
+                else {
+                    const cellValue = $('<td/>').html(obs[header] ?? '')
+                    row.append(cellValue);
+                }
+
             })
             $("#excelDataTable").append(row);
         });
@@ -127,15 +143,42 @@ function getQuery() {
 
 function updateInfo() {
     var requestCallsList = ['game', 'agent-games', 'agentId', 'winrate', 'improvement', 'improvement-rate']
+    var prompts = ['Game ID', 'Agent Display Name', 'Agent ID']
     var selected = $('#query').val();
 
     if (requestCallsList.includes(selected)) {
         $('#single').prop('disabled', false);
-        console.log('in');
+        if (selected == 'game') {
+            $('#single').prop('placeholder', prompts[0]);
+        }
+        if (selected == 'agent-games'){
+            $('#single').prop('placeholder', prompts[2]);
+        }
+        else {
+            $('#single').prop('placeholder', prompts[1]);
+        };
     }
     else {
         $('#single').prop('disabled', true);
-        console.log('else');
+        $('#single').prop('placeholder', '');
     }
 
+}
+
+function tabulateSingle(dataJson) {
+    key = Object.keys(dataJson)[0]
+    headers = []
+    data = []
+
+    for (let x in dataJson[key]) {
+        headers.push(x);
+        data.push(dataJson[key][x]);
+    }
+    headerTr$ = $('<tr/>');
+    headers.forEach((header) => headerTr$.append($('<th/>').html(header)));
+    $("#excelDataTable").append(headerTr$);
+
+    dataTr$ = $('<tr/>');
+    data.forEach((d) => dataTr$.append($('<td/>').html(d)));
+    $("#excelDataTable").append(dataTr$);
 }
