@@ -63,7 +63,7 @@ public class API {
             }
 
         } catch (IOException e) {
-            throw new IOException("connetion refused");
+            throw new IOException("connetion refused\n Failed at join_lobby()");
         }
     }
 
@@ -92,7 +92,7 @@ public class API {
 
         } catch (IOException e) {
             e.printStackTrace();
-            throw new IOException("Lost Connection");
+            throw new IOException("Lost Connection\n Failed at game_started()");
         }
     }
 
@@ -121,7 +121,7 @@ public class API {
 
         } catch (IOException e) {
             e.printStackTrace();
-            throw new IOException("Lost Connection");
+            throw new IOException("Lost Connection\n Failed at game_finished()");
         }
     }
 
@@ -150,7 +150,7 @@ public class API {
 
         } catch (IOException e) {
             e.printStackTrace();
-            throw new IOException("Lost Connection");
+            throw new IOException("Lost Connection\n Failed at is_turn()");
         }
     }
 
@@ -179,7 +179,7 @@ public class API {
 
         } catch (IOException e) {
             e.printStackTrace();
-            throw new IOException("Lost Connection");
+            throw new IOException("Lost Connection\n Failed at get_state()");
         }
     }
 
@@ -222,11 +222,19 @@ public class API {
             }
 
         } catch (IOException e) {
-            throw new IOException("connetion refused");
+            throw new IOException("connetion refused\n Failed at send_action()");
         }
     }
 
     public Object request_method(String[] keys, String method, String[] params) {
+        // Sets up connection parameters
+        URL url = new URL("http://localhost:8080/api/action");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setDoOutput(true);
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Accept", "application/json");
+        connection.setRequestProperty("Content-Type", "application/json");
+
         return null;
     }
 }
