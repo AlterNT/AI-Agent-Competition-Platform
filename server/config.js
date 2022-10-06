@@ -14,7 +14,8 @@ const readConfig = (searchPath) => {
 }
 
 /** @type {{database: {enabled: Boolean, protocol: String, host: String, port: Number, username: String, password},games: Object.<String, {path: String, settings: {maxPlayers: Number, minPlayers: Number, timeout: Number, failClause: String, bot: String}, tournament: {}}>}} */
-let config = readConfig('config.json5')
+let path = process.env.NODE_ENV == "test" ? "config.test.json5" : "config.json5";
+let config = readConfig(path)
 
 if (!config) {
     console.error('`config.json5` not found, defaulting to `config.json5.example`')

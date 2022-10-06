@@ -4,11 +4,11 @@
         // (Boolean) If the database is enabled.
         enabled: true,
         protocol: 'neo4j',
-        host: 'neo4j',
-        port: 7687,
+        host: 'localhost',
+        port: 11010,
         username: 'neo4j',
         password: 'password',
-        database: 'neo4j',
+        database: 'test',
     },
     // Game-specific settings.
     // A game's ID corresponds to it's key in this object.
