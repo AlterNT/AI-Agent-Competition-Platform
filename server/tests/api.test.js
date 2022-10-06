@@ -4,14 +4,20 @@ import Database from "../database.js"
 
 const databaseDisabledError = { error: 'Database not implemented' };
 const incorrectQueryParamsError = { error: 'Incorrect query parameters' };
+console.assert(process.env.NODE_ENV == "test", "This test suite should only be run in the test environment");
 
 beforeAll(async () => {
-    process.env.DATABASE_ENABLED = true;
+    // process.env.DATABASE_ENABLED = true;
     await API.init();
+    await Database.init();
+
+    // would be good to do before each test
+    // but it's so slow and none of the tests are mutating anyway
+    // it would be good to make this not random, but Math.random has no seed function
+    await Database.loadTestData();
 });
 
 beforeEach(async () => {
-    await Database.init();
 })
 
 describe('API', () => {
