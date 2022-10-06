@@ -6,7 +6,7 @@ const databaseDisabledError = { error: 'Database not implemented' };
 const incorrectQueryParamsError = { error: 'Incorrect query parameters' };
 console.assert(process.env.NODE_ENV == "test", "This test suite should only be run in the test environment");
 if (process.env.NODE_ENV != "test") process.exit(0);
- 
+
 beforeAll(async () => {
     // process.env.DATABASE_ENABLED = true;
     await API.init();
@@ -75,9 +75,8 @@ describe('API', () => {
             it(`/api/${endpoint}`, async () => {
                 const response = await request(API.app)
                    .get(`/api/${endpoint}`)
-                   .query({ agentId: new Array(36).fill("A").join("") });
+                   .query({ agentId: "fakedisplayname" });
                    // a non existant agent returns the same as existant agents for most fields
-                   // only requirement is that it is 36 letters long
                 const responseBody = JSON.parse(response.text);
                 const returnedKeys = Object.keys(responseBody);
                 expect(returnedKeys.length).toBe(1);    
@@ -113,10 +112,12 @@ describe('API', () => {
     describe('Queries With Badly Typed Arguments', () => {
         Object.entries({
             "games": { page: 'page 1' },
-            "game": { gameId: "stillnot36" },
-            "winrate": { agentId: "not36again" },
-            "improvement": { agentId: "not36" },
-            "improvement-rate": { agentId: "" },
+
+            // Below tests commented out because currently all strings are valid
+            // "game": { gameId: "stillnot36" },
+            // "winrate": { agentId: "not36again" },
+            // "improvement": { agentId: "not36" },
+            // "improvement-rate": { agentId: "" },
         }).forEach(([endpoint, query]) => {
             it(`/api/${endpoint}`, async () => {
                 const response = await request(API.app)

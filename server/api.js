@@ -99,7 +99,7 @@ class API {
         // return all games for a given user
         app.get('/api/agent-games', (req, res) => {
             const { agentId } = req.query;
-            if (agentId && agentId.length==36) {
+            if (agentId) {
                 Database.getQueryResult(Database.queryGames, { agentScores: agentId })
                 .then((games) => {
                     res.json({games});
@@ -148,7 +148,7 @@ class API {
         // returns null if not enough games played
         app.get('/api/winrate', (req, res) => {
             const { agentId } = req.query;
-            if (agentId && agentId.length==36) {
+            if (agentId) {
                 Database.getQueryResult(Database.queryTopWinrate, {displayName: agentId})
                 .then((winrateArray) => {
                     const winrate = winrateArray?.[0] || null;
@@ -163,7 +163,7 @@ class API {
         // returns null if not enough games played
         app.get('/api/improvement', (req, res) => {
             const { agentId } = req.query;
-            if (agentId && agentId.length==36) {
+            if (agentId) {
                 Database.getQueryResult(Database.queryMostImproved, {displayName: agentId})
                 .then((improvementArray) => {
                     const improvement = improvementArray?.[0] || null;
@@ -184,7 +184,7 @@ class API {
         // returns null if not enough games played
         app.get('/api/improvement-rate', (req, res) => {
             const { agentId } = req.query;
-            if (agentId && agentId.length==36) {
+            if (agentId) {
                 Database.getQueryResult(Database.queryMostImproved, {displayName: agentId})
                 .then((improvementArray) => {
                     const improvement = improvementArray?.[0] || null;
