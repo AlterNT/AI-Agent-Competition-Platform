@@ -5,7 +5,8 @@ import Database from "../database.js"
 const databaseDisabledError = { error: 'Database not implemented' };
 const incorrectQueryParamsError = { error: 'Incorrect query parameters' };
 console.assert(process.env.NODE_ENV == "test", "This test suite should only be run in the test environment");
-
+if (process.env.NODE_ENV != "test") process.exit(0);
+ 
 beforeAll(async () => {
     // process.env.DATABASE_ENABLED = true;
     await API.init();
