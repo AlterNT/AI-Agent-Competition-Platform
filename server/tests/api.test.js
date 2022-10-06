@@ -87,8 +87,15 @@ describe('API', () => {
 
     // TODO: Test it doesn't crash
     describe('Queries With Missing Arguments', () => {
-        it('/api/games', async () => {
-            const response = await request(API.app).get('/api/games');
+        [
+            "games",
+            "game",
+            "winrate",
+            "improvement",
+            "improvement-rate",
+        ].forEach(route => {
+            it(`/api/${route}`, async () => {
+                const response = await request(API.app).get(`/api/${route}`);
             const responseBody = JSON.parse(response.text);
             const returnedKeys = Object.keys(responseBody);
             expect(returnedKeys.length).toBe(1);
@@ -96,14 +103,7 @@ describe('API', () => {
             const returnedObject = responseBody[returnedKeys];
             expect(returnedObject).toEqual(incorrectQueryParamsError);
         });
-        xit('/api/game', async () => {
-        });
-        xit('/api/winrate', async () => {
-        });
-        xit('/api/improvement', async () => {
-        });
-        xit('/api/improvement-rate', async () => {
-        });
+        })
     });
 
     // TODO: Test it doesn't crash
