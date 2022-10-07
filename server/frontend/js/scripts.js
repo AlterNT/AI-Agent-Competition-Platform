@@ -2,7 +2,7 @@
 
 document.getElementById('rt').addEventListener("click", getQuery);
 document.getElementById('query').addEventListener("change", updateInfo);
-document.getElementById('saveAuth').addEventListener('click', saveAuthString);
+//document.getElementById('saveAuth').addEventListener('click', saveAuthString);
 
 async function apiResult(endpoint) {
     const serverUrl = 'http://localhost:8080';
@@ -191,14 +191,9 @@ function tabulateSingle(dataJson) {
     $("#excelDataTable").append(dataTr$);
 }
 
-function openAdmin() {
-    $('#adminBox').toggle(
-        function() {$('#adminBox').css('display', 'inline-flex')},
-        function() {$('#adminBox').css('display', 'none')}
-    );
-}
-
 async function saveAuthString() {
+
+    $("tr").remove();
     
     var authString = document.getElementById('auth').value;
     localStorage.setItem('aiCompetitionAdminToken', authString);
@@ -218,18 +213,101 @@ async function saveAuthString() {
 }
 
 async function adminView() {
-    var endpoint = '/api/admin-view'
+    var endpoint = '/api/admin-view?adminToken=' + localStorage.getItem('aiCompetitionAdminToken')
+    console.log(endpoint)
     tabulateFromEndpoint(endpoint);
+    $('#adminBox').css('display', 'none');
 }
 
 async function studentToken() {
 
+    let headers = new Headers();
+    headers.append("Accept", "application/json")
+    headers.append('Access-Control-Allow-Origin', '*')
+    headers.append("Accept-Language", "en-US,en;q=0.5")
+    headers.append("Sec-Fetch-Dest", "empty")
+    headers.append("Sec-Fetch-Mode", "no-cors")
+    headers.append("Sec-Fetch-Site", "cross-site")
+    headers.append("Pragma", "no-cache")
+    headers.append("Cache-Control", "no-cache")
+
+    seed = $('#studentSeed').val();
+    host = 'http://localhost:8080'
+    var endpoint = '/api/generate-token?adminToken=' + localStorage.getItem('aiCompetitionAdminToken') + '&seed=' + seed;
+    console.log(host+endpoint)
+
+    const result = await fetch(encodeURI(host+endpoint), {
+        "method": "POST",
+    });
+
+    const resultJson = await result.json();
+    $('#adminBox').css('display', 'none');
+    tabulateSingle(resultJson);
 }
 
 async function adminToken() {
+    let headers = new Headers();
+    headers.append("Accept", "application/json")
+    headers.append('Access-Control-Allow-Origin', '*')
+    headers.append("Accept-Language", "en-US,en;q=0.5")
+    headers.append("Sec-Fetch-Dest", "empty")
+    headers.append("Sec-Fetch-Mode", "no-cors")
+    headers.append("Sec-Fetch-Site", "cross-site")
+    headers.append("Pragma", "no-cache")
+    headers.append("Cache-Control", "no-cache")
 
+    seed = $('#adminSeed').val();
+    host = 'http://localhost:8080'
+    var endpoint = '/api/generate-admin-token?adminToken=' + localStorage.getItem('aiCompetitionAdminToken') + '&seed=' + seed;
+    console.log(host+endpoint)
+
+    const result = await fetch(encodeURI(host+endpoint), {
+        "method": "POST",
+    });
+
+    const resultJson = await result.json();
+    console.log(resultJson['token']);
+    $('#adminBox').css('display', 'none');
+    var dataTr$ = $('<tr/>');
+    var headerTr$ = $('<tr/>');
+    headerTr$.append($('<th/>').html('New Admin Token'));
+    dataTr$.append($('<td/>').html(resultJson['token']));
+    $('#excelDataTable').append(headerTr$);
+    $('#excelDataTable').append(dataTr$);
 }
 
 async function changeName() {
+    let headers = new Headers();
+    headers.append("Accept", "application/json")
+    headers.append('Access-Control-Allow-Origin', '*')
+    headers.append("Accept-Language", "en-US,en;q=0.5")
+    headers.append("Sec-Fetch-Dest", "empty")
+    headers.append("Sec-Fetch-Mode", "no-cors")
+    headers.append("Sec-Fetch-Site", "cross-site")
+    headers.append("Pragma", "no-cache")
+    headers.append("Cache-Control", "no-cache")
+
+    studentNumber = $('#studentNumber').val();
+    newName = $('#newName').val();
+    host = 'http://localhost:8080'
+    var endpoint = '/api/set-display-name?studentNumber=' + studentNumber + '&displayName=' + newName;
+    console.log(host+endpoint);
+
+    const result = await fetch(encodeURI(host+endpoint), {
+        "method": "POST",
+    });
+
+    const resultJson = await result.json();
+    console.log(resultJson);
+    $('#adminBox').css('display', 'none');
+
+    var dataTr$ = $('<tr/>');
+    var headerTr$ = $('<tr/>');
+    headerTr$.append($('<th/>').html('Success'));
+    headerTr$.append($('<th/>').html('New Name'));
+    dataTr$.append($('<td/>').html(resultJson['success']['success']));
+    dataTr$.append($('<td/>').html(newName));
+    $('#excelDataTable').append(headerTr$);
+    $('#excelDataTable').append(dataTr$);
 
 }
