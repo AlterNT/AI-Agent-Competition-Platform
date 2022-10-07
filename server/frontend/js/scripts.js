@@ -19,21 +19,31 @@ async function apiResult(endpoint) {
     headers.append("Pragma", "no-cache")
     headers.append("Cache-Control", "no-cache")
 
-  
-    return await fetch(apiCall, {
-        "method": "GET",
-        "credentials": "omit",
-        "mode": "cors",
-        "headers": headers,
-    });
+    try {
+        const result = await fetch(apiCall, {
+            "method": "GET",
+            "credentials": "omit",
+            "mode": "cors",
+            "headers": headers,
+        });
+
+        const resultJson = await result.json();
+        return resultJson;
+
+        const values = Object.values(resultJson)[0];
+        const headers = Object.keys(values[0])
+        if (!values.length) {
+            return ({ error: [{ Error: 'Not Enough Data To Display, Please Try Again Layer' }] });
+        } else {
+            return resultJson;
+        }
+    } catch {
+        return ({ error: [{ Error: 'Server Unreachable At Current Time, Please Try Again Later' }] });
+    }
 }
 
 async function tabulateFromEndpoint(endpoint) {
-
-    const result = await apiResult(endpoint);
-    const resultJson = await result.json();
-
-    console.log(resultJson);
+    const resultJson = await apiResult(endpoint);
 
     if (endpoint[5] == 'i' || endpoint[5] == 'w') {
         tabulateSingle(resultJson);
@@ -42,6 +52,7 @@ async function tabulateFromEndpoint(endpoint) {
     
     const values = Object.values(resultJson)[0];
     const headers = Object.keys(values[0])
+
     headers.unshift('#');
     console.log(headers);
 
@@ -82,8 +93,6 @@ async function tabulateFromEndpoint(endpoint) {
 }
 
 async function download_table_as_csv(table_id, separator = ',') {
-    console.log('#' + table_id)
-
     // Select rows from table_id
     var rows = document.querySelectorAll('table#' + table_id + ' tr');
 
@@ -126,14 +135,11 @@ function getQuery() {
     var starter = "/api/";
     var q = $('#query').val();
     var id = $('#single').val();
-    //console.log(q)
     
     const requestCalls = {'game': 'gameId', 'agent-games': 'agentId', 'winrate': 'agentId', 'improvement': 'agentId'};
 
     if (q in requestCalls) {
-        console.log(requestCalls[q])
         qr = starter + q + "?" + requestCalls[q] + '=' + id
-        console.log(qr)
         return qr
     }
     else {
@@ -184,7 +190,6 @@ function tabulateSingle(dataJson) {
 }
 
 function openAdmin() {
-    console.log('running');
     $('#adminBox').toggle(
         function() {$('#adminBox').css('display', 'inline-flex')},
         function() {$('#adminBox').css('display', 'none')}
