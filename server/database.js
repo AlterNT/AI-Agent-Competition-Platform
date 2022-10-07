@@ -41,18 +41,27 @@ class Neo4jDatabase {
         await this.dbSync.start(batchQueries, timeoutDurationMilliseconds);
     }
 
-    // Has a 1.6% chance for a collision given 200 students
-    static generateRandomName() {
+    // Has a <1.6% chance for a collision given 200 students
+    static async generateRandomName() {
         const words =  JSON.parse(fs.readFileSync('./wordlists.json'));
-        const randRange = (low, high) => Math.floor((high - low) * Math.random() + low);
-        const randElement = (arr) => arr[randRange(0, arr.length)];
 
-        const adjective = randElement(words.adjectives);
-        const colour = randElement(words.colours);
-        const fruit = randElement(words.fruit);
-        const number = `${randRange(0, 9)}${randRange(0, 9)}`;
+        const users = await this.dbInstance.all('Admin')
+        const existingNames = users.map((_, i) => users.get(i).properties().displayName);
 
-        return `${adjective}${colour}${fruit}${number}`;
+        while (true) {
+            const randRange = (low, high) => Math.floor((high - low) * Math.random() + low);
+            const randElement = (arr) => arr[randRange(0, arr.length)];
+
+            const adjective = randElement(words.adjectives);
+            const colour = randElement(words.colours);
+            const fruit = randElement(words.fruit);
+            const number = `${randRange(0, 9)}${randRange(0, 9)}`;
+
+            const displayName = `${adjective}${colour}${fruit}${number}`;
+            if (!existingNames.includes(displayName)) {
+                return displayName;
+            }
+        }
     }
 
     /**
@@ -187,7 +196,7 @@ class Neo4jDatabase {
      * @returns {Neode.Node<Models.User>}
      */
     static async createUser(studentNumber, authToken, selectedDisplayName=null, isBot=false) {
-        const displayName = selectedDisplayName || this.generateRandomName();
+        const displayName = selectedDisplayName || await this.generateRandomName();
         return await this.dbInstance.create('User', {
             studentNumber: String(studentNumber),
             authToken,
