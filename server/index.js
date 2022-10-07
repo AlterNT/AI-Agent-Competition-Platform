@@ -18,6 +18,12 @@ async function main() {
         description: 'Load file',
         type: 'string',
     })
+    .command('admin-tokens <file>', 'generates admin tokens using seeds in file')
+    .option('f', {
+        alias: 'file',
+        description: 'Load file',
+        type: 'string',
+    })
     .help()
     .argv
 
@@ -37,8 +43,14 @@ async function main() {
     }
 
     if (argv._[0] == 'tokens') {
-        const tokens = await Database.generateUserTokens(argv.f);
-        console.log('New Tokens Created:', tokens)
+        const tokens = await Database.generateUserTokens(argv.f, false);
+        console.log('User Tokens Created:', tokens)
+        process.exit(0)
+    }
+
+    if (argv._[0] == 'admin-tokens') {
+        const tokens = await Database.generateUserTokens(argv.f, true);
+        console.log('Admin Tokens Created:', tokens)
         process.exit(0)
     }
 

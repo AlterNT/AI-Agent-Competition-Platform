@@ -164,6 +164,18 @@ class Neo4jDatabase {
         return await this.dbInstance.create('Game', {});
     }
 
+    static async createAdmin(adminToken) {
+        return await this.dbInstance.create('Admin', {
+            adminToken,
+        });
+    }
+
+    static async authenticateAdmin(adminToken) {
+        return !!await this.dbInstance.find('Admin', {
+            adminToken,
+        });
+    }
+
     /**
      * @param {String} userToken
      * @param {String | Number} studentNumber
@@ -280,34 +292,40 @@ class Neo4jDatabase {
      * Generates and assigns a token for each student number in the file
      * One student number should be present on each line
      * @param {String} studentNumbersFilePath string containing the file path of the student numbers file
+     * @param {Boolean | undefined} isAdmin
      * @returns {{studentNumber: String, authToken: String}[]} an array of objects with the last token generated at the last index
      */
-    static async generateUserTokens(studentNumbersFilePath) {
-        let studentNumbersFileContent;
+    static async generateUserTokens(seedTokensFilePath, isAdmin) {
+        let seedTokensFileContent;
         try {
-            studentNumbersFileContent = fs.readFileSync(studentNumbersFilePath)
+            seedTokensFileContent = fs.readFileSync(seedTokensFilePath)
                 .toString();
         } catch (exception) {
             console.error(`Cannot read specified file, please check permission and location\n${exception}`);
             return [];
         }
 
-        const studentNumbers = studentNumbersFileContent
+        const seedTokens = seedTokensFileContent
             .trim()
             .split('\n');
 
         const tokengen = new TokenGenerator();
-        const studentData = tokengen.computeStudentTokens(studentNumbers);
+        const studentData = tokengen.computeStudentTokens(seedTokens);
         const userData = [];
 
         for (const { studentNumber, authToken } of studentData) {
-            const user = await this.dbInstance.find(
-                'User', studentNumber
-            );
+            if (isAdmin && !await this.authenticateAdmin(authToken)) {
+                await this.createAdmin(authToken);
+                userData.push(authToken);
+            } else {
+                const user = await this.dbInstance.find(
+                    'User', studentNumber
+                );
 
-            if (!user) {
-                await this.createUserAndAgent(studentNumber, authToken);
-                userData.push({ studentNumber, authToken });
+                if (!user) {
+                    await this.createUserAndAgent(studentNumber, authToken);
+                    userData.push({ studentNumber, authToken });
+                }
             }
         }
 
