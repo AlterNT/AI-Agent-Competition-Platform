@@ -224,8 +224,8 @@ class API {
         })
 
         app.post('/api/join', async (req, res) => {
-            const { agentToken, gameID, lobbyID } = req.body
-            const result = await LobbyManager.joinLobby(agentToken, gameID, lobbyID);
+            const { agentToken, gameID, lobbyID, options } = req.body
+            const result = await LobbyManager.joinLobby(agentToken, gameID, lobbyID, options);
             res.json(result);
         })
 
