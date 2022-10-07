@@ -1,0 +1,31 @@
+name: Deploy To Server on Main Push.
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+ deploy:
+  runs-on: ubuntu-latest
+  steps:
+  
+   - name: Install SSH key
+     uses: shimataro/ssh-key-action@v2
+     with:
+       key: ${{ secrets.SSH_PRIVATE_KEY }}
+       known_hosts: ${{ secrets.KNOW_HOST }}
+       
+   - name: deploy code
+     uses: appleboy/ssh-action@master
+     with:
+          host: 194.195.253.84
+          username: testing
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /home/testing/AgentServer
+            rm -rf AI-Agent-Competition-Platform
+            gh repo clone AlterNT/AI-Agent-Competition-Platform
+            cd AI-Agent-Competition-Platform
+            git init
+            git fetch origin 
