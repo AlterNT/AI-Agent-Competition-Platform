@@ -13,7 +13,7 @@ class Lobby {
     /** @type {Number} How many players for this lobby to start. */
     slots;
     /** @type {Number} */
-    bots = 2;
+    bots = 0;
     /** @type {String} */
     password = '';
     /** @type {Boolean} */
