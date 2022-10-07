@@ -41,12 +41,15 @@ class Neo4jDatabase {
         await this.dbSync.start(batchQueries, timeoutDurationMilliseconds);
     }
 
-    // Has a <1.6% chance for a collision given 200 students
+    static async getAllDisplayNames() {
+        const users = await this.dbInstance.all('User');
+        return users.map((_, i) => users.get(i).properties().displayName);
+    }
+
+    // Has a 0.4% chance for a collision given 200 students
     static async generateRandomName() {
         const words =  JSON.parse(fs.readFileSync('./wordlists.json'));
-
-        const users = await this.dbInstance.all('Admin')
-        const existingNames = users.map((_, i) => users.get(i).properties().displayName);
+        const existingNames = await this.getAllDisplayNames();
 
         while (true) {
             const randRange = (low, high) => Math.floor((high - low) * Math.random() + low);
@@ -533,6 +536,14 @@ class Neo4jDatabase {
             return {
                 success: false,
                 error: `userToken ${userToken} does not exist in the database`,
+            };
+        }
+
+        const existingNames = await this.getAllDisplayNames();
+        if (existingNames.includes(displayName)) {
+            return {
+                success: false,
+                error: `Display Name ${displayName} already taken`,
             };
         }
 
