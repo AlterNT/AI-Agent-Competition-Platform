@@ -2,6 +2,7 @@
 
 document.getElementById('rt').addEventListener("click", getQuery);
 document.getElementById('query').addEventListener("change", updateInfo);
+document.getElementById('saveAuth').addEventListener('click', saveAuthString);
 
 async function apiResult(endpoint) {
     const serverUrl = 'http://localhost:8080';
@@ -189,5 +190,9 @@ function openAdmin() {
         function() {$('#adminBox').css('display', 'inline-flex')},
         function() {$('#adminBox').css('display', 'none')}
     );
+}
 
+function saveAuthString() {
+    var authString = document.getElementById('auth').value;
+    localStorage.setItem('aiCompetitionAdminToken', authString);
 }

@@ -29,6 +29,7 @@
 /*End Media Queries*/
 
 #adminBox {
+  display: inline-flex;
 }
 
 #tableWrapperWrapper {
