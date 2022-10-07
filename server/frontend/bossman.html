@@ -52,7 +52,20 @@
 
             <div class="justify-content-center my-2">
                 <div id="adminBox" class="justify-content-center align-content-center">
-                    <input type="text" placeholder="User Token"><input type="text" placeholder="New Name"> <button class='btn btn-outline-primary mx-1' onclick="changeName()">Submit</button>
+                    <div class="adminQuery">
+                        <label>Admin Database View</label>
+                        <button class='btn btn-outline-primary mx-1' onclick="adminView()">All Users</button>
+                        <br/>
+                        <label>Generate New Student Token</label>
+                        <input type="text" placeholder="Student Number"> <button class='btn btn-outline-primary mx-1' onclick="studentToken()">Submit</button>
+                        <br/>
+                        <label>Generate New Admin Token</label>
+                        <input type="text" placeholder="Seed"> <button class='btn btn-outline-primary mx-1' onclick="adminToken()">Submit</button>
+                        <br/>
+                        <label>Change Display Name</label>
+                        <input type="text" placeholder="User Token"><input type="text" placeholder="New Name"> <button class='btn btn-outline-primary mx-1' onclick="changeName()">Submit</button>          
+                    </div>
+
                 </div>
             </div>
 

@@ -14,6 +14,7 @@ class API {
         const databaseDisabledError = { error: 'Database not implemented' };
         const incorrectQueryParamsError = { error: 'Incorrect query parameters' };
         const adminAuthError = { error: 'Lacking Admin Authentication' };
+        const tokenAlreadyExistsError = { error: 'Token Already Exists' };
 
         this.app = express()
         const app = this.app
@@ -134,6 +135,7 @@ class API {
 
         // ---------------------------------------------------------------
         // Admin Routes
+        // Changing display name can be done by admin as they can view student numbers
 
         // all agents sorted by which improved the most since its first game
         app.get('/api/check-admin', (req, res) => {
@@ -163,6 +165,52 @@ class API {
                             .then((users) => {
                                 res.json({ users })
                             });
+                        }
+                    });
+            }
+        });
+
+        app.get('/api/generate-token', (req, res) => {
+            let { adminToken, seed } = req.query;
+            seed = Number(seed);
+            if (!adminToken) {
+                res.json({ token: adminAuthError });
+            } else if (!seed || !Number.isInteger(seed)) {
+                // seed must be a student number (integer)
+                res.json({ token: incorrectQueryParamsError });
+            } else {
+                Database.authenticateAdmin(adminToken)
+                    .then((authenticated) => {
+                        if (!authenticated) {
+                            res.json({ token: adminAuthError });
+                        } else {
+                            Database.generateUserTokens([seed], false)
+                                .then((tokens) => {
+                                    const token = tokens?.[0] || tokenAlreadyExistsError;
+                                    res.json({ token });
+                                });
+                        }
+                    });
+            }
+        });
+
+        app.get('/api/generate-admin-token', (req, res) => {
+            const { adminToken, seed } = req.query;
+            if (!adminToken) {
+                res.json({ token: adminAuthError });
+            } else if (!seed) {
+                res.json({ token: incorrectQueryParamsError });
+            } else {
+                Database.authenticateAdmin(adminToken)
+                    .then((authenticated) => {
+                        if (!authenticated) {
+                            res.json({ token: adminAuthError });
+                        } else {
+                            Database.generateUserTokens([seed], true)
+                                .then((tokens) => {
+                                    const token = tokens?.[0] || tokenAlreadyExistsError;
+                                    res.json({ token });
+                                });
                         }
                     });
             }

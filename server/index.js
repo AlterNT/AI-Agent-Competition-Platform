@@ -43,13 +43,13 @@ async function main() {
     }
 
     if (argv._[0] == 'tokens') {
-        const tokens = await Database.generateUserTokens(argv.f, false);
+        const tokens = await Database.generateTokensFromFile(argv.f, false);
         console.log('User Tokens Created:', tokens)
         process.exit(0)
     }
 
     if (argv._[0] == 'admin-tokens') {
-        const tokens = await Database.generateUserTokens(argv.f, true);
+        const tokens = await Database.generateTokensFromFile(argv.f, true);
         console.log('Admin Tokens Created:', tokens)
         process.exit(0)
     }

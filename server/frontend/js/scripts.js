@@ -29,8 +29,9 @@ async function apiResult(endpoint) {
         });
 
         const resultJson = await result.json();
-
         const values = Object.values(resultJson)[0];
+
+        console.log(values);
         if (values === null) {
             return ({ error: [{ Error: 'Insufficient Data For Current Query' }] });
         } else if (!values?.length) {
@@ -197,7 +198,38 @@ function openAdmin() {
     );
 }
 
-function saveAuthString() {
+async function saveAuthString() {
+    
     var authString = document.getElementById('auth').value;
     localStorage.setItem('aiCompetitionAdminToken', authString);
+
+    const serverUrl = 'http://localhost:8080';
+    const result = await fetch(encodeURI(serverUrl + '/api/check-admin?adminToken=' + authString))
+    const resultJson = await result.json()
+
+    if (resultJson['authenticated'] == true) {
+        console.log('good');
+        $('#adminBox').css('display', 'inline-flex');
+    }
+    else {
+        return
+    }
+    return resultJson['authenticated'];
+}
+
+async function adminView() {
+    var endpoint = '/api/admin-view'
+    tabulateFromEndpoint(endpoint);
+}
+
+async function studentToken() {
+
+}
+
+async function adminToken() {
+
+}
+
+async function changeName() {
+
 }
