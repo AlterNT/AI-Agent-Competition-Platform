@@ -11,7 +11,7 @@ class Lobby {
     /** @type {{maxPlayers: Number, minPlayers: Number}} Settings of current game. */
     gameSettings;
     /** @type {Number} How many players for this lobby to start. */
-    slots = this.gameSettings.maxPlayers;
+    slots;
     /** @type {Number} */
     bots = 0;
     /** @type {String} */
@@ -21,12 +21,13 @@ class Lobby {
 
     constructor(gameID, options) {
         this.bots = options?.bots ?? this.bots;
+        this.gameSettings = config.games[gameID].settings;
         // Clamp slots to valid number.
-        this.slots = Math.min(Math.max(options?.slots, this.gameSettings.minPlayers), this.gameSettings.maxPlayers) ?? this.slots;
+        this.slots = Math.min(Math.max(options?.slots ?? this.gameSettings.maxPlayers, this.gameSettings.minPlayers), this.gameSettings.maxPlayers);
+        console.log(this.slots)
         this.password = options?.password ?? this.password;
         this.tournament = options?.tournament ?? this.tournament;
         this.gameID = gameID;
-        this.gameSettings = config.games[gameID].settings;
     }
 
     /**

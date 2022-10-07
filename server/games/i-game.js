@@ -56,7 +56,11 @@ class IGame {
      * Setup and End of a game.
      */
     async main() {
-        this.result = await this.playGame(this.agents)
+        try {
+            this.result = await this.playGame(this.agents)
+        } catch (error) {
+            console.log(`Game crashed with error:\n${error}`)
+        }
         this.stream.write("The final scores are: \n")
         for (const i in this.agents) {
             this.stream.write(`\t Agent ${i}, '${this.agents[i]}':\t ${this.result[i]}\n`);

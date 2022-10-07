@@ -14,7 +14,7 @@ class LobbyManager {
      * @param {{}} options lobby options.
      * @returns true if agent successfully added to lobby, false otherwise
      */
-    static async joinLobby(agentToken, gameID, lobbyID = 0, options = { password: '', tournament: false }) {
+    static async joinLobby(agentToken, gameID, lobbyID = 0, options) {
         // authorisation
         const authorised = await Database.isUserEligibleToPlay(agentToken)
         if (!authorised) { return { success: false } }
