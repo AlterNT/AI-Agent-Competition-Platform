@@ -28,16 +28,17 @@ async function apiResult(endpoint) {
         });
 
         const resultJson = await result.json();
-        return resultJson;
 
         const values = Object.values(resultJson)[0];
-        const headers = Object.keys(values[0])
-        if (!values.length) {
-            return ({ error: [{ Error: 'Not Enough Data To Display, Please Try Again Layer' }] });
+        if (values === null) {
+            return ({ error: [{ Error: 'Insufficient Data For Current Query' }] });
+        } else if (!values?.length) {
+            return ({ error: [{ Error: 'No Data To Display For Current Query Insufficient Or Does Not Exist' }] });
         } else {
             return resultJson;
         }
-    } catch {
+    } catch (err) {
+        console.error('API ERROR:', err)
         return ({ error: [{ Error: 'Server Unreachable At Current Time, Please Try Again Later' }] });
     }
 }
@@ -45,7 +46,7 @@ async function apiResult(endpoint) {
 async function tabulateFromEndpoint(endpoint) {
     const resultJson = await apiResult(endpoint);
 
-    if (endpoint[5] == 'i' || endpoint[5] == 'w') {
+    if (!('error' in resultJson) && (endpoint[5] == 'i' || endpoint[5] == 'w')) {
         tabulateSingle(resultJson);
         return
     }
@@ -54,7 +55,6 @@ async function tabulateFromEndpoint(endpoint) {
     const headers = Object.keys(values[0])
 
     headers.unshift('#');
-    console.log(headers);
 
     function addAllColumnHeaders() {
         var headerTr$ = $('<tr/>');
