@@ -182,3 +182,12 @@ function tabulateSingle(dataJson) {
     data.forEach((d) => dataTr$.append($('<td/>').html(d)));
     $("#excelDataTable").append(dataTr$);
 }
+
+function openAdmin() {
+    console.log('running');
+    $('#adminBox').toggle(
+        function() {$('#adminBox').css('display', 'inline-flex')},
+        function() {$('#adminBox').css('display', 'none')}
+    );
+
+}

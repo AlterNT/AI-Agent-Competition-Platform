@@ -28,6 +28,18 @@
 
 /*End Media Queries*/
 
+#adminBox {
+}
+
+#tableWrapperWrapper {
+  width: 120%;
+}
+
+#queryForm {
+  width: 95%;
+  padding-top: 10%;
+}
+
 /*Table Styles*/
 td + td { 
   border-left: 1px rgba(255, 255, 255, 0.374) solid; 
@@ -38,7 +50,6 @@ td + td {
  }
  
  .tableWrapper {
- background-color: rgba(10,14,26, 0.8);
  overflow: scroll;
  pointer-events: all; 
  height: 600px;
