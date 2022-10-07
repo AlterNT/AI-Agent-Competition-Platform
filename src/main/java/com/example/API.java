@@ -4,6 +4,7 @@ import java.net.URL;
 
 import com.example.jsonobjects.gameFinished;
 import com.example.jsonobjects.gameStarted;
+import com.example.jsonobjects.getCard;
 import com.example.jsonobjects.getState;
 import com.example.jsonobjects.isTurn;
 import com.example.jsonobjects.joinLobby;
@@ -28,7 +29,7 @@ public class API {
     }
 
     // POST
-    public void join_lobby(String gameID) throws IOException {
+    public Boolean join_lobby(String gameID) throws IOException {
         try {
             // Sets up connection parameters
             URL url = new URL("http://localhost:8080/api/join");
@@ -60,7 +61,9 @@ public class API {
             joinLobby json = mapper.readValue(responseStream, joinLobby.class);
 
             if (!json.success()) {
-                throw new Error();
+                return false;
+            } else {
+                return true;
             }
 
         } catch (IOException e) {
@@ -187,7 +190,7 @@ public class API {
     }
 
     // POST
-    public Boolean send_action(Action action, Card card) throws IOException {
+    public Boolean send_action(Action action) throws IOException {
         try {
             // Sets up connection parameters
             URL url = new URL("http://localhost:8080/api/action");
@@ -199,7 +202,7 @@ public class API {
 
             // Creates Json Body for request
             ObjectMapper mapperRequest = new ObjectMapper();
-            String actionName = String.format("play%s", card.toString());
+            String actionName = String.format("play%s", action.card().toString());
             ObjectNode rootNode = mapperRequest.createObjectNode();
             rootNode.put("agentToken", this.token);
             rootNode.put("action", actionName);
@@ -231,7 +234,44 @@ public class API {
     }
 
     // GET
-    public Object request_method(String[] keys, String method, String[] params) {
-        return null;
+    /* DEPRECATED */
+    public getCard request_method(String method) throws IOException {
+        try {
+            // Sets up connection parameters
+            URL url = new URL("http://localhost:8080/api/method");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            // Creates Json Body for request
+            ObjectMapper mapperRequest = new ObjectMapper();
+            ObjectNode rootNode = mapperRequest.createObjectNode();
+            rootNode.put("agentToken", this.token);
+            rootNode.put("keys", "null");
+            rootNode.put("method", "getTopCard");
+            rootNode.put("params", "null");
+            String lobbyJSON = mapperRequest.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
+
+            // Writes out the created json to the body
+            OutputStream os = connection.getOutputStream();
+            OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
+            osw.write(lobbyJSON);
+            osw.flush();
+            osw.close();
+            os.close();
+            connection.connect();
+
+            // Creates input stream and converts to json object
+            InputStream responseStream = connection.getInputStream();
+            ObjectMapper mapper = new ObjectMapper();
+            getCard json = mapper.readValue(responseStream, getCard.class);
+
+            return json;
+
+        } catch (IOException e) {
+            throw new IOException("connetion refused");
+        }
     }
 }

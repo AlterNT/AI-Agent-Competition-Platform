@@ -553,4 +553,84 @@ public class State implements Cloneable {
      * 
      */
 
+    public int statePlayer() {
+        return this.player;
+    }
+
+    public void updatePlayer(State controller, int player) throws IllegalActionException {
+        if (controller.statePlayer() != -1) {
+            throw new IllegalActionException("operation not permitted in player's state.");
+        }
+        this.player = player;
+    }
+
+    public void updateNum(State controller, int num) throws IllegalActionException {
+        if (controller.statePlayer() != -1) {
+            throw new IllegalActionException("operation not permitted in player's state.");
+        }
+        this.num = num;
+    }
+
+    public void updateDiscards(State controller, Card[][] discards) throws IllegalActionException {
+        if (controller.statePlayer() != -1) {
+            throw new IllegalActionException("operation not permitted in player's state.");
+        }
+        this.discards = discards;
+    }
+
+    public void updateDiscardcount(State controller, int[] discardCount) throws IllegalActionException {
+        if (controller.statePlayer() != -1) {
+            throw new IllegalActionException("operation not permitted in player's state.");
+        }
+        this.discardCount = discardCount;
+    }
+
+    public void updateHand(State controller, Card[] hand) throws IllegalActionException {
+        if (controller.statePlayer() != -1) {
+            throw new IllegalActionException("operation not permitted in player's state.");
+        }
+        this.hand = hand;
+    }
+
+    public void updateDeck(State controller, Card[] deck) throws IllegalActionException {
+        if (controller.statePlayer() != -1) {
+            throw new IllegalActionException("operation not permitted in player's state.");
+        }
+        this.deck = deck;
+    }
+
+    public void updateTop(State controller, int[] top) throws IllegalActionException {
+        if (controller.statePlayer() != -1) {
+            throw new IllegalActionException("operation not permitted in player's state.");
+        }
+        this.top = top;
+    }
+
+    public void updateKnown(State controller, boolean[][] known) throws IllegalActionException {
+        if (controller.statePlayer() != -1) {
+            throw new IllegalActionException("operation not permitted in player's state.");
+        }
+        this.known = known;
+    }
+
+    public void updateHandmaid(State controller, boolean[] handmaid) throws IllegalActionException {
+        if (controller.statePlayer() != -1) {
+            throw new IllegalActionException("operation not permitted in player's state.");
+        }
+        this.handmaid = handmaid;
+    }
+
+    public void updateScores(State controller, int player) throws IllegalActionException {
+        if (controller.statePlayer() != -1) {
+            throw new IllegalActionException("operation not permitted in player's state.");
+        }
+        this.player = player;
+    }
+
+    public void updateNext(State controller, int[] nextPlayer) throws IllegalActionException {
+        if (controller.statePlayer() != -1) {
+            throw new IllegalActionException("operation not permitted in player's state.");
+        }
+        this.nextPlayer = nextPlayer;
+    }
 }

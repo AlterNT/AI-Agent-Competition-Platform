@@ -2,8 +2,9 @@ package com.example;
 
 import com.example.jsonobjects.getCard;
 import com.example.jsonobjects.getState;
-import com.example.loveletter.State;
+import com.example.loveletter.Action;
 import com.example.loveletter.Card;
+import com.example.loveletter.State;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class objectBuilder {
@@ -20,7 +21,11 @@ public class objectBuilder {
         return null;
     }
 
-    // public Card buildCard(getCard card){
-    // return null;
-    // }
+    public Card buildCard(getCard json) {
+        return null;
+    }
+
+    public Action buildAction() {
+        return null;
+    }
 }
