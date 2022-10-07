@@ -14,4 +14,8 @@ public class joinLobby {
         this.gameID = gameID;
         this.success = success;
     }
+
+    public Boolean success() {
+        return this.success;
+    }
 }

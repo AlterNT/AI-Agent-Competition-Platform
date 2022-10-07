@@ -12,7 +12,6 @@ import com.example.loveletter.Action;
 import com.example.loveletter.Card;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +27,7 @@ public class API {
         this.token = agentToken;
     }
 
+    // POST
     public void join_lobby(String gameID) throws IOException {
         try {
             // Sets up connection parameters
@@ -59,35 +59,33 @@ public class API {
             ObjectMapper mapper = new ObjectMapper();
             joinLobby json = mapper.readValue(responseStream, joinLobby.class);
 
-            if (json.success == false) {
+            if (!json.success()) {
                 throw new Error();
             }
 
         } catch (IOException e) {
-            throw new IOException("connetion refused Failed at join_lobby()");
+            throw new IOException("connetion refused at join_lobby()");
         }
     }
 
+    // GET
     public Boolean game_started() throws IOException {
         try {
             // Sets up connection parameters
-            StringBuilder stringBuilder = new StringBuilder("http://localhost:8080/api/started?agentToekn=");
-            stringBuilder.append(this.agentToekn);
-            // String output =
-            // String.format("http://localhost:8080/api/started?agentToekn=%s", this.token);
+            String output = "http://localhost:8080/api/started?agentToken=" + this.token;
             URL url = new URL(output);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
             connection.setRequestMethod("GET");
-            // connection.setRequestProperty("Accept", "application/json");
-            // connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setRequestProperty("Content-Type", "application/json");
 
             // Creates input stream and converts to json object
             InputStream responseStream = connection.getInputStream();
             ObjectMapper mapper = new ObjectMapper();
             gameStarted json = mapper.readValue(responseStream, gameStarted.class);
+
             // Check json response and see if game has been started.
-            if (json.gameStarted == true) {
+            if (json.started()) {
                 return true;
             } else {
                 return false;
@@ -95,17 +93,17 @@ public class API {
 
         } catch (IOException e) {
             e.printStackTrace();
-            throw new IOException("Lost Connection Failed at game_started()");
+            throw new IOException("Lost Connection at game_started()");
         }
     }
 
+    // GET
     public Boolean game_finished() throws IOException {
         try {
             // Sets up connection parameters
-            String output = String.format("http://localhost:8080/api/finished?agentToekn=%s", this.token);
+            String output = "http://localhost:8080/api/finished?agentToken=" + this.token;
             URL url = new URL(output);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestProperty("Content-Type", "application/json");
@@ -116,25 +114,25 @@ public class API {
             gameFinished json = mapper.readValue(responseStream, gameFinished.class);
 
             // Check json response and see if game has been started.
-            if (json.gameFinished == false) {
-                return false;
-            } else {
+            if (json.finished()) {
                 return true;
+            } else {
+                return false;
             }
 
         } catch (IOException e) {
             e.printStackTrace();
-            throw new IOException("Lost Connection Failed at game_finished()");
+            throw new IOException("Lost Connection");
         }
     }
 
+    // GET
     public Boolean is_turn() throws IOException {
         try {
             // Sets up connection parameters
-            String output = String.format("http://localhost:8080/api/turn?agentToekn=%s", this.token);
+            String output = "http://localhost:8080/api/turn?agentToken=" + this.token;
             URL url = new URL(output);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestProperty("Content-Type", "application/json");
@@ -145,25 +143,25 @@ public class API {
             isTurn json = mapper.readValue(responseStream, isTurn.class);
 
             // Check json response and see if game has been started.
-            if (json.isTurn == false) {
-                return false;
-            } else {
+            if (json.turn()) {
                 return true;
+            } else {
+                return false;
             }
 
         } catch (IOException e) {
             e.printStackTrace();
-            throw new IOException("Lost Connection Failed at is_turn()");
+            throw new IOException("Lost Connection");
         }
     }
 
-    public Object get_state() throws IOException {
+    // GET
+    public getState get_state() throws IOException {
         try {
             // Sets up connection parameters
-            String output = String.format("http://localhost:8080/api/state?agentToekn=%s", this.token);
+            String output = "http://localhost:8080/api/state?agentToken=" + this.token;
             URL url = new URL(output);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestProperty("Content-Type", "application/json");
@@ -172,20 +170,23 @@ public class API {
             InputStream responseStream = connection.getInputStream();
             ObjectMapper mapper = new ObjectMapper();
             getState json = mapper.readValue(responseStream, getState.class);
-            System.out.print(json);
+
+            return json;
+            // Creates states object
             // Check json response and see if game has been started.
-            if (json.state == null) {
-                throw new Error("state received was null");
-            } else {
-                return json.state;
-            }
+            // if (json.state == null) {
+            // throw new Error("state received was null");
+            // } else {
+            // return json.state;
+            // }
 
         } catch (IOException e) {
             e.printStackTrace();
-            throw new IOException("Lost Connection Failed at get_state()");
+            throw new IOException("Lost Connection");
         }
     }
 
+    // POST
     public Boolean send_action(Action action, Card card) throws IOException {
         try {
             // Sets up connection parameters
@@ -225,24 +226,12 @@ public class API {
             }
 
         } catch (IOException e) {
-            throw new IOException("connetion refused Failed at send_action()");
+            throw new IOException("connetion refused");
         }
     }
 
+    // GET
     public Object request_method(String[] keys, String method, String[] params) {
-        // Sets up connection parameters
-        URL url = new URL("http://localhost:8080/api/action");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setDoOutput(true);
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("Content-Type", "application/json");
-
-        // Creates input stream and converts to json object
-        InputStream responseStream = connection.getInputStream();
-        ObjectMapper mapper = new ObjectMapper();
-        getState json = mapper.readValue(responseStream, getState.class);
-
         return null;
     }
 }

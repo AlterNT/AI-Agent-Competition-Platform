@@ -1,17 +1,17 @@
 package com.example.jsonobjects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class getState {
 
-    public final String agentToken;
-    public final String gameID;
-    public final Object state;
+    public final JsonNode state;
 
-    public getState(@JsonProperty("agentToekn") String agentToken, @JsonProperty("gameID") String gameID,
-            @JsonProperty("success") Object state) {
-        this.agentToken = agentToken;
-        this.gameID = gameID;
+    public getState(@JsonProperty("success") JsonNode state) {
         this.state = state;
+    }
+
+    public JsonNode get() {
+        return this.state;
     }
 }
