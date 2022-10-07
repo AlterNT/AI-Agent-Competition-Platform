@@ -477,6 +477,22 @@ class Neo4jDatabase {
         return res.records.map((record) => record.get('Games').toString());
     };
 
+        /**
+        *   Admin View for Tim
+        */
+        static async adminView() {
+            const res = await this.dbInstance.cypher(`
+            MATCH (u:User) 
+            RETURN u.studentNumber as studentNumber, u.displayName as displayName, u.authToken as authToken;
+            `);
+
+            return res.records.map((record) => ({
+                studentNumber: record.get('studentNumber').toString(),
+                displayName: record.get('displayName').toString(),
+                authToken: record.get('authToken').toString(),
+            }));
+    };
+
     static async setDisplayName(userToken, displayName) {
         const user = await this.dbInstance.find('User', userToken);
         if (!user) {
@@ -494,6 +510,8 @@ class Neo4jDatabase {
         };
     }
 }
+
+
 
 const getMockDatabase = () => {
     console.log(//chalk.red(
