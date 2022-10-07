@@ -37,13 +37,17 @@
           <a class="nav-link active" href="query.html">Query</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="about.html">About</a>
+            <a class="nav-link" href="bossman.html">Admin</a>
+          </li>
+        <li class="nav-item">
+            <a class="nav-link" href="about.html"
+            style="border-top-right-radius: 0.25rem;">About</a>
         </li>
       </ul>
     <div class="masthead">
         <div class="masthead-content text-white">
 
-            <div class="d-inline-flex justify-content-center">
+            <div id='queryForm' class="d-inline-flex justify-content-center">
                 <select id="query">
                     <option value="agents">All Agents</option>
                     <option value="agent-games">Agent Games Single</option>
@@ -54,21 +58,22 @@
                     <option value="improvement">Lifetime Improvement</option>
                     <option value="winrate">Winrate</option>
                 </select>
-                <input id="single" placeholder="Agent/Game ID" disabled></input>
+                <input id="single" placeholder="" disabled></input>
                 <button class="btn btn-outline-primary" id ='rt' onclick="renderTable(String(getQuery()))">GO</button> 
             </div>
 
-                <div class="d-inline-flex justify-content-center">
+                <div id='tableWrapperWrapper'class="justify-content-center">
                     <div class="tableWrapper">
                         <table id="excelDataTable"></table>
                     </div>
                 </div>
 
-                    <br><br>
+                    <br>
 
                 <div class="d-inline-flex justify-content-center">
-                    <button class='btn btn-outline-primary' onclick="download_table_as_csv('excelDataTable')">Export</button>
+                    <button class='btn btn-outline-primary mx-1' onclick="download_table_as_csv('excelDataTable')">Export</button>
                 </div>
+
         </div>
     </div> 
 
@@ -95,6 +100,7 @@
         window.onload = getQuery();
         window.onload = renderTable();
         window.onload = download_table_as_csv();
+        window.onload = openAdmin();
     </script>
 
 </body>

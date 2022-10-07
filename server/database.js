@@ -39,6 +39,7 @@ class Neo4jDatabase {
             this.queryAgents,
             this.queryTopWinrate,
             this.queryMostImproved,
+            this.queryAdminView,
         ];
 
         const timeoutDurationMilliseconds = 4_000;
@@ -164,6 +165,24 @@ class Neo4jDatabase {
         return await this.dbInstance.create('Game', {});
     }
 
+    static async createAdmin(adminToken) {
+        return await this.dbInstance.create('Admin', {
+            adminToken,
+        });
+    }
+
+    // neode `.find` method not working as intended?
+    // did authentication manually
+    static async authenticateAdmin(adminToken) {
+        const admins = await this.dbInstance.all('Admin')
+        const authenticated = !!admins
+            .map((_, i) => admins.get(i).properties().adminToken)
+            .filter((token) => token === adminToken)
+            .length;
+
+        return authenticated;
+    }
+
     /**
      * @param {String} userToken
      * @param {String | Number} studentNumber
@@ -280,34 +299,40 @@ class Neo4jDatabase {
      * Generates and assigns a token for each student number in the file
      * One student number should be present on each line
      * @param {String} studentNumbersFilePath string containing the file path of the student numbers file
+     * @param {Boolean | undefined} isAdmin
      * @returns {{studentNumber: String, authToken: String}[]} an array of objects with the last token generated at the last index
      */
-    static async generateUserTokens(studentNumbersFilePath) {
-        let studentNumbersFileContent;
+    static async generateUserTokens(seedTokensFilePath, isAdmin) {
+        let seedTokensFileContent;
         try {
-            studentNumbersFileContent = fs.readFileSync(studentNumbersFilePath)
+            seedTokensFileContent = fs.readFileSync(seedTokensFilePath)
                 .toString();
         } catch (exception) {
             console.error(`Cannot read specified file, please check permission and location\n${exception}`);
             return [];
         }
 
-        const studentNumbers = studentNumbersFileContent
+        const seedTokens = seedTokensFileContent
             .trim()
             .split('\n');
 
         const tokengen = new TokenGenerator();
-        const studentData = tokengen.computeStudentTokens(studentNumbers);
+        const studentData = tokengen.computeStudentTokens(seedTokens);
         const userData = [];
 
         for (const { studentNumber, authToken } of studentData) {
-            const user = await this.dbInstance.find(
-                'User', studentNumber
-            );
+            if (isAdmin && !await this.authenticateAdmin(authToken)) {
+                await this.createAdmin(authToken);
+                userData.push(authToken);
+            } else {
+                const user = await this.dbInstance.find(
+                    'User', studentNumber
+                );
 
-            if (!user) {
-                await this.createUserAndAgent(studentNumber, authToken);
-                userData.push({ studentNumber, authToken });
+                if (!user) {
+                    await this.createUserAndAgent(studentNumber, authToken);
+                    userData.push({ studentNumber, authToken });
+                }
             }
         }
 
@@ -477,6 +502,22 @@ class Neo4jDatabase {
         return res.records.map((record) => record.get('Games').toString());
     };
 
+    /**
+    *   Admin View for Tim
+    */
+    static async queryAdminView() {
+        const res = await this.dbInstance.cypher(`
+            MATCH (u:User)
+            RETURN u.studentNumber as studentNumber, u.displayName as displayName, u.authToken as authToken;
+        `);
+
+        return res.records.map((record) => ({
+            studentNumber: record.get('studentNumber').toString(),
+            displayName: record.get('displayName').toString(),
+            authToken: record.get('authToken').toString(),
+        }));
+    };
+
     static async setDisplayName(userToken, displayName) {
         const user = await this.dbInstance.find('User', userToken);
         if (!user) {
@@ -494,6 +535,8 @@ class Neo4jDatabase {
         };
     }
 }
+
+
 
 const getMockDatabase = () => {
     console.log(//chalk.red(

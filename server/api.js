@@ -13,6 +13,8 @@ class API {
     static async init() {
         const databaseDisabledError = { error: 'Database not implemented' };
         const incorrectQueryParamsError = { error: 'Incorrect query parameters' };
+        const adminAuthError = { error: 'Lacking Admin Authentication' };
+
         this.app = express()
         const app = this.app
 
@@ -131,6 +133,42 @@ class API {
         });
 
         // ---------------------------------------------------------------
+        // Admin Routes
+
+        // all agents sorted by which improved the most since its first game
+        app.get('/api/check-admin', (req, res) => {
+            const { adminToken } = req.query;
+            if (!adminToken) {
+                res.json({ authenticated: false });
+            } else {
+                Database.authenticateAdmin(adminToken)
+                .then((authenticated) => {
+                    res.json({ authenticated });
+                })
+            }
+        });
+
+        // all agents sorted by which improved the most since its first game
+        app.get('/api/admin-view', (req, res) => {
+            const { adminToken } = req.query;
+            if (!adminToken) {
+                res.json({ users: adminAuthError })
+            } else {
+                Database.authenticateAdmin(adminToken)
+                    .then((authenticated) => {
+                        if (!authenticated) {
+                            res.json({ users: adminAuthError })
+                        } else {
+                            Database.getQueryResult(Database.queryAdminView)
+                            .then((users) => {
+                                res.json({ users })
+                            });
+                        }
+                    });
+            }
+        });
+
+        // ---------------------------------------------------------------
         // game statistics: single agent
         // @TODO: implement by reusing cached batch query results
 
@@ -138,7 +176,7 @@ class API {
         // returns null if not enough games played
         app.get('/api/winrate', (req, res) => {
             const { agentId } = req.query;
-            Database.getQueryResult(Database.queryTopWinrate, {agentId})
+            Database.getQueryResult(Database.queryTopWinrate, {displayName: agentId})
             .then((winrateArray) => {
                 const winrate = winrateArray?.[0] || null;
                 res.json({ winrate })
@@ -149,7 +187,7 @@ class API {
         // returns null if not enough games played
         app.get('/api/improvement', (req, res) => {
             const { agentId } = req.query;
-            Database.getQueryResult(Database.queryMostImproved, {agentId})
+            Database.getQueryResult(Database.queryMostImproved, {displayName: agentId})
             .then((improvementArray) => {
                 const improvement = improvementArray?.[0] || null;
                 res.json({ improvement })
@@ -166,7 +204,7 @@ class API {
         // returns null if not enough games played
         app.get('/api/improvement-rate', (req, res) => {
             const { agentId } = req.query;
-            Database.getQueryResult(Database.queryMostImproved, {agentId})
+            Database.getQueryResult(Database.queryMostImproved, {displayName: agentId})
             .then((improvementArray) => {
                 const improvement = improvementArray?.[0] || null;
                 res.json({ improvement })
