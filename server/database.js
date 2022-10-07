@@ -171,10 +171,16 @@ class Neo4jDatabase {
         });
     }
 
+    // neode `.find` method not working as intended?
+    // did authentication manually
     static async authenticateAdmin(adminToken) {
-        return !!await this.dbInstance.find('Admin', {
-            adminToken,
-        });
+        const admins = await this.dbInstance.all('Admin')
+        const authenticated = !!admins
+            .map((_, i) => admins.get(i).properties().adminToken)
+            .filter((token) => token === adminToken)
+            .length;
+
+        return authenticated;
     }
 
     /**
