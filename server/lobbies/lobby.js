@@ -10,11 +10,21 @@ class Lobby {
     gameID;
     /** @type {{maxPlayers: Number, minPlayers: Number}} Settings of current game. */
     gameSettings;
+    /** @type {Number} How many players for this lobby to start. */
+    slots = this.gameSettings.maxPlayers;
     /** @type {Number} */
-    bots;
+    bots = 0;
+    /** @type {String} */
+    password = '';
+    /** @type {Boolean} */
+    tournament = false;
 
     constructor(gameID, options) {
-        this.bots = options.bots ?? 0;
+        this.bots = options?.bots ?? this.bots;
+        // Clamp slots to valid number.
+        this.slots = Math.min(Math.max(options?.slots, this.gameSettings.minPlayers), this.gameSettings.maxPlayers) ?? this.slots;
+        this.password = options?.password ?? this.password;
+        this.tournament = options?.tournament ?? this.tournament;
         this.gameID = gameID;
         this.gameSettings = config.games[gameID].settings;
     }
@@ -24,8 +34,8 @@ class Lobby {
      * @param {String} agentToken All tokens to be added.
      * @returns If the agent was added successfully.
      */
-    addAgent(agentToken) {
-        if (!this.tokens.includes(agentToken) && !this.isFull()) {
+    addAgent(agentToken, password = '') {
+        if (password === this.password && !this.tokens.includes(agentToken) && !this.isFull()) {
             this.tokens.push(agentToken);
             return true;
         }
@@ -68,7 +78,7 @@ class Lobby {
     }
 
     isFull() {
-        return (this.bots + this.tokens.length) === this.gameSettings.maxPlayers
+        return (this.bots + this.tokens.length) === this.slots
     }
 }
 

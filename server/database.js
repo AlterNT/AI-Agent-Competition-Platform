@@ -10,8 +10,9 @@ import config from './config.js';
 class Neo4jDatabase {
     /** @type {[String]} */
     static defaultAgentToken = '00000000';
-    static dbInstance
-    static dbSync
+    static testAdminToken = 'admin';
+    static dbInstance;
+    static dbSync;
 
     static async init() {
         /** @type {Neode} */
@@ -174,6 +175,10 @@ class Neo4jDatabase {
     // neode `.find` method not working as intended?
     // did authentication manually
     static async authenticateAdmin(adminToken) {
+        if (config.database.testEnvironment || process.env.NODE_ENV === 'test') {
+            return adminToken === Database.testAdminToken;
+        }
+
         const admins = await this.dbInstance.all('Admin')
         const authenticated = !!admins
             .map((_, i) => admins.get(i).properties().adminToken)
@@ -302,20 +307,7 @@ class Neo4jDatabase {
      * @param {Boolean | undefined} isAdmin
      * @returns {{studentNumber: String, authToken: String}[]} an array of objects with the last token generated at the last index
      */
-    static async generateUserTokens(seedTokensFilePath, isAdmin) {
-        let seedTokensFileContent;
-        try {
-            seedTokensFileContent = fs.readFileSync(seedTokensFilePath)
-                .toString();
-        } catch (exception) {
-            console.error(`Cannot read specified file, please check permission and location\n${exception}`);
-            return [];
-        }
-
-        const seedTokens = seedTokensFileContent
-            .trim()
-            .split('\n');
-
+    static async generateUserTokens(seedTokens, isAdmin) {
         const tokengen = new TokenGenerator();
         const studentData = tokengen.computeStudentTokens(seedTokens);
         const userData = [];
@@ -337,6 +329,23 @@ class Neo4jDatabase {
         }
 
         return userData;
+    }
+
+    static async generateTokensFromFile(seedTokensFilePath, isAdmin) {
+        let seedTokensFileContent;
+        try {
+            seedTokensFileContent = fs.readFileSync(seedTokensFilePath)
+                .toString();
+        } catch (exception) {
+            console.error(`Cannot read specified file, please check permission and location\n${exception}`);
+            return [];
+        }
+
+        const seedTokens = seedTokensFileContent
+            .trim()
+            .split('\n');
+
+        return await this.generateUserTokens(seedTokens, isAdmin);
     }
 
     /**
