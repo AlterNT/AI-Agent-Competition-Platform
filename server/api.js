@@ -13,6 +13,8 @@ class API {
     static async init() {
         const databaseDisabledError = { error: 'Database not implemented' };
         const incorrectQueryParamsError = { error: 'Incorrect query parameters' };
+        const adminAuthError = { error: 'Lacking Admin Authentication' };
+
         this.app = express()
         const app = this.app
 
@@ -132,12 +134,25 @@ class API {
 
         // ---------------------------------------------------------------
         // Admin Routes
+
         // all agents sorted by which improved the most since its first game
-        app.get('/api/admin-view', (_, res) => {
-            Database.getQueryResult(Database.queryAdminView)
-            .then((users) => {
-                res.json({ users })
-            });
+        app.get('/api/admin-view', (req, res) => {
+            const { adminToken } = req.query;
+            if (!adminToken) {
+                res.json({ users: adminAuthError })
+            } else {
+                Database.authenticateAdmin(adminToken)
+                    .then((authenticated) => {
+                        if (!authenticated) {
+                            res.json({ users: adminAuthError })
+                        } else {
+                            Database.getQueryResult(Database.queryAdminView)
+                            .then((users) => {
+                                res.json({ users })
+                            });
+                        }
+                    });
+            }
         });
 
         // ---------------------------------------------------------------
