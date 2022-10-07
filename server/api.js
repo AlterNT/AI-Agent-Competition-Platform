@@ -136,6 +136,19 @@ class API {
         // Admin Routes
 
         // all agents sorted by which improved the most since its first game
+        app.get('/api/check-admin', (req, res) => {
+            const { adminToken } = req.query;
+            if (!adminToken) {
+                res.json({ authenticated: false });
+            } else {
+                Database.authenticateAdmin(adminToken)
+                .then((authenticated) => {
+                    res.json({ authenticated });
+                })
+            }
+        });
+
+        // all agents sorted by which improved the most since its first game
         app.get('/api/admin-view', (req, res) => {
             const { adminToken } = req.query;
             if (!adminToken) {
