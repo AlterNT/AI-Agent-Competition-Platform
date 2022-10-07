@@ -131,6 +131,16 @@ class API {
         });
 
         // ---------------------------------------------------------------
+        // Admin Routes
+        // all agents sorted by which improved the most since its first game
+        app.get('/api/admin-view', (_, res) => {
+            Database.getQueryResult(Database.queryAdminView)
+            .then((users) => {
+                res.json({ users })
+            });
+        });
+
+        // ---------------------------------------------------------------
         // game statistics: single agent
         // @TODO: implement by reusing cached batch query results
 

@@ -39,6 +39,7 @@ class Neo4jDatabase {
             this.queryAgents,
             this.queryTopWinrate,
             this.queryMostImproved,
+            this.queryAdminView,
         ];
 
         const timeoutDurationMilliseconds = 4_000;
@@ -495,20 +496,20 @@ class Neo4jDatabase {
         return res.records.map((record) => record.get('Games').toString());
     };
 
-        /**
-        *   Admin View for Tim
-        */
-        static async adminView() {
-            const res = await this.dbInstance.cypher(`
-            MATCH (u:User) 
+    /**
+    *   Admin View for Tim
+    */
+    static async queryAdminView() {
+        const res = await this.dbInstance.cypher(`
+            MATCH (u:User)
             RETURN u.studentNumber as studentNumber, u.displayName as displayName, u.authToken as authToken;
-            `);
+        `);
 
-            return res.records.map((record) => ({
-                studentNumber: record.get('studentNumber').toString(),
-                displayName: record.get('displayName').toString(),
-                authToken: record.get('authToken').toString(),
-            }));
+        return res.records.map((record) => ({
+            studentNumber: record.get('studentNumber').toString(),
+            displayName: record.get('displayName').toString(),
+            authToken: record.get('authToken').toString(),
+        }));
     };
 
     static async setDisplayName(userToken, displayName) {
