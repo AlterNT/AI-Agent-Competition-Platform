@@ -1,6 +1,8 @@
 import Database from "../database.js";
 import IAgent from "./i-agent.js";
+import Gzip from "zlib";
 import fs from 'fs'
+import { Readable } from "stream";
 
 class IGame {
 
@@ -69,9 +71,13 @@ class IGame {
         this.agents.forEach(({ token }, i) => {
             scores[token] = this.result[i]
         })
-        fs.writeFileSync('./log.json', JSON.stringify(this.events))
+
+        const logs = JSON.stringify(this.events)
+        // Important! Brings 500KB -> ~6KB.
+        const compressed = gzip(logs)
+
         this.finished = true
-        await Database.recordGame(scores)
+        await Database.recordGame(scores, compressed)
     }
 }
 

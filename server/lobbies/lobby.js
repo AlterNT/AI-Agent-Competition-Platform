@@ -1,6 +1,7 @@
 import fs from 'fs';
 import config from '../config.js';
 import Database from '../database.js';
+import LobbyManager from '../lobby-manager.js';
 
 class Lobby {
 
@@ -98,7 +99,7 @@ class Lobby {
                         return (...args) => {
                             // Agent method called.
                             const eventObj = { event, args }
-                            //LobbyManager.agentGame[token].events.push(eventObj)
+                            LobbyManager.agentGame[token].events.push(eventObj)
                             return target[event](...args)
                         }
                     } else {

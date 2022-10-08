@@ -10,7 +10,7 @@ export default {
     },
     gameState: {
         type: 'string',
-        default: '{}',
+        default: '[]',
         required: true,
     }, // to be stored as a JSON string
     playedIn: {

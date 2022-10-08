@@ -285,8 +285,9 @@ class Neo4jDatabase {
      * Creates agent <-> game edges in the db
      * @param {{ userToken: String, score: Number}} gameOutcome
      */
-    static async recordGame(gameOutcome) {
+    static async recordGame(gameOutcome, gameState) {
         const game = await this.createGameNode();
+        await game.update({ gameState })
 
         const relationMappings = [];
         for (const [ userToken, score ] of Object.entries(gameOutcome)) {
