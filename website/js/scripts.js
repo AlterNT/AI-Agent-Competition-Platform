@@ -1,11 +1,13 @@
 'strict mode'
 
+const TEMP_SERVER_URL = 'http://194.195.253.84:8080';
+
 document.getElementById('rt').addEventListener("click", getQuery);
 document.getElementById('query').addEventListener("change", updateInfo);
 //document.getElementById('saveAuth').addEventListener('click', saveAuthString);
 
 async function apiResult(endpoint) {
-    const serverUrl = 'http://localhost:8080';
+    const serverUrl = TEMP_SERVER_URL || 'http://localhost:8080';
     const apiCall = `${serverUrl}${endpoint}`
 
     // Header Setup
@@ -198,7 +200,7 @@ async function saveAuthString() {
     var authString = document.getElementById('auth').value;
     localStorage.setItem('aiCompetitionAdminToken', authString);
 
-    const serverUrl = 'http://localhost:8080';
+    const serverUrl = TEMP_SERVER_URL || 'http://localhost:8080';
     const result = await fetch(encodeURI(serverUrl + '/api/check-admin?adminToken=' + authString))
     const resultJson = await result.json()
 
@@ -232,7 +234,7 @@ async function studentToken() {
     headers.append("Cache-Control", "no-cache")
 
     seed = $('#studentSeed').val();
-    host = 'http://localhost:8080'
+    host = TEMP_SERVER_URL || 'http://localhost:8080'
     var endpoint = '/api/generate-token?adminToken=' + localStorage.getItem('aiCompetitionAdminToken') + '&seed=' + seed;
     console.log(host+endpoint)
 
@@ -257,7 +259,7 @@ async function adminToken() {
     headers.append("Cache-Control", "no-cache")
 
     seed = $('#adminSeed').val();
-    host = 'http://localhost:8080'
+    host = TEMP_SERVER_URL || 'http://localhost:8080'
     var endpoint = '/api/generate-admin-token?adminToken=' + localStorage.getItem('aiCompetitionAdminToken') + '&seed=' + seed;
     console.log(host+endpoint)
 
@@ -289,7 +291,7 @@ async function changeName() {
 
     studentNumber = $('#studentNumber').val();
     newName = $('#newName').val();
-    host = 'http://localhost:8080'
+    host = TEMP_SERVER_URL || 'http://localhost:8080'
     var endpoint = '/api/set-display-name?studentNumber=' + studentNumber + '&displayName=' + newName;
     console.log(host+endpoint);
 
