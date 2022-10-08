@@ -137,7 +137,6 @@ class API {
         // Admin Routes
         // Changing display name can be done by admin as they can view student numbers
 
-        // all agents sorted by which improved the most since its first game
         app.get('/api/check-admin', (req, res) => {
             const { adminToken } = req.query;
             if (!adminToken) {
@@ -150,7 +149,7 @@ class API {
             }
         });
 
-        // all agents sorted by which improved the most since its first game
+
         app.get('/api/admin-view', (req, res) => {
             const { adminToken } = req.query;
             if (!adminToken) {
