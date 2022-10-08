@@ -16,20 +16,11 @@ class Neo4jDatabase {
 
     static async init() {
         /** @type {Neode} */
-
-        // TODO: test this
-        for (let i = 0; i < 3; i++) {
-            try {
-                this.dbInstance = new Neode(
-                    `${config.database.protocol}://${config.database.host}:${config.database.port}`,
-                    config.database.username,
-                    config.database.password,
-                ).with(Models);
-                break;
-            } catch (err) {
-                console.error(`Error while connecting to neo4j: ${err}\nTrying to connect to DB again...`)
-            }
-        }
+        this.dbInstance = new Neode(
+            `${config.database.protocol}://${config.database.host}:${config.database.port}`,
+            config.database.username,
+            config.database.password,
+        ).with(Models);
 
         if (!this.dbInstance) {
             throw new Error('Could not connect to neo4j');
@@ -50,18 +41,30 @@ class Neo4jDatabase {
         await this.dbSync.start(batchQueries, timeoutDurationMilliseconds);
     }
 
-    // Has a 1.6% chance for a collision given 200 students
-    static generateRandomName() {
+    static async getAllDisplayNames() {
+        const users = await this.dbInstance.all('User');
+        return users.map((_, i) => users.get(i).properties().displayName);
+    }
+
+    // Has a 0.4% chance for a collision given 200 students
+    static async generateRandomName() {
         const words =  JSON.parse(fs.readFileSync('./wordlists.json'));
-        const randRange = (low, high) => Math.floor((high - low) * Math.random() + low);
-        const randElement = (arr) => arr[randRange(0, arr.length)];
+        const existingNames = await this.getAllDisplayNames();
 
-        const adjective = randElement(words.adjectives);
-        const colour = randElement(words.colours);
-        const fruit = randElement(words.fruit);
-        const number = `${randRange(0, 9)}${randRange(0, 9)}`;
+        while (true) {
+            const randRange = (low, high) => Math.floor((high - low) * Math.random() + low);
+            const randElement = (arr) => arr[randRange(0, arr.length)];
 
-        return `${adjective}${colour}${fruit}${number}`;
+            const adjective = randElement(words.adjectives);
+            const colour = randElement(words.colours);
+            const fruit = randElement(words.fruit);
+            const number = `${randRange(0, 9)}${randRange(0, 9)}`;
+
+            const displayName = `${adjective}${colour}${fruit}${number}`;
+            if (!existingNames.includes(displayName)) {
+                return displayName;
+            }
+        }
     }
 
     /**
@@ -197,7 +200,7 @@ class Neo4jDatabase {
      * @returns {Neode.Node<Models.User>}
      */
     static async createUser(studentNumber, authToken, selectedDisplayName, isBot) {
-        const displayName = selectedDisplayName || this.generateRandomName();
+        const displayName = selectedDisplayName || await this.generateRandomName();
         return await this.dbInstance.create('User', {
             studentNumber: String(studentNumber),
             authToken,
@@ -536,6 +539,14 @@ class Neo4jDatabase {
             return {
                 success: false,
                 error: `userToken ${userToken} does not exist in the database`,
+            };
+        }
+
+        const existingNames = await this.getAllDisplayNames();
+        if (existingNames.includes(displayName)) {
+            return {
+                success: false,
+                error: `Display Name ${displayName} already taken`,
             };
         }
 
