@@ -21,4 +21,4 @@ services:
     depends_on:
       - neo4j
     links:
-      - "neo4j"
+      - neo4j
