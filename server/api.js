@@ -77,8 +77,8 @@ class API {
         });
 
         app.post('/api/set-display-name', (req, res) => {
-            const { userToken, displayName } = req.query;
-            Database.setDisplayName(userToken, displayName)
+            const { studentNumber, displayName } = req.query;
+            Database.setDisplayName(studentNumber, displayName)
                 .then((success) => {
                     res.json({success});
                 });
@@ -170,7 +170,7 @@ class API {
             }
         });
 
-        app.get('/api/generate-token', (req, res) => {
+        app.post('/api/generate-token', (req, res) => {
             let { adminToken, seed } = req.query;
             seed = Number(seed);
             if (!adminToken) {
@@ -194,7 +194,7 @@ class API {
             }
         });
 
-        app.get('/api/generate-admin-token', (req, res) => {
+        app.post('/api/generate-admin-token', (req, res) => {
             const { adminToken, seed } = req.query;
             if (!adminToken) {
                 res.json({ token: adminAuthError });
