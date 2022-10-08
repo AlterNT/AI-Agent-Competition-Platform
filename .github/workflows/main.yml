@@ -23,9 +23,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /home/testing/AgentServer
+            cd /home/testing/Test
             rm -rf AI-Agent-Competition-Platform
             gh repo clone AlterNT/AI-Agent-Competition-Platform
             cd AI-Agent-Competition-Platform
-            git init
-            git fetch origin 
+            git fetch origin
+            git pull origin main
+            cd server
+            npm i 
+            node . start
