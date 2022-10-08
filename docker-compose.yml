@@ -22,3 +22,14 @@ services:
       - neo4j
     links:
       - neo4j
+  website:
+    image: aicompetitionplatformwebsite
+    build:
+      context: website
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 3000:8080
+    links:
+      - server
