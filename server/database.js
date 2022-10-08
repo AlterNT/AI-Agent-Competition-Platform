@@ -192,13 +192,14 @@ class Neo4jDatabase {
     }
 
     /**
+     * Use createUserAndAgent instead!
      * @param {String} userToken
      * @param {String | Number} studentNumber
      * @param {String | null} selectedDisplayName
      * @param {Boolean} isBot
      * @returns {Neode.Node<Models.User>}
      */
-    static async createUser(studentNumber, authToken, selectedDisplayName=null, isBot=false) {
+    static async createUser(studentNumber, authToken, selectedDisplayName, isBot) {
         const displayName = selectedDisplayName || await this.generateRandomName();
         return await this.dbInstance.create('User', {
             studentNumber: String(studentNumber),
@@ -209,6 +210,7 @@ class Neo4jDatabase {
     }
 
     /**
+     * Use createUserAndAgent instead!
      * @param {Neode.Node<Models.User>} user
      * @param {String} srcPath
      * @returns {Neode.Node<Models.Agent>}
@@ -232,8 +234,8 @@ class Neo4jDatabase {
      * @returns {Neode.Node<Models.Agent>}
      */
 
-    static async createUserAndAgent(studentNumber, authToken) {
-        const user = await this.createUser(studentNumber, authToken);
+    static async createUserAndAgent(studentNumber, authToken, selectedDisplayName=null, isBot=false) {
+        const user = await this.createUser(studentNumber, authToken, selectedDisplayName, isBot);
         const agent = await this.createAgent(user, '/code');
 
         return agent;
