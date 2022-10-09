@@ -27,4 +27,11 @@ jobs:
             rm -rf AI-Agent-Competition-Platform
             git clone git@github.com:AlterNT/AI-Agent-Competition-Platform.git
             cd AI-Agent-Competition-Platform
-            docker kill $(docker ps -q)
+
+            ids=$(docker ps -a -q)
+            for id in $ids
+            do
+             echo "$id"
+             docker stop $id && docker rm $id
+            done
+
