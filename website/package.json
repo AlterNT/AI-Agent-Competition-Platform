@@ -1,0 +1,14 @@
+{
+  "name": "ai-competition-platform-website",
+  "version": "1.0.0",
+  "description": "A website frontend to display data from and interact with the AI competition platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}

@@ -89,6 +89,7 @@ First change to the client directory and install dependencies:
 ```bash
 cd server
 npm i
+cp config.json5.example config.json5
 ```
 
 ### Starting the Server
@@ -144,12 +145,8 @@ After installing neo4j you must change the default password
 neo4j-admin set-initial-password <insert-password-here> # possibly requiring root permissions
 ```
 
-Go to the server dir and make a dotenv file
-```bash
-cd server && cp .env_example .env
-```
-
-Fill in the correct details into the dotenv file
+Go to the server dir and edit `config.json5`
+Fill in the same username and password.
 
 ### Installing APOC (and Neo4j Libraries)
 This section is only valid on *debian* based linux distros (ubuntu and ubuntu-derivatives count)

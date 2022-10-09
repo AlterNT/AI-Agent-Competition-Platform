@@ -1,26 +1,37 @@
-import chalk from 'chalk';
+//import chalk from 'chalk';
 import fs from 'fs';
 import Neode from 'neode';
 
 import Models from './models/index.js';
 import TokenGenerator from './token-generator.js';
 import DBSync from './db-sync.js';
+import config from './config.js';
 
 class Neo4jDatabase {
     /** @type {[String]} */
     static defaultAgentToken = '00000000';
-    static dbInstance
-    static dbSync
+    static testAdminToken = 'admin';
+    static dbInstance;
+    static dbSync;
 
     static async init() {
         /** @type {Neode} */
-        this.dbInstance = Neode.fromEnv().with(Models);
+        this.dbInstance = new Neode(
+            `${config.database.protocol}://${config.database.host}:${config.database.port}`,
+            config.database.username,
+            config.database.password,
+        ).with(Models);
+
+        if (!this.dbInstance) {
+            throw new Error('Could not connect to neo4j');
+        }
 
         const batchQueries = [
             this.queryGames,
             this.queryAgents,
             this.queryTopWinrate,
             this.queryMostImproved,
+            this.queryAdminView,
         ];
 
         const timeoutDurationMilliseconds = 4_000;
@@ -28,6 +39,32 @@ class Neo4jDatabase {
         /** @type {DBSync} */
         this.dbSync = new DBSync();
         await this.dbSync.start(batchQueries, timeoutDurationMilliseconds);
+    }
+
+    static async getAllDisplayNames() {
+        const users = await this.dbInstance.all('User');
+        return users.map((_, i) => users.get(i).properties().displayName);
+    }
+
+    // Has a 0.4% chance for a collision given 200 students
+    static async generateRandomName() {
+        const words =  JSON.parse(fs.readFileSync('./wordlists.json'));
+        const existingNames = await this.getAllDisplayNames();
+
+        while (true) {
+            const randRange = (low, high) => Math.floor((high - low) * Math.random() + low);
+            const randElement = (arr) => arr[randRange(0, arr.length)];
+
+            const adjective = randElement(words.adjectives);
+            const colour = randElement(words.colours);
+            const fruit = randElement(words.fruit);
+            const number = `${randRange(0, 9)}${randRange(0, 9)}`;
+
+            const displayName = `${adjective}${colour}${fruit}${number}`;
+            if (!existingNames.includes(displayName)) {
+                return displayName;
+            }
+        }
     }
 
     /**
@@ -42,7 +79,7 @@ class Neo4jDatabase {
 
     static async loadTestData() {
         const numAgents = 8;
-        const gamesPerAgent = 2;
+        const gamesPerAgent = 10;
         const agentsPerGame = 4;
         const numGames = numAgents * gamesPerAgent;
 
@@ -54,6 +91,7 @@ class Neo4jDatabase {
 
         console.log('Generating User Data...');
         const studentNumbers = [...new Array(numAgents)].map((_, i) => String(10000 * i + 20000000));
+        studentNumbers.push(this.defaultAgentToken);
 
         const tokengen = new TokenGenerator();
         const userData = tokengen.computeStudentTokens(studentNumbers);
@@ -81,7 +119,6 @@ class Neo4jDatabase {
         }
 
         await Promise.all(gameRecordings);
-        console.log('Finished');
 
         return;
     }
@@ -102,7 +139,7 @@ class Neo4jDatabase {
             return defaultAgent;
         }
 
-        const user = await this.createUser(Database.defaultAgentToken, '000000');
+        const user = await this.createUser(Database.defaultAgentToken, '000000', 'DefaultBotAgent', true);
         const agent = await this.dbInstance.create('Agent', {
             srcPath: '???',
         });
@@ -132,19 +169,48 @@ class Neo4jDatabase {
         return await this.dbInstance.create('Game', {});
     }
 
+    static async createAdmin(adminToken) {
+        return await this.dbInstance.create('Admin', {
+            adminToken,
+        });
+    }
+
+    // neode `.find` method not working as intended?
+    // did authentication manually
+    static async authenticateAdmin(adminToken) {
+        if (config.database.testEnvironment || process.env.NODE_ENV === 'test') {
+            return adminToken === Database.testAdminToken;
+        }
+
+        const admins = await this.dbInstance.all('Admin')
+        const authenticated = !!admins
+            .map((_, i) => admins.get(i).properties().adminToken)
+            .filter((token) => token === adminToken)
+            .length;
+
+        return authenticated;
+    }
+
     /**
+     * Use createUserAndAgent instead!
      * @param {String} userToken
      * @param {String | Number} studentNumber
+     * @param {String | null} selectedDisplayName
+     * @param {Boolean} isBot
      * @returns {Neode.Node<Models.User>}
      */
-    static async createUser(studentNumber, userToken) {
+    static async createUser(studentNumber, authToken, selectedDisplayName, isBot) {
+        const displayName = selectedDisplayName || await this.generateRandomName();
         return await this.dbInstance.create('User', {
             studentNumber: String(studentNumber),
-            authToken: userToken,
+            authToken,
+            displayName,
+            isBot,
         });
     }
 
     /**
+     * Use createUserAndAgent instead!
      * @param {Neode.Node<Models.User>} user
      * @param {String} srcPath
      * @returns {Neode.Node<Models.Agent>}
@@ -168,8 +234,8 @@ class Neo4jDatabase {
      * @returns {Neode.Node<Models.Agent>}
      */
 
-    static async createUserAndAgent(studentNumber, authToken) {
-        const user = await this.createUser(studentNumber, authToken);
+    static async createUserAndAgent(studentNumber, authToken, selectedDisplayName=null, isBot=false) {
+        const user = await this.createUser(studentNumber, authToken, selectedDisplayName, isBot);
         const agent = await this.createAgent(user, '/code');
 
         return agent;
@@ -222,8 +288,9 @@ class Neo4jDatabase {
      * Creates agent <-> game edges in the db
      * @param {{ userToken: String, score: Number}} gameOutcome
      */
-    static async recordGame(gameOutcome) {
+    static async recordGame(gameOutcome, gameState) {
         const game = await this.createGameNode();
+        await game.update({ gameState })
 
         const relationMappings = [];
         for (const [ userToken, score ] of Object.entries(gameOutcome)) {
@@ -243,38 +310,48 @@ class Neo4jDatabase {
      * Generates and assigns a token for each student number in the file
      * One student number should be present on each line
      * @param {String} studentNumbersFilePath string containing the file path of the student numbers file
+     * @param {Boolean | undefined} isAdmin
      * @returns {{studentNumber: String, authToken: String}[]} an array of objects with the last token generated at the last index
      */
-    static async generateUserTokens(studentNumbersFilePath) {
-        let studentNumbersFileContent;
+    static async generateUserTokens(seedTokens, isAdmin) {
+        const tokengen = new TokenGenerator();
+        const studentData = tokengen.computeStudentTokens(seedTokens);
+        const userData = [];
+
+        for (const { studentNumber, authToken } of studentData) {
+            if (isAdmin && !await this.authenticateAdmin(authToken)) {
+                await this.createAdmin(authToken);
+                userData.push(authToken);
+            } else {
+                const user = await this.dbInstance.find(
+                    'User', studentNumber
+                );
+
+                if (!user) {
+                    await this.createUserAndAgent(studentNumber, authToken);
+                    userData.push({ studentNumber, authToken });
+                }
+            }
+        }
+
+        return userData;
+    }
+
+    static async generateTokensFromFile(seedTokensFilePath, isAdmin) {
+        let seedTokensFileContent;
         try {
-            studentNumbersFileContent = fs.readFileSync(studentNumbersFilePath)
+            seedTokensFileContent = fs.readFileSync(seedTokensFilePath)
                 .toString();
         } catch (exception) {
             console.error(`Cannot read specified file, please check permission and location\n${exception}`);
             return [];
         }
 
-        const studentNumbers = studentNumbersFileContent
+        const seedTokens = seedTokensFileContent
             .trim()
             .split('\n');
 
-        const tokengen = new TokenGenerator();
-        const studentData = tokengen.computeStudentTokens(studentNumbers);
-        const userData = [];
-
-        for (const { studentNumber, authToken } of studentData) {
-            const user = await this.dbInstance.find(
-                'User', studentNumber
-            );
-
-            if (!user) {
-                await this.createUserAndAgent(studentNumber, authToken);
-                userData.push({ studentNumber, authToken });
-            }
-        }
-
-        return userData;
+        return await this.generateUserTokens(seedTokens, isAdmin);
     }
 
     /**
@@ -311,7 +388,7 @@ class Neo4jDatabase {
             MATCH (g:Game)<-[rel]-(a:Agent)
             WITH g, collect({score: rel.score, agent: a.id}) as scores
             RETURN g, scores
-            ORDER BY g.timePlayed DESC
+            ORDER BY g.timePlayed ASC
             SKIP (toInteger($page) - 1) * toInteger($gamesPerPage)
             LIMIT toInteger($gamesPerPage);
         `, {
@@ -335,6 +412,15 @@ class Neo4jDatabase {
         });
     }
 
+    static async countPages() {
+        const res = await this.dbInstance.cypher(`
+            MATCH (g:Game)
+            RETURN count(g) as pages;
+        `);
+
+        return res.records[0].get('pages').toInt();
+    }
+
     /**
      * @TODO remove token from users
      * @return {any[]} array of all user and agents id
@@ -344,11 +430,12 @@ class Neo4jDatabase {
         const allUsers = res.map((_, i) => {
             const user = res.get(i);
             const agentId = user.get('controls')?.endNode()?.get('id');
-            const { studentNumber } = user.properties();
+            const { isBot, displayName } = user.properties();
 
             return {
-                studentNumber,
                 agentId,
+                isBot,
+                displayName,
             };
         });
 
@@ -363,15 +450,16 @@ class Neo4jDatabase {
      */
     static async queryTopWinrate() {
         const res = await this.dbInstance.cypher(`
-            MATCH (a:Agent)-[p:PLAYED_IN]-> (g:Game)
-            WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
-            WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
-            RETURN a.id as AgentId, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
+            MATCH (u:User)-[:CONTROLS]->(a:Agent)-[p:PLAYED_IN]-> (g:Game)
+            WITH a, u, count(g) AS GamesPlayed, collect(p.score) AS scores
+            WITH a, u, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
+            RETURN a.id as AgentId, u.isBot as IsBot, u.displayName as DisplayName, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
             ORDER BY WinPercent DESC;
         `);
 
         return res.records.map((record) => ({
-            agentId: record.get('AgentId').toString(),
+            displayName: record.get('DisplayName').toString(),
+            isBot: record.get('IsBot').toString(),
             gamesPlayed: record.get('GamesPlayed').toInt(),
             wins: record.get('Wins').toInt(),
             winPercent: record.get('WinPercent').toNumber().toFixed(2),
@@ -384,17 +472,20 @@ class Neo4jDatabase {
      */
     static async queryMostImproved() {
         const res = await this.dbInstance.cypher(`
-            MATCH (a:Agent)-[p:PLAYED_IN]-> (g:Game)
-            WITH a, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
-            WITH a, Scores[0..5] as FFGS, Scores[-5..] as LFGS, Games[0..5] as FFG, Games[-5..] as LFG
+            MATCH (u:User)-[:CONTROLS]->(a:Agent)-[p:PLAYED_IN]-> (g:Game)
+            WITH a, u.displayName as DisplayName, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
+            WITH a, DisplayName, Scores[0..5] as FFGS, Scores[-5..] as LFGS, Games[0..5] as FFG, Games[-5..] as LFG
             WITH a,
+                DisplayName,
                 size(FFG) as FFGSize, size(LFG) as LFGSize,
                 size([i in FFGS WHERE i=1]) as FFGWins,
                 size([i in LFGS WHERE i=1]) as LFGWins
             WITH a,
+                DisplayName,
                 100 * FFGWins/FFGSize as InitialWinPercent,
                 100 * LFGWins/LFGSize as LastWinPercent
             RETURN a.id as AgentId,
+                DisplayName,
                 InitialWinPercent,
                 LastWinPercent,
                 LastWinPercent - InitialWinPercent as PercentageImprovement
@@ -403,7 +494,7 @@ class Neo4jDatabase {
         `);
 
         return res.records.map((record) => ({
-            agentId: record.get('AgentId').toString(),
+            displayName: record.get('DisplayName').toString(),
             initialWinPercent: record.get('InitialWinPercent').toInt(),
             lastWinPercent: record.get('LastWinPercent').toInt(),
             percentageImproved: record.get('PercentageImprovement').toInt(),
@@ -427,75 +518,54 @@ class Neo4jDatabase {
     };
 
     /**
-     * @param {String} agentId
-     * @return {any[]} winrate of all agents
-     */
-    static async queryAgentWinrate() {
+    *   Admin View for Tim
+    */
+    static async queryAdminView() {
         const res = await this.dbInstance.cypher(`
-            MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"}) -[p:PLAYED_IN]-> (g:Game)
-            WITH a, count(g) AS GamesPlayed, collect(p.score) AS scores
-            WITH a, GamesPlayed, size([i in scores WHERE i=1| i]) AS Wins
-            RETURN a.id AS AgentId, GamesPlayed, Wins, 100 * Wins/GamesPlayed AS WinPercent
-            ORDER BY WinPercent DESC;
+            MATCH (u:User)
+            RETURN u.studentNumber as studentNumber, u.displayName as displayName, u.authToken as authToken;
         `);
 
-        // @TODO: this return is wrong
         return res.records.map((record) => ({
-            agentId: record.get('AgentId').toString(),
-            initialWinPercent: record.get('InitialWinPercent').toInt(),
-            lastWinPercent: record.get('LastWinPercent').toInt(),
-            percentageImproved: record.get('PercentageImprovement').toInt(),
+            studentNumber: record.get('studentNumber').toString(),
+            displayName: record.get('displayName').toString(),
+            authToken: record.get('authToken').toString(),
         }));
-    }
+    };
 
-    /**
-     * @param {String} agentId
-     * @param {Number} lookbehind number of games to seek
-     * @return {any[]} all x recent games of agents
-     */
-    static async queryAgentRecentGames() {
-        const res = await this.dbInstance.cypher(`
-            MATCH (a:Agent {id:"c2f75e6e-b25c-41dd-9f7d-31375e0a129c"})
-            WITH a, apoc.coll.sortNodes([(a)-[:PLAYED_IN]->(g:Game) | g ], 'timePlayed') as Games
-            RETURN a as Agent, Games[0..5] as MostRecentGames;
-        `);
+    static async setDisplayName(userToken, displayName) {
+        const user = await this.dbInstance.find('User', userToken);
+        if (!user) {
+            return {
+                success: false,
+                error: `userToken ${userToken} does not exist in the database`,
+            };
+        }
 
-        return res.records.map((record) => record.get('MostRecentGames'));
-    }
+        const existingNames = await this.getAllDisplayNames();
+        if (existingNames.includes(displayName)) {
+            return {
+                success: false,
+                error: `Display Name ${displayName} already taken`,
+            };
+        }
 
-    /**
-     * @param {String} studentNumber
-     * @return {any[]} all agents of user
-     */
-    static async queryUserAgents() {
-        const res = await this.dbInstance.cypher(`
-            MATCH (u:User)-[c:CONTROLS]->(a:Agent)
-            WHERE u.studentNumber = "20070000"
-            RETURN u as User, a as Agents;
-        `);
+        user.update({ displayName });
 
-        return res.records.map((record) => record.get('Agents'));
-    }
-
-    /**
-     * @return {any[]} array of all bot agents
-     */
-    static async queryBotAgents() {
-        const res = await this.dbInstance.cypher(`
-            MATCH (u:User)-[:CONTROLS]->(a:Agent)
-            WHERE u.authToken = "00000000"
-            RETURN u as User, a as Agents;
-        `);
-
-        return res.records.map((record) => record.get('Agents'));
+        return {
+            success: true,
+            error: null,
+        };
     }
 }
 
+
+
 const getMockDatabase = () => {
-    console.log(chalk.red(
-        `Running Server With Database Disabled,\n` +
-        `If Not Intentional Please Add \`DATABASE_ENABLED=1\` to the \`.env\`\n`
-    ));
+    console.log(//chalk.red(
+        `Running Server with Database disabled.\n` +
+        `If this is not intentional, please set database.enabled to true in 'config.json5'!\n`
+    );
 
     const isUserEligibleToPlay = Neo4jDatabase.isUserEligibleToPlay.name;
     const getQueryResult = Neo4jDatabase.getQueryResult.name;
@@ -515,7 +585,7 @@ const getMockDatabase = () => {
     });
 }
 
-const Database = (process.env.DATABASE_ENABLED === '1') ?
+const Database = process.env.NODE_ENV !== 'test' && config.database.enabled ?
     Neo4jDatabase :
     getMockDatabase();
 

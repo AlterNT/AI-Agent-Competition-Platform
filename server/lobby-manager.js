@@ -10,21 +10,19 @@ class LobbyManager {
      * adds agent to lobby
      * @param {string} agentToken agent token
      * @param {string} gameID id of game to be played
-     * @param {boolean, object} privateMode for private games
-     * @param {boolean, object} tournamentMode for tournament games
+     * @param {string} lobbyID id of the lobby requested
+     * @param {{}} options lobby options.
      * @returns true if agent successfully added to lobby, false otherwise
      */
-    static async joinLobby(agentToken, gameID, privateMode=false, tournamentMode=false) {
+    static async joinLobby(agentToken, gameID, lobbyID = 0, options) {
         // authorisation
         const authorised = await Database.isUserEligibleToPlay(agentToken)
-        if (!authorised) { return false }
-
-        console.log('success')
+        if (!authorised) { return { success: false } }
 
         // if agent already in game
         const currentGame = this.agentGame[agentToken]
         if (currentGame) {
-            if (!currentGame.finished) { return false }
+            if (!currentGame.gameFinished()) { return { success: false } }
             delete this.agentGame[agentToken]
         }
 
@@ -32,48 +30,32 @@ class LobbyManager {
         const currentLobby = this.agentLobby[agentToken]
         if (currentLobby) { currentLobby.removeAgent(agentToken) }
 
-        // join generic lobby
-        if (!privateMode && !tournamentMode) {
-            const lobby = this.lobbies[gameID] ? this.lobbies[gameID] : new Lobby(gameID, gameID)
-            const success = lobby.addAgent(agentToken)
-            if (!success) { return false }
-            this.lobbies[gameID] = lobby
-            this.agentLobby[agentToken] = lobby
-        }
+        // join lobby
+        const lobby = this.lobbies[lobbyID] ?? new Lobby(gameID, options)
+        const success = lobby.addAgent(agentToken, options?.password)
+        if (!success) { return { success: false } }
+        this.agentLobby[agentToken] = lobby
+        this.lobbies[lobbyID] = lobby
 
-        // join private lobby
-        if (privateMode) {
-            const privateLobby = this.lobbies[privateMode.lobbyID] ? this.lobbies[privateMode.lobbyID] : new PrivateLobby(gameID, privateMode.lobbyID, privateMode.password)
-            const success = privateLobby.addAgent(agentToken, privateMode.password)
-            if (!success) { return false }
-            this.lobbies[privateMode.lobbyID] = privateLobby
-            this.agentLobby[agentToken] = privateLobby
-        }
-
-        // join tournament lobby
-        if (tournamentMode) {
-            const tournamentLobby = this.lobbies[tournamentMode.lobbyID] ? this.lobbies[tournamentMode.lobbyID] : new TournamentLobby(gameID, tournamentMode.lobbyID, tournamentMode.password)
-            const success = tournamentLobby.addAgent(agentToken, tournamentMode.password)
-            if (!success) { return false }
-            this.lobbies[tournament.tournamentMode] = tournamentLobby
-            this.agentLobby[agentToken] = tournamentLobby
-
-        }
+        console.log(`Agent ${agentToken} successfully joined lobby #${lobbyID} for ${gameID}!`);
 
         // attempt to start game
-        const lobby = this.agentLobby[agentToken]
-        const game = lobby.startGame()
+        if (lobby.isFull()) {
 
-        if (game) {
-            console.log(`Game Started (${lobby.gameID}): `, lobby.agentTokens)
-            lobby.agentTokens.forEach((agentToken) => { 
-                this.agentGame[agentToken] = game 
-                delete this.agentLobby[agentToken]
-            })
-            delete this.lobbies[lobby.lobbyID]
+            const game = await lobby.initGame()
+
+            if (game) {
+                lobby.tokens.forEach((agentToken) => {
+                    this.agentGame[agentToken] = game
+                    delete this.agentLobby[agentToken]
+                })
+                delete this.lobbies[lobbyID]
+                console.log(`Game Started (${lobby.gameID}): `, lobby.tokens)
+                game.main();
+            }
         }
 
-        return true
+        return { success, lobbyID }
     }
 
     static gameStarted(agentToken) {
@@ -89,8 +71,8 @@ class LobbyManager {
         const gameFinished = game.gameFinished()
 
         if (gameFinished) {
-            const agentTokens = game.agentTokens
-            agentTokens.forEach((agentToken) => delete this.agentGame[agentToken])
+            const agents = game.agents
+            agents.forEach((agent) => delete this.agentGame[agent.token])
         }
 
         return gameFinished
@@ -98,7 +80,7 @@ class LobbyManager {
 
     static isTurn(agentToken) {
         const game = this.agentGame[agentToken]
-        const isTurn = game?.isTurn(agentToken) || false
+        const isTurn = (game?.turn === agentToken) ?? false
         return isTurn
     }
 
@@ -110,9 +92,7 @@ class LobbyManager {
 
     static action(agentToken, action) {
         const game = this.agentGame[agentToken]
-        game.resolve(action)
-        const success = true
-        return success
+        return game.action(agentToken, action)
     }
 
     static method(agentToken, keys, method, params) {
@@ -125,4 +105,4 @@ class LobbyManager {
     }
 }
 
-export default LobbyManager
+export default LobbyManager;

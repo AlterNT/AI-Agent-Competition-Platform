@@ -1,53 +1,87 @@
 import express from 'express'
 import LobbyManager from './lobby-manager.js'
 import Database from './database.js'
+import config from './config.js';
 
 class API {
+
+    /** @type {import('express').Application} */
+    static app;
+
     static port = 8080
 
-    static init() {
-        const app = express()
+    static async init() {
+        const databaseDisabledError = { error: 'Database not implemented' };
+        const incorrectQueryParamsError = { error: 'Incorrect query parameters' };
+        const adminAuthError = { error: 'Lacking Admin Authentication' };
+        const tokenAlreadyExistsError = { error: 'Token Already Exists' };
+
+        this.app = express()
+        const app = this.app
+
         app.use(express.json())
-        app.listen(
-            this.port,
-            () => { console.log(`listening at http://localhost:${this.port}`) }
-        )
+
+        // Allow CORS, everything should be application JSON
+        // TODO: Test this doesn't break the bots
+        app.use((req, res, next) => {
+            res.header('Content-Type','application/json');
+            res.header('Access-Control-Allow-Origin', '*');
+            res.header('Access-Control-Allow-Headers', '*');
+            next();
+        });
 
         // ---------------------------------------------------------------
         // Historical Game Data and Utilities
 
-        // TODO: replace games
-        // page: Int > 1
-        app.get('/api/paginate', (req, res) => {
-            const { page } = req.query;
-            Database.paginateGames(page)
-                .then((games) => {
-                    res.json({games})
-                });
-        });
-
         // returns all user/agent ids
         app.get('/api/agents', (_, res) => {
             Database.getQueryResult(Database.queryAgents)
-            .then((agents) => {
-                res.json({agents});
-            });
+                .then((agents) => {
+                    res.json({agents});
+                });
         });
 
         // returns all bot agents
         app.get('/api/bots', (_, res) => {
-            Database.getQueryResult(Database.queryAgents, { studentNumber: Database.defaultAgentToken })
+            Database.getQueryResult(Database.queryAgents, { isBot: true })
             .then((bots) => {
                 res.json({bots});
             });
         });
 
         // returns all games played
-        app.get('/api/games', (_, res) => {
-            Database.getQueryResult(Database.queryGames)
-            .then((games) => {
+        app.get('/api/games', (req, res) => {
+            let { page } = req.query;
+            page = Number(page);
+
+            if (!page || !Number.isInteger(page)) {
+                const games = incorrectQueryParamsError;
                 res.json({games});
-            });
+                return;
+            }
+
+            Database.paginateGames(page)
+                .then((result) => {
+                    const games = result || databaseDisabledError;
+                    res.json({games})
+                });
+        });
+
+        // returns number of pages for the games query
+        app.get('/api/count-game-pages', (_, res) => {
+            Database.countPages()
+                .then((numPages) => {
+                    const pages = numPages || databaseDisabledError;
+                    res.json({pages});
+                });
+        });
+
+        app.post('/api/set-display-name', (req, res) => {
+            const { studentNumber, displayName } = req.query;
+            Database.setDisplayName(studentNumber, displayName)
+                .then((success) => {
+                    res.json({success});
+                });
         });
 
         // returns a single game
@@ -100,6 +134,89 @@ class API {
         });
 
         // ---------------------------------------------------------------
+        // Admin Routes
+        // Changing display name can be done by admin as they can view student numbers
+
+        // all agents sorted by which improved the most since its first game
+        app.get('/api/check-admin', (req, res) => {
+            const { adminToken } = req.query;
+            if (!adminToken) {
+                res.json({ authenticated: false });
+            } else {
+                Database.authenticateAdmin(adminToken)
+                .then((authenticated) => {
+                    res.json({ authenticated });
+                })
+            }
+        });
+
+        // all agents sorted by which improved the most since its first game
+        app.get('/api/admin-view', (req, res) => {
+            const { adminToken } = req.query;
+            if (!adminToken) {
+                res.json({ users: adminAuthError })
+            } else {
+                Database.authenticateAdmin(adminToken)
+                    .then((authenticated) => {
+                        if (!authenticated) {
+                            res.json({ users: adminAuthError })
+                        } else {
+                            Database.getQueryResult(Database.queryAdminView)
+                            .then((users) => {
+                                res.json({ users })
+                            });
+                        }
+                    });
+            }
+        });
+
+        app.post('/api/generate-token', (req, res) => {
+            let { adminToken, seed } = req.query;
+            seed = Number(seed);
+            if (!adminToken) {
+                res.json({ token: adminAuthError });
+            } else if (!seed || !Number.isInteger(seed)) {
+                // seed must be a student number (integer)
+                res.json({ token: incorrectQueryParamsError });
+            } else {
+                Database.authenticateAdmin(adminToken)
+                    .then((authenticated) => {
+                        if (!authenticated) {
+                            res.json({ token: adminAuthError });
+                        } else {
+                            Database.generateUserTokens([seed], false)
+                                .then((tokens) => {
+                                    const token = tokens?.[0] || tokenAlreadyExistsError;
+                                    res.json({ token });
+                                });
+                        }
+                    });
+            }
+        });
+
+        app.post('/api/generate-admin-token', (req, res) => {
+            const { adminToken, seed } = req.query;
+            if (!adminToken) {
+                res.json({ token: adminAuthError });
+            } else if (!seed) {
+                res.json({ token: incorrectQueryParamsError });
+            } else {
+                Database.authenticateAdmin(adminToken)
+                    .then((authenticated) => {
+                        if (!authenticated) {
+                            res.json({ token: adminAuthError });
+                        } else {
+                            Database.generateUserTokens([seed], true)
+                                .then((tokens) => {
+                                    const token = tokens?.[0] || tokenAlreadyExistsError;
+                                    res.json({ token });
+                                });
+                        }
+                    });
+            }
+        });
+
+        // ---------------------------------------------------------------
         // game statistics: single agent
         // @TODO: implement by reusing cached batch query results
 
@@ -107,7 +224,7 @@ class API {
         // returns null if not enough games played
         app.get('/api/winrate', (req, res) => {
             const { agentId } = req.query;
-            Database.getQueryResult(Database.queryTopWinrate, {agentId})
+            Database.getQueryResult(Database.queryTopWinrate, {displayName: agentId})
             .then((winrateArray) => {
                 const winrate = winrateArray?.[0] || null;
                 res.json({ winrate })
@@ -118,18 +235,24 @@ class API {
         // returns null if not enough games played
         app.get('/api/improvement', (req, res) => {
             const { agentId } = req.query;
-            Database.getQueryResult(Database.queryMostImproved, {agentId})
+            Database.getQueryResult(Database.queryMostImproved, {displayName: agentId})
             .then((improvementArray) => {
                 const improvement = improvementArray?.[0] || null;
                 res.json({ improvement })
             });
         });
 
+        // returns all available gameIDs to play.
+        app.get('/api/available-games', (_, res) => {
+            const gameIDs = Object.keys(config.games);
+            res.json({ gameIDs });
+        });
+
         // improvement of agent in its recent few games
         // returns null if not enough games played
         app.get('/api/improvement-rate', (req, res) => {
             const { agentId } = req.query;
-            Database.getQueryResult(Database.queryMostImproved, {agentId})
+            Database.getQueryResult(Database.queryMostImproved, {displayName: agentId})
             .then((improvementArray) => {
                 const improvement = improvementArray?.[0] || null;
                 res.json({ improvement })
@@ -146,20 +269,15 @@ class API {
             res.json({ authorised })
         })
 
-        app.post('/api/join', (req, res) => {
-            const { agentToken, gameID } = req.body
-            console.log('joined', agentToken, gameID)
-            LobbyManager.joinLobby(agentToken, gameID)
-            .then((success) => {
-                res.json({ success })
-            })
-        })
+        // ---------------------------------------------------------------
+        // game statistics: single agent
+        // @TODO: implement by reusing cached batch query results
 
         app.get('/api/started', (req, res) => {
-            const agentToken = req.query.agentToken
+            const agentToken = req.query.agentToken;
             const gameStarted = LobbyManager.gameStarted(agentToken)
             res.json({ gameStarted })
-        })
+        });
 
         app.get('/api/finished', (req, res) => {
             const agentToken = req.query.agentToken
@@ -190,7 +308,23 @@ class API {
             const result = LobbyManager.method(agentToken, keys, method, params)
             res.json({ result })
         })
+
+        app.post('/api/join', async (req, res) => {
+            const { agentToken, gameID, lobbyID, options } = req.body
+            const result = await LobbyManager.joinLobby(agentToken, gameID, lobbyID, options);
+            res.json(result);
+        })
+
+        return new Promise((resolve) => {
+            app.listen(
+                this.port,
+                () => {
+                    console.log(`listening at http://localhost:${this.port}`) 
+                    resolve()
+                }
+            )
+        })
     }
 }
 
-export default API
+export default API;

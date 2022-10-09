@@ -1,0 +1,34 @@
+undefined (1)
+Player undefined (1) holds the lesser card: Guard, and is eliminated.
+
+undefined (3)
+Player undefined (2) and player undefined (3) swap cards.
+
+
+
+undefined (0)
+Player undefined (2) sees player undefined (0)'s card.
+
+undefined (2)
+Player undefined (3) sees player undefined (2)'s card.
+
+undefined (2)
+Player undefined (2) discards the Prince.
+
+undefined (3)
+Player undefined (3) does not have the Priest.
+
+undefined (2)
+Player undefined (2) does not have the Handmaid.
+
+undefined (2)
+Player undefined (2) does not have the Handmaid.
+
+Player 2 wins the round.
+undefined (1)
+Player undefined (2) holds the lesser card: Guard, and is eliminated.
+
+
+undefined (1)
+Player undefined (1) does not have the Countess.
+

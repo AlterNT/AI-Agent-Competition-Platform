@@ -13,6 +13,17 @@ export default {
         required: true,
         unique: true,
     },
+    displayName: {
+        type: 'string',
+        required: true,
+        unique: false,
+    },
+    isBot: {
+        type: 'boolean',
+        required: true,
+        unique: false,
+        default: false,
+    },
     controls: {
         type: 'relationship',
         relationship: 'CONTROLS',

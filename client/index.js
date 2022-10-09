@@ -21,7 +21,7 @@ const pathLookup = async (lookupList) => {
 
 const getPythonPath = async () => {
     try {
-        return await pathLookup(['python3', 'python'])
+        return await pathLookup(['python', 'python3'])
     } catch {
         throw new Error('Python not installed? Please check that `python3` or `python` is in path.')
     }
@@ -96,5 +96,6 @@ async function main() {
         console.log(chalk.red(`${data}`))
     })
 }
+
 
 main()
