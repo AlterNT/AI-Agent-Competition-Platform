@@ -23,5 +23,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            whoami
-            whoami
+            cd AgentServer
+            rm -rf AI-Agent-Competition-Platform
+            git clone git@github.com:AlterNT/AI-Agent-Competition-Platform.git
+            cd AI-Agent-Competition-Platform
