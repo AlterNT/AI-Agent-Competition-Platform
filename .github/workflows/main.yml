@@ -37,3 +37,4 @@ jobs:
             
             docker compose build
             docker compose up &
+            bg
