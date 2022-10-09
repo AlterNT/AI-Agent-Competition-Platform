@@ -27,4 +27,4 @@ jobs:
             rm -rf AI-Agent-Competition-Platform
             git clone git@github.com:AlterNT/AI-Agent-Competition-Platform.git
             cd AI-Agent-Competition-Platform
-            sudo docker kill $(docker ps -q)
+            docker kill $(docker ps -q)
