@@ -34,4 +34,6 @@ jobs:
              echo "$id"
              docker stop $id && docker rm $id
             done
-
+            
+            docker compose build
+            docker compose up
