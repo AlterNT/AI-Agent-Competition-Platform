@@ -22,13 +22,4 @@ jobs:
           username: testing
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          script: |
-            cd /home/testing/Test
-            rm -rf AI-Agent-Competition-Platform
-            gh repo clone AlterNT/AI-Agent-Competition-Platform
-            cd AI-Agent-Competition-Platform
-            git fetch origin
-            git pull origin main
-            sudo docker kill $(sudo docker ps -q)
-            sudo docker compose build
-            sudo docker compose up
+          script: whoami
