@@ -29,6 +29,6 @@ jobs:
             cd AI-Agent-Competition-Platform
             git fetch origin
             git pull origin main
-            cd server
-            npm i 
-            node . start
+            sudo docker kill $(sudo docker ps -q)
+            sudo docker compose build
+            sudo docker compose up
