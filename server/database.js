@@ -533,12 +533,12 @@ class Neo4jDatabase {
         }));
     };
 
-    static async setDisplayName(userToken, displayName) {
-        const user = await this.dbInstance.find('User', userToken);
+    static async setDisplayName(studentNumber, displayName) {
+        const user = await this.dbInstance.find('User', studentNumber);
         if (!user) {
             return {
                 success: false,
-                error: `userToken ${userToken} does not exist in the database`,
+                error: `Student number ${studentNumber} does not exist in the database`,
             };
         }
 
