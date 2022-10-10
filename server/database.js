@@ -114,7 +114,7 @@ class Neo4jDatabase {
                 userScores[token] = i == 0 ? 1.0 : 0.0;
             });
 
-            const promise = this.recordGame(userScores);
+            const promise = this.recordGame(userScores, "{}");
             gameRecordings.push(promise);
         }
 
