@@ -18,9 +18,10 @@ class Neo4jDatabase {
 
         // TODO: test this
         for (let i = 0; i < 3; i++) {
+            const dbPort = process.env.NODE_ENV === 'test' ? config.database.testPort : config.database.port;
             try {
                 this.dbInstance = new Neode(
-                    `${config.database.protocol}://${config.database.host}:${config.database.port}`,
+                    `${config.database.protocol}://${config.database.host}:${dbPort}`,
                     config.database.username,
                     config.database.password,
                 ).with(Models);
@@ -46,6 +47,24 @@ class Neo4jDatabase {
         /** @type {DBSync} */
         this.dbSync = new DBSync();
         await this.dbSync.start(batchQueries, timeoutDurationMilliseconds);
+    }
+
+    static async closeConnectionWithDelay(ms) {
+        return new Promise(resolve => setTimeout(() => {
+            this.dbInstance.close();
+            resolve();
+        }, ms));
+    }
+
+    static async close(deleteDatabase=false) {
+        this.dbSync.close();
+
+        if (deleteDatabase) {
+            this.deleteAll();
+        }
+
+        // wait for all dbSync timeouts to end???
+        await this.closeConnectionWithDelay(10_000);
     }
 
     // Has a 1.6% chance for a collision given 200 students
@@ -74,7 +93,7 @@ class Neo4jDatabase {
 
     static async loadTestData() {
         const numAgents = 6;
-        const gamesPerAgent = 70;
+        const gamesPerAgent = 5;
         const agentsPerGame = 4;
         const numGames = Math.ceil(numAgents * gamesPerAgent / agentsPerGame);
 
@@ -526,7 +545,7 @@ const getMockDatabase = () => {
     });
 }
 
-const Database = process.env.NODE_ENV !== 'test' || config.database.enabled ?
+const Database = process.env.NODE_ENV === 'test' || config.database.enabled ?
     Neo4jDatabase :
     getMockDatabase();
 

@@ -9,19 +9,13 @@ if (process.env.NODE_ENV != "test") process.exit(0);
 
 beforeAll(async () => {
     await Database.init();
-});
-
-beforeEach(async () => {
     await Database.loadTestData();
     await API.init();
 });
 
-afterEach(async () => {
-    await Database.deleteAll();
-    API.server.close();
-});
-
 afterAll(async () => {
+    await Database.close(true);
+    API.server.close();
 })
 
 describe('API', () => {
