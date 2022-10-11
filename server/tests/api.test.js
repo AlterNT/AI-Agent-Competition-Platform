@@ -1,6 +1,7 @@
+import { jest } from '@jest/globals';
 import request from "supertest";
 import API from "../api.js";
-import Database from "../database.js"
+import Database from "../database.js";
 
 const databaseDisabledError = { error: 'Database not implemented' };
 const incorrectQueryParamsError = { error: 'Incorrect query parameters' };
@@ -8,6 +9,7 @@ console.assert(process.env.NODE_ENV == "test", "This test suite should only be r
 if (process.env.NODE_ENV != "test") process.exit(0);
 
 beforeAll(async () => {
+    jest.setTimeout(300_000);
     await Database.init();
     await Database.loadTestData();
     await API.init();
