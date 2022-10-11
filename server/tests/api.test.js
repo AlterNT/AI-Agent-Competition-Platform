@@ -22,7 +22,7 @@ beforeEach(async () => {
 
 afterAll(async () => {
     await Database.deleteAll();
-    API.app.close();
+    API.server.close();
 })
 
 describe('API', () => {

@@ -7,6 +7,7 @@ class API {
 
     /** @type {import('express').Application} */
     static app;
+    static server;
 
     static port = 8080
 
@@ -252,12 +253,11 @@ class API {
         })
 
         return new Promise((resolve) => {
-            app.listen(
+            API.server = app.listen(
                 this.port,
                 () => {
                     console.log(`listening at http://localhost:${this.port}`) 
                     resolve()
-                    app.close(() => console.log('Closing Server'));
                 }
             )
         })
