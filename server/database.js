@@ -18,10 +18,9 @@ class Neo4jDatabase {
 
         // TODO: test this
         for (let i = 0; i < 3; i++) {
-            const dbPort = process.env.NODE_ENV === 'test' ? config.database.testPort : config.database.port;
             try {
                 this.dbInstance = new Neode(
-                    `${config.database.protocol}://${config.database.host}:${dbPort}`,
+                    `${config.database.protocol}://${config.database.host}:${config.database.port}`,
                     config.database.username,
                     config.database.password,
                 ).with(Models);
@@ -93,7 +92,7 @@ class Neo4jDatabase {
 
     static async loadTestData() {
         const numAgents = 6;
-        const gamesPerAgent = 5;
+        const gamesPerAgent = 70;
         const agentsPerGame = 4;
         const numGames = Math.ceil(numAgents * gamesPerAgent / agentsPerGame);
 
