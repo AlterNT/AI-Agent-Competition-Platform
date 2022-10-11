@@ -23,8 +23,6 @@ class Neo4jDatabase {
                     `${config.database.protocol}://${config.database.host}:${config.database.port}`,
                     config.database.username,
                     config.database.password,
-                    undefined, // enterprise, not sure what this means
-                    config.database.database, // to allow using test database instead
                 ).with(Models);
                 break;
             } catch (err) {

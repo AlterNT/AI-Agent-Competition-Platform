@@ -8,7 +8,6 @@ console.assert(process.env.NODE_ENV == "test", "This test suite should only be r
 if (process.env.NODE_ENV != "test") process.exit(0);
 
 beforeAll(async () => {
-    // process.env.DATABASE_ENABLED = true;
     await API.init();
     await Database.init();
 
@@ -19,6 +18,11 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+})
+
+afterAll(async () => {
+    await Database.deleteAll();
+    API.app.close();
 })
 
 describe('API', () => {

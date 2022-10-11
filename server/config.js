@@ -14,7 +14,7 @@ const readConfig = (searchPath) => {
 }
 
 /** @type {{database: {enabled: Boolean, protocol: String, host: String, port: Number, username: String, password},games: Object.<String, {path: String, settings: {maxPlayers: Number, minPlayers: Number, timeout: Number, failClause: String, bot: String}, tournament: {}}>}} */
-let path = process.env.NODE_ENV == "test" ? "config.test.json5" : "config.json5";
+let path = 'config.json5';
 let config = readConfig(path)
 
 // This is an extra safety measure to ensure that the tests can't be run

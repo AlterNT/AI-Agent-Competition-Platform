@@ -257,6 +257,7 @@ class API {
                 () => {
                     console.log(`listening at http://localhost:${this.port}`) 
                     resolve()
+                    app.close(() => console.log('Closing Server'));
                 }
             )
         })
