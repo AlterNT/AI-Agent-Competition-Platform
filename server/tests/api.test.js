@@ -8,38 +8,37 @@ console.assert(process.env.NODE_ENV == "test", "This test suite should only be r
 if (process.env.NODE_ENV != "test") process.exit(0);
 
 beforeAll(async () => {
-    await API.init();
     await Database.init();
-
-    // would be good to do before each test
-    // but it's so slow and none of the tests are mutating anyway
-    // it would be good to make this not random, but Math.random has no seed function
-    await Database.loadTestData();
 });
 
 beforeEach(async () => {
-})
+    await Database.loadTestData();
+    await API.init();
+});
 
-afterAll(async () => {
+afterEach(async () => {
     await Database.deleteAll();
     API.server.close();
+});
+
+afterAll(async () => {
 })
 
 describe('API', () => {
     describe('Queries Not Needing Arguments', () => {
         Object.entries({
-            'agents': 10,
+            'agents': 8,
             'bots': 1,
-            'most-improved': 9,
-            'most-improving': 9,
-            'top-winrate': 9, // TODO should this be 10?
+            'most-improved': 7,
+            'most-improving': 7,
+            'top-winrate': 7, // TODO should this be 10?
         }).forEach(([endpoint, length]) => {
             it(`/api/${endpoint}`, async () => {
                 const response = await request(API.app).get(`/api/${endpoint}`);
                 const responseBody = JSON.parse(response.text);
                 const returnedKeys = Object.keys(responseBody);
-                expect(returnedKeys.length).toBe(1);    
-                const results = responseBody[returnedKeys[0]];     
+                expect(returnedKeys.length).toBe(1);
+                const results = responseBody[returnedKeys[0]];
                 expect(results.length).toBe(length);
             });
         });
@@ -48,20 +47,19 @@ describe('API', () => {
             const response = await request(API.app).get(`/api/count-game-pages`);
             const responseBody = JSON.parse(response.text);
             const returnedKeys = Object.keys(responseBody);
-            expect(returnedKeys.length).toBe(1);    
-            const results = responseBody[returnedKeys[0]];     
-            expect(results).toBe(80);
+            expect(returnedKeys.length).toBe(1);
+            const results = responseBody[returnedKeys[0]];
+            expect(results).toBe(2);
         });
     });
 
-    // @TODO: fill out the rest of these tests
     describe('Queries With Correct Arguments', () => {
         it('/api/games', async () => {
             const response = await request(API.app)
                 .get('/api/games')
                 .query({ page: 1 });
             const games = JSON.parse(response.text).games;
-            expect(games.length).toBe(80);
+            expect(games.length).toBe(100);
         });
         it('/api/game', async () => {
             const games = JSON.parse((await request(API.app).get("/api/games").query({ page: 1 })).text).games;
@@ -83,14 +81,13 @@ describe('API', () => {
                    // a non existant agent returns the same as existant agents for most fields
                 const responseBody = JSON.parse(response.text);
                 const returnedKeys = Object.keys(responseBody);
-                expect(returnedKeys.length).toBe(1);    
+                expect(returnedKeys.length).toBe(1);
                 const results = responseBody[returnedKeys[0]];
-                expect(results).not.toBe(incorrectQueryParamsError);   
+                expect(results).not.toBe(incorrectQueryParamsError);
             });
         })
     });
 
-    // TODO: Test it doesn't crash
     describe('Queries With Missing Arguments', () => {
         [
             "games",
@@ -104,15 +101,13 @@ describe('API', () => {
                 const responseBody = JSON.parse(response.text);
                 const returnedKeys = Object.keys(responseBody);
                 expect(returnedKeys.length).toBe(1);
-    
+
                 const returnedObject = responseBody[returnedKeys];
                 expect(returnedObject).toEqual(incorrectQueryParamsError);
             });
         })
     });
 
-    // TODO: Test it doesn't crash
-    
     describe('Queries With Badly Typed Arguments', () => {
         Object.entries({
             "games": { page: 'page 1' },

@@ -73,10 +73,10 @@ class Neo4jDatabase {
     }
 
     static async loadTestData() {
-        const numAgents = 8;
-        const gamesPerAgent = 10;
+        const numAgents = 6;
+        const gamesPerAgent = 70;
         const agentsPerGame = 4;
-        const numGames = numAgents * gamesPerAgent;
+        const numGames = Math.ceil(numAgents * gamesPerAgent / agentsPerGame);
 
         console.log('Cleaning Database...');
         await this.deleteAll();
@@ -381,7 +381,11 @@ class Neo4jDatabase {
             RETURN count(g) as pages;
         `);
 
-        return res.records[0].get('pages').toInt();
+        const gamesPerPage = 100;
+        const numGames = res.records[0].get('pages').toInt();
+        const numPages = Math.ceil(numGames / gamesPerPage);
+
+        return numPages;
     }
 
     /**
