@@ -4,13 +4,12 @@ import java.net.URL;
 
 import com.example.jsonobjects.gameFinished;
 import com.example.jsonobjects.gameStarted;
-import com.example.jsonobjects.getCard;
-import com.example.jsonobjects.getState;
 import com.example.jsonobjects.isTurn;
 import com.example.jsonobjects.joinLobby;
-import com.example.jsonobjects.sendAction;
+import com.example.jsonobjects.sendActionResponse;
+import com.example.jsonobjects.getAction;
 import com.example.loveletter.Action;
-import com.example.loveletter.Card;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -159,7 +158,7 @@ public class API {
     }
 
     // GET
-    public getState get_state() throws IOException {
+    public JsonNode get_state() throws IOException {
         try {
             // Sets up connection parameters
             String output = "http://localhost:8080/api/state?agentToken=" + this.token;
@@ -172,16 +171,31 @@ public class API {
             // Creates input stream and converts to json object
             InputStream responseStream = connection.getInputStream();
             ObjectMapper mapper = new ObjectMapper();
-            getState json = mapper.readValue(responseStream, getState.class);
-
+            JsonNode json = mapper.readTree(responseStream);
             return json;
-            // Creates states object
-            // Check json response and see if game has been started.
-            // if (json.state == null) {
-            // throw new Error("state received was null");
-            // } else {
-            // return json.state;
-            // }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException("Lost Connection");
+        }
+    }
+
+    // GET
+    public JsonNode get_action() throws IOException {
+        try {
+            // Sets up connection parameters
+            String output = "http://localhost:8080/api/getAction?agentToken=" + this.token;
+            URL url = new URL(output);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            // Creates input stream and converts to json object
+            InputStream responseStream = connection.getInputStream();
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode json = mapper.readTree(responseStream);
+            return json;
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -202,10 +216,19 @@ public class API {
 
             // Creates Json Body for request
             ObjectMapper mapperRequest = new ObjectMapper();
-            String actionName = String.format("play%s", action.card().toString());
             ObjectNode rootNode = mapperRequest.createObjectNode();
             rootNode.put("agentToken", this.token);
-            rootNode.put("action", actionName);
+
+            // Create Json string for agent variable in json response
+            String actionName = String.format("play%s", action.card().toString());
+            int[] params = new int[2];
+            params[0] = action.player();
+            params[1] = action.target();
+            getAction actionjsonClass = new getAction(actionName, params);
+            String actionJson = mapperRequest.writeValueAsString(actionjsonClass);
+
+            // Assign actionJson to action variable in body
+            rootNode.put("action", actionJson);
             String lobbyJSON = mapperRequest.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
 
             // Writes out the created json to the body
@@ -220,7 +243,7 @@ public class API {
             // Creates input stream and converts to json object
             InputStream responseStream = connection.getInputStream();
             ObjectMapper mapper = new ObjectMapper();
-            sendAction json = mapper.readValue(responseStream, sendAction.class);
+            sendActionResponse json = mapper.readValue(responseStream, sendActionResponse.class);
 
             if (json.success == false) {
                 return false;
@@ -234,8 +257,11 @@ public class API {
     }
 
     // GET
-    /* DEPRECATED */
-    public getCard request_method(String method) throws IOException {
+    /*
+     * Repurposed to get the top card of the game of the state controller serverside
+     */
+
+    public JsonNode request_method(String method) throws IOException {
         try {
             // Sets up connection parameters
             URL url = new URL("http://localhost:8080/api/method");
@@ -266,7 +292,7 @@ public class API {
             // Creates input stream and converts to json object
             InputStream responseStream = connection.getInputStream();
             ObjectMapper mapper = new ObjectMapper();
-            getCard json = mapper.readValue(responseStream, getCard.class);
+            JsonNode json = mapper.readTree(responseStream);
 
             return json;
 

@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.util.Random;
 
 import com.example.agents.RandomAgent;
-import com.example.jsonobjects.getCard;
-import com.example.jsonobjects.getState;
 import com.example.loveletter.Action;
 import com.example.loveletter.Agent;
 import com.example.loveletter.Card;
 import com.example.loveletter.IllegalActionException;
 import com.example.loveletter.State;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Hello world!
@@ -25,7 +24,6 @@ public class App {
     static String token;
     static String game;
     static stateUpdater stateUpdater;
-    static getState state;
     static State stateControiler;
     static objectBuilder builder;
 
@@ -37,6 +35,9 @@ public class App {
         gameAPI = new API(agent_token);
         stateUpdater = new stateUpdater();
         builder = new objectBuilder();
+
+        // JsonNode action = gameAPI.get_action();
+        // System.out.println(action.get("action"));
 
         if (game == "love-letter") {
             agent1 = new RandomAgent();
@@ -77,14 +78,15 @@ public class App {
                     boolean is_turn = gameAPI.is_turn();
                     if (is_turn == true) {
                         System.out.println("agent is making a move.");
-                        // update agent state
-                        getState state = gameAPI.get_state();
-                        stateUpdater.updatePlayerState(stateControiler, state, agents[1]);
-                        getCard topCard = gameAPI.request_method("getTopCard");
+                        // get/build agent state
+                        JsonNode state = gameAPI.get_state();
+                        JsonNode action = gameAPI.get_action();
+                        stateUpdater.updatePlayerState(stateControiler, state, action, agents[1]);
+                        // get top/build card from server side state controller
+                        JsonNode topCard = gameAPI.request_method("getTopCard");
                         Card agentCard = builder.buildCard(topCard);
-                        // get the agent to make a move
+                        // get the agent to make a move & send the action via api
                         Action move = agents[1].playCard(agentCard);
-                        // send the action via api
                         gameAPI.send_action(move);
                     }
                     Thread.sleep(1000);

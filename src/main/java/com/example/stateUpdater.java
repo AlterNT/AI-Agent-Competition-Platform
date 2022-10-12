@@ -1,8 +1,9 @@
 package com.example;
 
-import com.example.jsonobjects.getState;
+import com.example.loveletter.Action;
 import com.example.loveletter.Agent;
 import com.example.loveletter.State;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class stateUpdater {
 
@@ -12,8 +13,10 @@ public class stateUpdater {
         this.builder = new objectBuilder();
     }
 
-    public void updatePlayerState(State controller, getState state, Agent agent) {
-
+    public void updatePlayerState(State controller, JsonNode state, JsonNode action, Agent agent) {
+        Action playerAction = builder.buildAction(action);
+        State playerState = builder.buildState(state, controller);
+        agent.see(playerAction, playerState);
     }
 
 }
