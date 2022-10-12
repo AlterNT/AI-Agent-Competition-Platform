@@ -81,7 +81,7 @@ public class objectBuilder {
             }
             playerCount++;
         }
-        return null;
+        return results;
     }
 
     public int[] buildDiscardCount(JsonNode discardCount) {
@@ -96,31 +96,94 @@ public class objectBuilder {
     }
 
     public Card[] buildHand(JsonNode hand) {
-        return null;
+        Iterator<JsonNode> it = hand.iterator();
+        Card[] results = new Card[4];
+        int count = 0;
+        while (it.hasNext()) {
+            JsonNode temp = it.next();
+            Card tempCard = buildCard(temp);
+            results[count] = tempCard;
+            count++;
+        }
+        return results;
     }
 
     public Card[] buildDeck(JsonNode deck) {
-        return null;
+        Iterator<JsonNode> it = deck.iterator();
+        Card[] results = new Card[16];
+        int count = 0;
+        while (it.hasNext()) {
+            JsonNode temp = it.next();
+            Card tempCard = buildCard(temp);
+            results[count] = tempCard;
+            count++;
+        }
+        return results;
     }
 
     public int[] getTop(JsonNode top) {
-        return null;
+        Iterator<JsonNode> it = top.iterator();
+        int[] results = new int[1];
+        JsonNode temp = it.next();
+        results[0] = temp.intValue();
+        return results;
     }
 
     public boolean[][] buildKnown(JsonNode known) {
-        return null;
+        Iterator<JsonNode> it = known.iterator();
+        int playerCount = 0;
+        int seenCount = 0;
+        boolean[][] results = new boolean[known.size()][4];
+        while (it.hasNext()) {
+            JsonNode temp = it.next();
+            Iterator<JsonNode> it2 = temp.iterator();
+            while (it2.hasNext()) {
+                JsonNode temp2 = it2.next();
+                if (temp2.booleanValue() == true) {
+                    results[playerCount][seenCount] = temp2.booleanValue();
+                } else {
+                    results[playerCount][seenCount] = temp2.booleanValue();
+                }
+                seenCount++;
+                if (seenCount == 4) {
+                    seenCount = 0;
+                }
+            }
+            playerCount++;
+        }
+        return results;
     }
 
     public boolean[] buildHandmaid(JsonNode handmaid) {
-        return null;
+        Iterator<JsonNode> it = handmaid.iterator();
+        int count = 0;
+        boolean[] results = new boolean[handmaid.size()];
+        while (it.hasNext()) {
+            JsonNode temp = it.next();
+            results[count] = temp.booleanValue();
+            count++;
+        }
+        return results;
     }
 
     public int[] getScores(JsonNode scores) {
-        return null;
+        Iterator<JsonNode> it = scores.iterator();
+        int count = 0;
+        int[] results = new int[scores.size()];
+        while (it.hasNext()) {
+            JsonNode temp = it.next();
+            results[count] = temp.intValue();
+            count++;
+        }
+        return results;
     }
 
     public int[] getNextPlayer(JsonNode nextPlayer) {
-        return null;
+        Iterator<JsonNode> it = nextPlayer.iterator();
+        int[] results = new int[1];
+        JsonNode temp = it.next();
+        results[0] = temp.intValue();
+        return results;
     }
 
     /**

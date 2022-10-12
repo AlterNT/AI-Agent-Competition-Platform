@@ -1,7 +1,12 @@
 package com.example;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.net.URI;
+import java.net.URISyntaxException;
+import javax.ws.rs.core.MediaType;
 
+import com.example.jsonobjects.HttpGetWithEntity;
 import com.example.jsonobjects.gameFinished;
 import com.example.jsonobjects.gameStarted;
 import com.example.jsonobjects.isTurn;
@@ -9,15 +14,31 @@ import com.example.jsonobjects.joinLobby;
 import com.example.jsonobjects.sendActionResponse;
 import com.example.jsonobjects.getAction;
 import com.example.loveletter.Action;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 
 /**
  * 
@@ -306,46 +327,39 @@ public class API {
      * 
      * @param method
      * @return
+     * @throws ClientProtocolException
      * @throws IOException
+     * @throws URISyntaxException
+     * @throws JSONException
      */
 
-    public JsonNode request_method(String method) throws IOException {
+    public JSONObject request_method(String method)
+            throws ClientProtocolException, IOException, URISyntaxException, JSONException {
+        JSONObject temp = null;
         try {
             // Sets up connection parameters
-            URL url = new URL("http://localhost:8080/api/method");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Accept", "application/json");
-            connection.setRequestProperty("Content-Type", "application/json");
-
-            // Creates Json Body for request
             ObjectMapper mapperRequest = new ObjectMapper();
             ObjectNode rootNode = mapperRequest.createObjectNode();
             rootNode.put("agentToken", this.token);
-            rootNode.put("keys", "null");
+            rootNode.putNull("keys");
             rootNode.put("method", "getTopCard");
-            rootNode.put("params", "null");
+            rootNode.putNull("params");
             String lobbyJSON = mapperRequest.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
+            JSONObject lobbyObject = new JSONObject(lobbyJSON);
 
-            // Writes out the created json to the body
-            OutputStream os = connection.getOutputStream();
-            OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
-            osw.write(lobbyJSON);
-            osw.flush();
-            osw.close();
-            os.close();
-            connection.connect();
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            URL url = new URL("http://localhost:8080/api/method");
+            HttpRequest request = new HttpGetWithEntity(url.toURI(), lobbyObject);
+            request.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+            request.addHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
+            HttpResponse response;
+            response = httpClient.execute(new HttpHost(url.getHost(), url.getPort()), request);
+            temp = new JSONObject(EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8));
 
-            // Creates input stream and converts to json object
-            InputStream responseStream = connection.getInputStream();
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode json = mapper.readTree(responseStream);
-
-            return json;
-
-        } catch (IOException e) {
-            throw new IOException("connetion refused");
+        } catch (Error e) {
+            e.printStackTrace();
         }
+        return temp;
+
     }
 }
