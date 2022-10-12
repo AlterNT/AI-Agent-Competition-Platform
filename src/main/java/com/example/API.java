@@ -19,15 +19,28 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 
+/**
+ * 
+ */
 public class API {
 
     private String token;
 
+    /**
+     * 
+     * @param agentToken
+     */
     public API(String agentToken) {
         this.token = agentToken;
     }
 
     // POST
+    /**
+     * 
+     * @param gameID
+     * @return
+     * @throws IOException
+     */
     public Boolean join_lobby(String gameID) throws IOException {
         try {
             // Sets up connection parameters
@@ -71,6 +84,11 @@ public class API {
     }
 
     // GET
+    /**
+     * 
+     * @return
+     * @throws IOException
+     */
     public Boolean game_started() throws IOException {
         try {
             // Sets up connection parameters
@@ -100,6 +118,11 @@ public class API {
     }
 
     // GET
+    /**
+     * 
+     * @return
+     * @throws IOException
+     */
     public Boolean game_finished() throws IOException {
         try {
             // Sets up connection parameters
@@ -129,6 +152,11 @@ public class API {
     }
 
     // GET
+    /**
+     * 
+     * @return
+     * @throws IOException
+     */
     public Boolean is_turn() throws IOException {
         try {
             // Sets up connection parameters
@@ -158,10 +186,15 @@ public class API {
     }
 
     // GET
+    /**
+     * 
+     * @return
+     * @throws IOException
+     */
     public JsonNode get_state() throws IOException {
         try {
             // Sets up connection parameters
-            String output = "http://localhost:8080/api/state?agentToken=" + this.token;
+            String output = "http://localhost:8080/api/state2";
             URL url = new URL(output);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -181,6 +214,11 @@ public class API {
     }
 
     // GET
+    /**
+     * 
+     * @return
+     * @throws IOException
+     */
     public JsonNode get_action() throws IOException {
         try {
             // Sets up connection parameters
@@ -204,6 +242,12 @@ public class API {
     }
 
     // POST
+    /**
+     * 
+     * @param action
+     * @return
+     * @throws IOException
+     */
     public Boolean send_action(Action action) throws IOException {
         try {
             // Sets up connection parameters
@@ -257,8 +301,12 @@ public class API {
     }
 
     // GET
-    /*
+    /**
      * Repurposed to get the top card of the game of the state controller serverside
+     * 
+     * @param method
+     * @return
+     * @throws IOException
      */
 
     public JsonNode request_method(String method) throws IOException {

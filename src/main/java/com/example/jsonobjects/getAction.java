@@ -1,5 +1,8 @@
 package com.example.jsonobjects;
 
+/**
+ * used by object mapper to write values of json
+ */
 public class getAction {
     public String action;
     public int[] params;
