@@ -85,7 +85,6 @@ class LoveLetter extends IGame {
 
                     let act = await agent.playCard(topCard)
                     try {
-                        
                         this.stream.write(gameState.update(act, topCard) + '\n');
                     } catch {
                         this.stream.write(
