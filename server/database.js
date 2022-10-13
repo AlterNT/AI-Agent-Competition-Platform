@@ -473,25 +473,21 @@ class Neo4jDatabase {
      */
     static async queryMostImproved() {
         const res = await this.dbInstance.cypher(`
-            MATCH (u:User)-[:CONTROLS]->(a:Agent)-[p:PLAYED_IN]-> (g:Game)
-            WITH a, u.displayName as DisplayName, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
-            WITH a, DisplayName, Scores[0..5] as FFGS, Scores[-5..] as LFGS, Games[0..5] as FFG, Games[-5..] as LFG
-            WITH a,
-                DisplayName,
-                size(FFG) as FFGSize, size(LFG) as LFGSize,
-                size([i in FFGS WHERE i=1]) as FFGWins,
-                size([i in LFGS WHERE i=1]) as LFGWins
-            WITH a,
-                DisplayName,
-                100 * FFGWins/FFGSize as InitialWinPercent,
-                100 * LFGWins/LFGSize as LastWinPercent
-            RETURN a.id as AgentId,
-                DisplayName,
-                InitialWinPercent,
-                LastWinPercent,
-                LastWinPercent - InitialWinPercent as PercentageImprovement
-            ORDER BY PercentageImprovement DESC
-            LIMIT 10;
+        MATCH (a:Agent) -[p:PLAYED_IN]-> (g:Game)
+        WITH a, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
+        WITH a, Scores[0..5] as FFGS, Scores[-5..] as LFGS, Games[0..5] as FFG, Games[-5..] as LFG
+        WITH a, 
+            size(FFG) as FFGSize, size(LFG) as LFGSize, 
+            size([i in FFGS WHERE i=1]) as FFGWins, 
+            size([i in LFGS WHERE i=1]) as LFGWins
+        WITH a, 
+            100 * FFGWins/FFGSize as InitialWinPercent,
+            100 * LFGWins/LFGSize as LastWinPercent
+        RETURN a as Agent,
+            InitialWinPercent,
+            LastWinPercent,
+            LastWinPercent - InitialWinPercent as PercentageImprovement
+        ORDER BY PercentageImprovement DESC;
         `);
 
         return res.records.map((record) => ({

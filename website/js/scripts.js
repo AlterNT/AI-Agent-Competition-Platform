@@ -1,6 +1,6 @@
 'strict mode'
 
-const TEMP_SERVER_URL = 'http://194.195.253.84:8080';
+const TEMP_SERVER_URL = 'http://localhost:8080';
 
 document.getElementById('rt').addEventListener("click", getQuery);
 document.getElementById('query').addEventListener("change", updateInfo);
@@ -140,7 +140,7 @@ function getQuery() {
     var q = $('#query').val();
     var id = $('#single').val();
     
-    const requestCalls = {'game': 'gameId', 'agent-games': 'agentId', 'winrate': 'agentId', 'improvement': 'agentId'};
+    const requestCalls = {'game': 'gameId', 'agent-games': 'agentId', 'winrate': 'agentId', 'improvement': 'agentId', 'games': 'page'};
 
     if (q in requestCalls) {
         qr = starter + q + "?" + requestCalls[q] + '=' + id
@@ -152,17 +152,24 @@ function getQuery() {
 }
 
 function updateInfo() {
-    var requestCallsList = ['game', 'agent-games', 'agentId', 'winrate', 'improvement', 'improvement-rate']
-    var prompts = ['Game ID', 'Agent Display Name', 'Agent ID']
+    var requestCallsList = ['game', 'agent-games', 'agentId', 'winrate', 'improvement', 'improvement-rate', 'games']
+    var prompts = ['Game ID', 'Agent Display Name', 'Agent ID', 'Page']
     var selected = $('#query').val();
+    var selQ = $('#query').html();
 
+
+    console.log(selected);
     if (requestCallsList.includes(selected)) {
         $('#single').prop('disabled', false);
+
         if (selected == 'game') {
             $('#single').prop('placeholder', prompts[0]);
         }
         if (selected == 'agent-games'){
             $('#single').prop('placeholder', prompts[2]);
+        }
+        if (selected == 'games'){
+            $('#single').prop('placeholder', prompts[3]);
         }
         else {
             $('#single').prop('placeholder', prompts[1]);
