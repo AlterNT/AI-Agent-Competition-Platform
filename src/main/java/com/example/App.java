@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import java.util.Random;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.example.agents.RandomAgent;
 import com.example.loveletter.Action;
@@ -74,54 +73,54 @@ public class App {
         }
 
         while (true) {
-            // boolean joined_lobby;
-            // try {
-            // joined_lobby = gameAPI.join_lobby(game);
-            // } catch (Error e) {
-            // e.printStackTrace();
-            // return;
-            // }
+            boolean joined_lobby;
+            try {
+                joined_lobby = gameAPI.join_lobby(game);
+            } catch (Error e) {
+                e.printStackTrace();
+                return;
+            }
 
-            // if (joined_lobby == true) {
-            // System.out.print("Joined Lobby\n");
-            // while (gameAPI.game_started() == false) {
-            // System.out.println("waiting for game to start...");
-            // Thread.sleep(1000);
-            // }
-
-            System.out.println("game has started!");
-
-            while (!gameAPI.game_finished()) {
-                boolean is_turn = gameAPI.is_turn();
-                if (is_turn == true) {
-                    System.out.println("agent is making a move.");
-                    // get/build agent & controller state
-                    JsonNode state = gameAPI.get_state();
-                    JsonNode action = gameAPI.get_action();
-                    try {
-                        stateUpdater.updatePlayerState(stateController, state, action, agents[0], playerStates[0]);
-                    } catch (IllegalActionException e) {
-                    }
-
-                    try {
-                        stateController = stateUpdater.updateControllerState(stateController, state, action,
-                                stateController);
-                    } catch (IllegalActionException e) {
-                    }
-                    // Get top card
-                    Card topCard = stateController.drawCard();
-                    // get the agent to make a move & send the action via api
-                    Action move = agents[0].playCard(topCard);
-                    try {
-                        gameAPI.send_action(move);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return;
-                    }
+            if (joined_lobby == true) {
+                System.out.print("Joined Lobby\n");
+                while (gameAPI.game_started() == false) {
+                    System.out.println("waiting for game to start...");
+                    Thread.sleep(1000);
                 }
-                Thread.sleep(1000);
+
+                System.out.println("game has started!");
+
+                while (!gameAPI.game_finished()) {
+                    boolean is_turn = gameAPI.is_turn();
+                    if (is_turn == true) {
+                        System.out.println("agent is making a move.");
+                        // get/build agent & controller state
+                        JsonNode state = gameAPI.get_state();
+                        JsonNode action = gameAPI.get_action();
+                        try {
+                            stateUpdater.updatePlayerState(stateController, state, action, agents[0], playerStates[0]);
+                        } catch (IllegalActionException e) {
+                        }
+
+                        try {
+                            stateController = stateUpdater.updateControllerState(stateController, state, action,
+                                    stateController);
+                        } catch (IllegalActionException e) {
+                        }
+                        // Get top card
+                        Card topCard = stateController.drawCard();
+                        // get the agent to make a move & send the action via api
+                        Action move = agents[0].playCard(topCard);
+                        try {
+                            gameAPI.send_action(move);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            return;
+                        }
+                    }
+                    Thread.sleep(1000);
+                }
             }
         }
     }
 }
-// }

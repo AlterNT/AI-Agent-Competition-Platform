@@ -7,9 +7,8 @@ import com.example.jsonobjects.gameStarted;
 import com.example.jsonobjects.isTurn;
 import com.example.jsonobjects.joinLobby;
 import com.example.jsonobjects.sendActionResponse;
-import com.example.jsonobjects.getAction;
 import com.example.loveletter.Action;
-
+import com.example.loveletter.Card;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -26,6 +25,7 @@ import java.net.HttpURLConnection;
 public class API {
 
     private String token;
+    private objectBuilder builder;
 
     /**
      * 
@@ -33,6 +33,7 @@ public class API {
      */
     public API(String agentToken) {
         this.token = agentToken;
+        this.builder = new objectBuilder();
     }
 
     // POST
@@ -254,9 +255,7 @@ public class API {
 
             // Create Json string for agent variable in json response
             String actionName = String.format("play%s", action.card().toString());
-            int[] params = new int[2];
-            params[0] = action.player();
-            params[1] = action.target();
+            String[] params = builder.buildParams(action);
 
             // Sets up connection parameters
             URL url = new URL("http://localhost:8080/api/action");
@@ -272,7 +271,16 @@ public class API {
             rootNode.put("agentToken", this.token);
             ObjectNode actionNode = mapperRequest.createObjectNode();
             actionNode.put("action", actionName);
-            actionNode.putArray("params").add(params[0]).add(params[1]);
+
+            if (action.card() == Card.COUNTESS || action.card() == Card.HANDMAID) {
+                actionNode.putArray("params").add(Integer.valueOf(params[0]));
+            } else if (action.card() != Card.GUARD) {
+                actionNode.putArray("params").add(Integer.valueOf(params[0])).add(Integer.valueOf(params[1]));
+            } else {
+                actionNode.putArray("params").add(Integer.valueOf(params[0])).add(Integer.valueOf(params[1]))
+                        .add(params[2]);
+            }
+
             rootNode.with("action").setAll(actionNode);
             String lobbyJSON = mapperRequest.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
 

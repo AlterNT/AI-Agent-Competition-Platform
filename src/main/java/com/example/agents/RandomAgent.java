@@ -48,6 +48,9 @@ public class RandomAgent implements Agent {
    * @param results the state of play the agent is able to observe.
    **/
   public void see(Action act, State results) {
+
+    // if action is null you are the first player.
+
     current = results;
     action = act;
     myIndex = results.getPlayerIndex();

@@ -36,7 +36,11 @@ public class stateUpdater {
         try {
             Action playerAction = builder.buildAction(action);
             State updatedPlayerState = builder.buildState(state, controller, playerState);
-            agent.see(playerAction, updatedPlayerState);
+            if (playerAction == null) {
+                agent.newRound(updatedPlayerState);
+            } else {
+                agent.see(playerAction, updatedPlayerState);
+            }
         } catch (IllegalActionException e) {
             throw e;
         }

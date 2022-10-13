@@ -254,8 +254,13 @@ public class objectBuilder {
      * @return
      */
     public Card buildCard(JsonNode json) {
+        if (json.isNull()) {
+            return null;
+        }
+
         String name = json.get("name").toString();
         name = name.substring(1, name.length() - 1);
+
         switch (name) {
             case "Guard":
                 return Card.GUARD;
@@ -286,6 +291,9 @@ public class objectBuilder {
      */
     public Action buildAction(JsonNode json) throws IllegalActionException {
         JsonNode action = json.get("action");
+        if (action.isNull()) {
+            return null;
+        }
         Card card = buildCard(action.get("card"));
         int player = action.get("player").intValue();
         int target = action.get("target").intValue();
@@ -312,5 +320,34 @@ public class objectBuilder {
         } catch (IllegalActionException e) {
             throw e;
         }
+    }
+
+    public String[] buildParams(Action action) {
+        int count = 0;
+        Card guess = null;
+        String target = "";
+        String player = String.valueOf(action.player());
+        count++;
+        if (!(action.guess() == null)) {
+            guess = action.guess();
+            count++;
+        }
+        if (action.card() != Card.HANDMAID || action.card() != Card.COUNTESS) {
+            target = String.valueOf(action.target());
+            count++;
+        }
+
+        String[] results = new String[count];
+        results[0] = player;
+
+        if (action.card() != Card.HANDMAID || action.card() != Card.COUNTESS) {
+            results[1] = target;
+        }
+
+        if (action.card() == Card.GUARD) {
+            results[2] = guess.toString();
+        }
+
+        return results;
     }
 }
