@@ -1,6 +1,6 @@
 import Database from "../database.js";
 import IAgent from "./i-agent.js";
-import Gzip from "zlib";
+import gzip from "zlib";
 import fs from 'fs'
 import { Readable } from "stream";
 

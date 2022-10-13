@@ -310,7 +310,7 @@ class API {
 
         app.post('/api/join', async (req, res) => {
             const { agentToken, gameID, lobbyID, options } = req.body
-            const result = await LobbyManager.joinLobby(agentToken, gameID, lobbyID, options);
+            const result = await LobbyManager.joinLobby(agentToken, gameID, lobbyID, JSON.parse(options));
             res.json(result);
         })
 

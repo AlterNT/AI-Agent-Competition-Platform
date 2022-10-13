@@ -83,8 +83,9 @@ class LoveLetter extends IGame {
                     let agent = this.agents[gameState.getNextPlayer()]
                     this.turn = agent.token;
 
+                    let act = await agent.playCard(topCard)
                     try {
-                        const act = await agent.playCard(topCard)
+                        
                         this.stream.write(gameState.update(act, topCard) + '\n');
                     } catch {
                         this.stream.write(
@@ -94,7 +95,7 @@ class LoveLetter extends IGame {
                         this.randomAgent.newRound(gameState.playerState(gameState.getNextPlayer()));
                         act = this.randomAgent.playCard(topCard);
                         console.log('Random action.', act);
-                        this.stream.write(gameState.update(action, topCard) + '\n');
+                        this.stream.write(gameState.update(act, topCard) + '\n');
                     }
                     for (let i = 0; i < numPlayers; i++) { this.agents[i].see(act, playerStates[i]); }
                 }
