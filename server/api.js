@@ -78,6 +78,14 @@ class API {
 
         app.post('/api/set-display-name', (req, res) => {
             const { studentNumber, displayName } = req.query;
+
+            if ( studentNumber === '' || displayName === '') {
+                res.json({
+                    error: "Invalid username or student number."
+                });
+                return;
+            }
+
             Database.setDisplayName(studentNumber, displayName)
                 .then((success) => {
                     res.json({success});
