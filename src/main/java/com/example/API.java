@@ -1,12 +1,7 @@
 package com.example;
 
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.net.URI;
-import java.net.URISyntaxException;
-import javax.ws.rs.core.MediaType;
 
-import com.example.jsonobjects.HttpGetWithEntity;
 import com.example.jsonobjects.gameFinished;
 import com.example.jsonobjects.gameStarted;
 import com.example.jsonobjects.isTurn;
@@ -18,27 +13,12 @@ import com.example.loveletter.Action;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 
 /**
  * 
@@ -215,7 +195,7 @@ public class API {
     public JsonNode get_state() throws IOException {
         try {
             // Sets up connection parameters
-            String output = "http://localhost:8080/api/state2";
+            String output = "http://localhost:8080/api/state?agentToken=" + this.token;
             URL url = new URL(output);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -271,6 +251,13 @@ public class API {
      */
     public Boolean send_action(Action action) throws IOException {
         try {
+
+            // Create Json string for agent variable in json response
+            String actionName = String.format("play%s", action.card().toString());
+            int[] params = new int[2];
+            params[0] = action.player();
+            params[1] = action.target();
+
             // Sets up connection parameters
             URL url = new URL("http://localhost:8080/api/action");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -283,17 +270,10 @@ public class API {
             ObjectMapper mapperRequest = new ObjectMapper();
             ObjectNode rootNode = mapperRequest.createObjectNode();
             rootNode.put("agentToken", this.token);
-
-            // Create Json string for agent variable in json response
-            String actionName = String.format("play%s", action.card().toString());
-            int[] params = new int[2];
-            params[0] = action.player();
-            params[1] = action.target();
-            getAction actionjsonClass = new getAction(actionName, params);
-            String actionJson = mapperRequest.writeValueAsString(actionjsonClass);
-
-            // Assign actionJson to action variable in body
-            rootNode.put("action", actionJson);
+            ObjectNode actionNode = mapperRequest.createObjectNode();
+            actionNode.put("action", actionName);
+            actionNode.putArray("params").add(params[0]).add(params[1]);
+            rootNode.with("action").setAll(actionNode);
             String lobbyJSON = mapperRequest.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
 
             // Writes out the created json to the body
@@ -319,47 +299,5 @@ public class API {
         } catch (IOException e) {
             throw new IOException("connetion refused");
         }
-    }
-
-    // GET
-    /**
-     * Repurposed to get the top card of the game of the state controller serverside
-     * 
-     * @param method
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws JSONException
-     */
-
-    public JSONObject request_method(String method)
-            throws ClientProtocolException, IOException, URISyntaxException, JSONException {
-        JSONObject temp = null;
-        try {
-            // Sets up connection parameters
-            ObjectMapper mapperRequest = new ObjectMapper();
-            ObjectNode rootNode = mapperRequest.createObjectNode();
-            rootNode.put("agentToken", this.token);
-            rootNode.putNull("keys");
-            rootNode.put("method", "getTopCard");
-            rootNode.putNull("params");
-            String lobbyJSON = mapperRequest.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
-            JSONObject lobbyObject = new JSONObject(lobbyJSON);
-
-            CloseableHttpClient httpClient = HttpClients.createDefault();
-            URL url = new URL("http://localhost:8080/api/method");
-            HttpRequest request = new HttpGetWithEntity(url.toURI(), lobbyObject);
-            request.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-            request.addHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
-            HttpResponse response;
-            response = httpClient.execute(new HttpHost(url.getHost(), url.getPort()), request);
-            temp = new JSONObject(EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8));
-
-        } catch (Error e) {
-            e.printStackTrace();
-        }
-        return temp;
-
     }
 }

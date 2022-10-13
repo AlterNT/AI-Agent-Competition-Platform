@@ -20,6 +20,37 @@ public class objectBuilder {
 
     }
 
+    public State buildControllerState(JsonNode json, State controller, State playerState)
+            throws IllegalActionException {
+        JsonNode state = json.get("state");
+        // use external functions so individual iterators can be used more clearly
+        int num = state.get("num").intValue();
+        int[] discardCount = buildDiscardCount(state.get("discardCount"));
+        Card[][] discards = buildDiscards(state.get("discards"));
+        Card[] hand = buildHand(state.get("hand"));
+        Card[] deck = buildDeck(state.get("deck"));
+        int[] top = getTop(state.get("top"));
+        boolean[][] known = buildKnown(state.get("known"));
+        boolean[] handmaid = buildHandmaid(state.get("handmaid"));
+        int[] scores = getScores(state.get("scores"));
+        int[] nextPlayer = getNextPlayer(state.get("nextPlayer"));
+
+        // use game controller to update playerState through the endpoint handlers that
+        // were added
+        playerState.updateNum(controller, num);
+        playerState.updateDiscards(controller, discards);
+        playerState.updateDiscardcount(controller, discardCount);
+        playerState.updateHand(controller, hand);
+        playerState.updateDeck(controller, deck);
+        playerState.updateTop(controller, top);
+        playerState.updateKnown(controller, known);
+        playerState.updateHandmaid(controller, handmaid);
+        playerState.updateScores(controller, scores);
+        playerState.updateNext(controller, nextPlayer);
+
+        return playerState;
+    }
+
     /**
      * 
      * @param json

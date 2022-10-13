@@ -42,4 +42,15 @@ public class stateUpdater {
         }
     }
 
+    public State updateControllerState(State controller, JsonNode state, JsonNode action, State playerState)
+            throws IllegalActionException {
+        State updatedControllerState;
+        try {
+            updatedControllerState = builder.buildControllerState(state, controller, playerState);
+        } catch (IllegalActionException e) {
+            throw e;
+        }
+        return updatedControllerState;
+    }
+
 }

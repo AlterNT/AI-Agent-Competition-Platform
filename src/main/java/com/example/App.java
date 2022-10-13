@@ -21,15 +21,17 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class App {
 
-    static Agent agent1;
-    static Agent placeholderAgent;
+    public static Agent agent1;
+    public static Agent placeholderAgent;
+    public static Agent placeholderAgent2;
+    public static Agent placeholderAgent3;
     static Agent[] agents;
     static State[] playerStates;
     static API gameAPI;
     static String token;
     static String game;
     static stateUpdater stateUpdater;
-    static State stateControiler;
+    static State stateController;
     static objectBuilder builder;
 
     /**
@@ -44,53 +46,27 @@ public class App {
      */
     public static void main(String[] args)
             throws InterruptedException, IOException, Error, IllegalActionException, URISyntaxException, JSONException {
-
-        /**
-         * BELOW ARE FOR TESTING PURPOSES
-         */
-        // gameAPI = new API("1");
-        // String agent_token = "10";
-        // String game = "love-letter";
-        // gameAPI = new API(agent_token);
-        // stateUpdater = new stateUpdater();
-        // builder = new objectBuilder();
-
-        // agent1 = new RandomAgent();
-        // placeholderAgent = new RandomAgent();
-        // agents = new Agent[2];
-        // agents[0] = agent1;
-        // agents[1] = placeholderAgent;
-        // Random random = new Random();
-        // stateControiler = new State(random, agents);
-        // playerStates = new State[2];
-        // for (int i = 0; i < 2; i++) {
-        // playerStates[i] = stateControiler.playerState(i);
-        // agents[i].newRound(playerStates[i]);
-        // }
-
-        // JSONObject topCard = gameAPI.request_method("getTopCard");
-
-        // Card agentCard = builder.buildCard(topCard);
-
-        // JsonNode action = gameAPI.get_action();
-        // System.out.println(action.get("action").get("card").get("name").toString());
-        // Action theAction = builder.buildAction(action);
-        // JsonNode state = gameAPI.get_state();
-        // State gameState = builder.buildState(state, stateControiler,
-        // playerStates[0]);
-        // System.out.println(theAction.card().value());
+        String agent_token = "10";
+        String game = "love-letter";
+        gameAPI = new API(agent_token);
+        stateUpdater = new stateUpdater();
+        builder = new objectBuilder();
 
         if (game == "love-letter") {
             agent1 = new RandomAgent();
             placeholderAgent = new RandomAgent();
-            agents = new Agent[2];
+            placeholderAgent2 = new RandomAgent();
+            placeholderAgent3 = new RandomAgent();
+            agents = new Agent[4];
             agents[0] = agent1;
             agents[1] = placeholderAgent;
+            agents[2] = placeholderAgent2;
+            agents[3] = placeholderAgent3;
             Random random = new Random();
-            stateControiler = new State(random, agents);
-            playerStates = new State[2];
-            for (int i = 0; i < 2; i++) {
-                playerStates[i] = stateControiler.playerState(i);
+            stateController = new State(random, agents);
+            playerStates = new State[4];
+            for (int i = 0; i < agents.length; i++) {
+                playerStates[i] = stateController.playerState(i);
                 agents[i].newRound(playerStates[i]);
             }
         } else {
@@ -98,59 +74,54 @@ public class App {
         }
 
         while (true) {
-            boolean joined_lobby;
-            try {
-                joined_lobby = gameAPI.join_lobby(game);
-            } catch (Error e) {
-                e.printStackTrace();
-                return;
-            }
+            // boolean joined_lobby;
+            // try {
+            // joined_lobby = gameAPI.join_lobby(game);
+            // } catch (Error e) {
+            // e.printStackTrace();
+            // return;
+            // }
 
-            if (joined_lobby == true) {
-                System.out.print("Joined Lobby\n");
-                while (gameAPI.game_started() == false) {
-                    System.out.println("waiting for game to start...");
-                    Thread.sleep(1000);
-                }
+            // if (joined_lobby == true) {
+            // System.out.print("Joined Lobby\n");
+            // while (gameAPI.game_started() == false) {
+            // System.out.println("waiting for game to start...");
+            // Thread.sleep(1000);
+            // }
 
-                System.out.println("game has started!");
+            System.out.println("game has started!");
 
-                while (!gameAPI.game_finished()) {
-                    boolean is_turn = gameAPI.is_turn();
-                    if (is_turn == true) {
-                        System.out.println("agent is making a move.");
-                        // get/build agent state
-                        JsonNode state = gameAPI.get_state();
-                        JsonNode action = gameAPI.get_action();
-                        try {
-                            stateUpdater.updatePlayerState(stateControiler, state, action, agents[0],
-                                    playerStates[0]);
-                        } catch (IllegalActionException e) {
-                            e.printStackTrace();
-                            return;
-                        }
-                        // get top/build card from server side state controller
-
-                        /*
-                         * IN PROGRESS
-                         */
-                        // JsonNode topCard = gameAPI.request_method("getTopCard");
-                        // Card agentCard = builder.buildCard(topCard);
-                        // System.out.print(agentCard);
-
-                        // get the agent to make a move & send the action via api
-                        Action move = agents[1].playCard(agentCard);
-                        try {
-                            gameAPI.send_action(move);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            return;
-                        }
+            while (!gameAPI.game_finished()) {
+                boolean is_turn = gameAPI.is_turn();
+                if (is_turn == true) {
+                    System.out.println("agent is making a move.");
+                    // get/build agent & controller state
+                    JsonNode state = gameAPI.get_state();
+                    JsonNode action = gameAPI.get_action();
+                    try {
+                        stateUpdater.updatePlayerState(stateController, state, action, agents[0], playerStates[0]);
+                    } catch (IllegalActionException e) {
                     }
-                    Thread.sleep(1000);
+
+                    try {
+                        stateController = stateUpdater.updateControllerState(stateController, state, action,
+                                stateController);
+                    } catch (IllegalActionException e) {
+                    }
+                    // Get top card
+                    Card topCard = stateController.drawCard();
+                    // get the agent to make a move & send the action via api
+                    Action move = agents[0].playCard(topCard);
+                    try {
+                        gameAPI.send_action(move);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
                 }
+                Thread.sleep(1000);
             }
-            Thread.sleep(1000);
         }
     }
 }
+// }

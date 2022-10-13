@@ -627,10 +627,11 @@ public class State implements Cloneable {
         this.scores = scores;
     }
 
-    public void updateNext(State controller, int[] nextPlayer) throws IllegalActionException {
+    public void updateNext(State controller, int[] theNextPlayer) throws IllegalActionException {
         if (controller.statePlayer() != -1) {
             throw new IllegalActionException("operation not permitted in player's state.");
         }
-        this.nextPlayer = nextPlayer;
+        int temp = theNextPlayer[0] % this.num;
+        this.nextPlayer[0] = temp;
     }
 }

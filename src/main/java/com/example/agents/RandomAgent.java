@@ -16,6 +16,7 @@ public class RandomAgent implements Agent {
 
   private Random rand;
   private State current;
+  private Action action;
   private int myIndex;
 
   // 0 place default constructor
@@ -48,6 +49,9 @@ public class RandomAgent implements Agent {
    **/
   public void see(Action act, State results) {
     current = results;
+    action = act;
+    myIndex = results.getPlayerIndex();
+
   }
 
   /**
