@@ -286,6 +286,7 @@ class Neo4jDatabase {
 
     /**
      * Creates agent <-> game edges in the db
+     * @TODO add isTournament?
      * @param {{ userToken: String, score: Number}} gameOutcome
      */
     static async recordGame(gameOutcome, gameState) {
