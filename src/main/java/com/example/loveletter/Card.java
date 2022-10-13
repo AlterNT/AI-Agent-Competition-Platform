@@ -61,7 +61,7 @@ public enum Card {
      * @return an array of cards representing a standard deck of loveletter cards,
      *         in random order.
      **/
-    public static Card[] deal(java.util.Random rand) {
+    public static Card[] deal(Random rand) {
         Card[] deck = new Card[16];
         int j = 0;
         for (Card c : Card.values())

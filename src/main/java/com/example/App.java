@@ -45,8 +45,8 @@ public class App {
      */
     public static void main(String[] args)
             throws InterruptedException, IOException, Error, IllegalActionException, URISyntaxException, JSONException {
-        String agent_token = "10";
-        String game = "love-letter";
+        String agent_token = args[0];
+        String game = args[1];
         gameAPI = new API(agent_token);
         stateUpdater = new stateUpdater();
         builder = new objectBuilder();
@@ -54,16 +54,12 @@ public class App {
         if (game == "love-letter") {
             agent1 = new RandomAgent();
             placeholderAgent = new RandomAgent();
-            placeholderAgent2 = new RandomAgent();
-            placeholderAgent3 = new RandomAgent();
-            agents = new Agent[4];
+            agents = new Agent[2];
             agents[0] = agent1;
             agents[1] = placeholderAgent;
-            agents[2] = placeholderAgent2;
-            agents[3] = placeholderAgent3;
             Random random = new Random();
             stateController = new State(random, agents);
-            playerStates = new State[4];
+            playerStates = new State[2];
             for (int i = 0; i < agents.length; i++) {
                 playerStates[i] = stateController.playerState(i);
                 agents[i].newRound(playerStates[i]);
@@ -120,6 +116,7 @@ public class App {
                     }
                     Thread.sleep(1000);
                 }
+                Thread.sleep(1000);
             }
         }
     }
