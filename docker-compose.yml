@@ -9,6 +9,9 @@ services:
     environment:
       - NEO4J_AUTH=neo4j/password
       - NEO4JLABS_PLUGINS=["apoc"]
+    volumes:
+      - ./neo4j/plugins:/plugins
+      - ./neo4j/data:/data
   server:
     image: aicompetitionplatform
     build:
