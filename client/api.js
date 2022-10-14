@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 
-const SERVER_API = 'http://localhost:8080/api'
+const SERVER_API = 'http://194.195.253.84:8080/api'
 
 class API {
     static async authenticate(agentToken) {

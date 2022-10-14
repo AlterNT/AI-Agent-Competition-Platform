@@ -1,6 +1,6 @@
 'strict mode'
 
-const TEMP_SERVER_URL = 'http://localhost:8080';
+const TEMP_SERVER_URL = 'http://194.195.253.84:8080';
 
 document.getElementById('rt').addEventListener("click", getQuery);
 document.getElementById('query').addEventListener("change", updateInfo);
