@@ -10,7 +10,6 @@ import config from './config.js';
 class Neo4jDatabase {
     /** @type {[String]} */
     static defaultAgentToken = '00000000';
-    static testAdminToken = 'admin';
     static dbInstance;
     static dbSync;
 
@@ -39,6 +38,21 @@ class Neo4jDatabase {
         /** @type {DBSync} */
         this.dbSync = new DBSync();
         await this.dbSync.start(batchQueries, timeoutDurationMilliseconds);
+
+        await this.createAdminUser();
+    }
+
+    // Creates an admin user if one doesn't yet exist
+    static async createAdminUser() {
+        const adminToken = config.database.defaultAdminToken;
+        const defaultAdmin = await this.dbInstance.find('Admin', adminToken);
+        if (!defaultAdmin) {
+            return await this.dbInstance.create('Admin', {
+                adminToken,
+            });
+        } else {
+            return defaultAdmin;
+        }
     }
 
     static async getAllDisplayNames() {
@@ -178,8 +192,8 @@ class Neo4jDatabase {
     // neode `.find` method not working as intended?
     // did authentication manually
     static async authenticateAdmin(adminToken) {
-        if (config.database.testEnvironment || process.env.NODE_ENV === 'test') {
-            return adminToken === Database.testAdminToken;
+        if (process.env.NODE_ENV === 'test') {
+            return adminToken === 'admin';
         }
 
         const admins = await this.dbInstance.all('Admin')
