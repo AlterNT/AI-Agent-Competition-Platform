@@ -13,7 +13,7 @@ const readConfig = (searchPath) => {
     }).search()?.config;
 }
 
-/** @type {{database: {enabled: Boolean, protocol: String, host: String, port: Number, username: String, password},games: Object.<String, {path: String, settings: {maxPlayers: Number, minPlayers: Number, timeout: Number, failClause: String, bot: String}, tournament: {}}>}} */
+/** @type {{tournamentMode: Boolean, database: {enabled: Boolean, protocol: String, host: String, port: Number, username: String, password},games: Object.<String, {path: String, settings: {maxPlayers: Number, minPlayers: Number, timeout: Number, failClause: String, bot: String}, tournament: {}}>}} */
 let config = readConfig('config.json5')
 
 if (!config) {
