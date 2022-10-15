@@ -3,6 +3,7 @@ import IAgent from "./i-agent.js";
 import { gzip } from "zlib";
 import fs from 'fs'
 import { Readable } from "stream";
+import config from "../config.js";
 
 class IGame {
 
@@ -31,9 +32,9 @@ class IGame {
     resolve = null;
     /** @type {Boolean} If the current game is finished. */
     finished = false;
-    /** @type {{event: String, args: []}[]} Agent event record */
+    /** @type {{event: String, args: []}[]} Agent event record. */
     events = [];
-    /** @type {Object.<String, Number>} */
+    /** @type {Object.<String, Number>} A map of tokens to player indices. */
     indexMap = {};
 
     /**
@@ -101,10 +102,9 @@ class IGame {
         const logs = JSON.stringify(this.events)
 
         // Important! Brings 500KB -> ~6KB.
-        // Instead of dumping all of state ideally we should only record initial state and moves
         gzip(logs, (_, buffer) => {
             const compressed = buffer.toString('base64');
-            Database.recordGame(scores, compressed).then(() => {
+            Database.recordGame(scores, compressed, config.tournamentMode).then(() => {
                 this.finished = true;
             });
         })

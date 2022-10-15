@@ -27,7 +27,7 @@ class LoveLetter extends IGame {
      * @param {IAgent[]} agents The agents playing this game.
      * @param {Number} seed A seed for the random number generator.
      **/
-    constructor(agents, seed = 0, stream = process.stdout) {
+    constructor(agents, seed = 0) {
         super(agents);
 
         this.random = seedrandom(seed);

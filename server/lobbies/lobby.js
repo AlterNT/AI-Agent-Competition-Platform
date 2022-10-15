@@ -85,7 +85,7 @@ class Lobby {
             agents.push(this.createAgent(agentClass, token));
         }
 
-        let game = new gameClass(agents, 0, fs.createWriteStream('./test.txt'));
+        let game = new gameClass(agents, 0);
 
         // Intercept 'push' on the events object if logging is disabled.
         let events = new Proxy([],{
