@@ -5,8 +5,8 @@ import random
 MOVES = ['PAPER', 'SCISSORS', 'ROCK']
 
 class RandomAgent:
-    def __init__(self, agent_token):
-        self.agent_io = AgentIO(agent_token)
+    def __init__(self, agent_token, server):
+        self.agent_io = AgentIO(agent_token, server)
         self.agent_token = agent_token
         self.state = None
     

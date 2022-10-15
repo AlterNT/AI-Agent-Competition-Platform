@@ -3,8 +3,8 @@ from love_letter.agent_io import AgentIO
 import random
 
 class RandomAgent:
-    def __init__(self, agent_token):
-        self.agent_io = AgentIO(agent_token)
+    def __init__(self, agent_token, server):
+        self.agent_io = AgentIO(agent_token, server)
         self.agent_token = agent_token
         self.state = None
     
