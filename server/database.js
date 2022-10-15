@@ -10,7 +10,6 @@ import config from './config.js';
 class Neo4jDatabase {
     /** @type {[String]} */
     static defaultAgentToken = '00000000';
-    static testAdminToken = 'admin';
     static dbInstance;
     static dbSync;
 
@@ -39,6 +38,21 @@ class Neo4jDatabase {
         /** @type {DBSync} */
         this.dbSync = new DBSync();
         await this.dbSync.start(batchQueries, timeoutDurationMilliseconds);
+
+        await this.createAdminUser();
+    }
+
+    // Creates an admin user if one doesn't yet exist
+    static async createAdminUser() {
+        const adminToken = config.database.defaultAdminToken;
+        const defaultAdmin = await this.dbInstance.find('Admin', adminToken);
+        if (!defaultAdmin) {
+            return await this.dbInstance.create('Admin', {
+                adminToken,
+            });
+        } else {
+            return defaultAdmin;
+        }
     }
 
     static async getAllDisplayNames() {
@@ -178,8 +192,8 @@ class Neo4jDatabase {
     // neode `.find` method not working as intended?
     // did authentication manually
     static async authenticateAdmin(adminToken) {
-        if (config.database.testEnvironment || process.env.NODE_ENV === 'test') {
-            return adminToken === Database.testAdminToken;
+        if (process.env.NODE_ENV === 'test') {
+            return adminToken === 'admin';
         }
 
         const admins = await this.dbInstance.all('Admin')
@@ -246,8 +260,8 @@ class Neo4jDatabase {
      * @return {Neode.Node<Models.Agent> | null} Agent model
      */
     static async getUserAgent(userToken) {
-        const user = await this.dbInstance.find(
-            'User', userToken
+        const user = await this.dbInstance.first(
+            'User', 'authToken', userToken
         );
 
         const edge = user.get('controls');
@@ -277,8 +291,8 @@ class Neo4jDatabase {
      * @return {Boolean}
      */
     static async isUserEligibleToPlay(userToken) {
-        const user = await this.dbInstance.find(
-            'User', userToken
+        const user = await this.dbInstance.first(
+            'User', 'authToken', userToken
         );
 
         return !!user && !!await this.getUserAgent(userToken);
@@ -473,17 +487,20 @@ class Neo4jDatabase {
      */
     static async queryMostImproved() {
         const res = await this.dbInstance.cypher(`
-        MATCH (a:Agent) -[p:PLAYED_IN]-> (g:Game)
-        WITH a, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
-        WITH a, Scores[0..5] as FFGS, Scores[-5..] as LFGS, Games[0..5] as FFG, Games[-5..] as LFG
-        WITH a, 
+        MATCH (u:User)-[:CONTROLS]->(a:Agent) -[p:PLAYED_IN]-> (g:Game)
+        WITH a, u, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
+        WITH a, u, Scores[0..5] as FFGS, Scores[-5..] as LFGS, Games[0..5] as FFG, Games[-5..] as LFG
+        WITH a,
+            u,
             size(FFG) as FFGSize, size(LFG) as LFGSize, 
             size([i in FFGS WHERE i=1]) as FFGWins, 
             size([i in LFGS WHERE i=1]) as LFGWins
-        WITH a, 
+        WITH a,
+            u,
             100 * FFGWins/FFGSize as InitialWinPercent,
             100 * LFGWins/LFGSize as LastWinPercent
         RETURN a as Agent,
+            u.displayName as DisplayName,
             InitialWinPercent,
             LastWinPercent,
             LastWinPercent - InitialWinPercent as PercentageImprovement

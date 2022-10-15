@@ -1,6 +1,6 @@
 'strict mode'
 
-const TEMP_SERVER_URL = 'http://localhost:8080';
+const TEMP_SERVER_URL = 'http://194.195.253.84:8080';
 
 document.getElementById('rt').addEventListener("click", getQuery);
 document.getElementById('query').addEventListener("change", updateInfo);
@@ -39,6 +39,12 @@ async function apiResult(endpoint) {
         } else if (!values?.length) {
             return ({ error: [{ Error: 'No Data To Display For Current Query Insufficient Or Does Not Exist' }] });
         } else {
+            // filter out gamestate as it is too verbose
+            resultJson?.games?.forEach((row) => {
+                if ('gameState' in row) {
+                    delete row.gameState;
+                }
+            });
             return resultJson;
         }
     } catch (err) {

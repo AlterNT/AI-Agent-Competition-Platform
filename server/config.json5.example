@@ -8,7 +8,7 @@
         port: 7687,
         username: 'neo4j',
         password: 'password',
-        testEnvironment: true,
+        defaultAdminToken: 'admin',
     },
     // Game-specific settings.
     // A game's ID corresponds to it's key in this object.
