@@ -9,7 +9,7 @@ class Lobby {
     tokens = [];
     /** @type {String} ID of game. */
     gameID;
-    /** @type {{maxPlayers: Number, minPlayers: Number, bot: 'bot'|'smart-bot'}} Settings of current game. */
+    /** @type {{maxPlayers: Number, minPlayers: Number, autoLogging: Boolean, loggingEnabled: Boolean, bot: 'bot'|'smart-bot'}} Settings of current game. */
     gameSettings;
     /** @type {Number} How many players for this lobby to start. */
     slots;
@@ -86,10 +86,24 @@ class Lobby {
         }
 
         let game = new gameClass(agents, 0, fs.createWriteStream('./test.txt'));
+
+        // Intercept 'push' on the events object if logging is disabled.
+        let events = new Proxy([],{
+            get: (target, prop, _) => {
+                if (!this.gameSettings.loggingEnabled) {
+                    return () => false;
+                }
+                return target[prop];
+            }
+        });
+        game.events = events;
+
         return game;
     }
 
     createAgent(classRef, token) {
+        // If default interception logging is disabled.
+        if (!this.gameSettings.autoLogging) return new classRef(token);
         // Use proxies to intercept function and method calls for logging.
         return new Proxy(
             new classRef(token),

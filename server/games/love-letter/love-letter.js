@@ -1,7 +1,5 @@
 import State from "./state.js"
 import RandomAgent from './random-agent.js'
-import Action from './action.js'
-import Database from "../../database.js";
 
 import seedrandom from 'seedrandom';
 import IGame from '../i-game.js';
@@ -18,7 +16,6 @@ class LoveLetter extends IGame {
     static Bot = RandomAgent;
 
     random;
-    stream;
     randomAgent = new LoveLetter.Bot();
 
     turn = null;
@@ -29,13 +26,11 @@ class LoveLetter extends IGame {
      * Constructs a LoveLetter game.
      * @param {IAgent[]} agents The agents playing this game.
      * @param {Number} seed A seed for the random number generator.
-     * @param {NodeJS.WriteStream} stream A IOstream to record the events of the game.
      **/
     constructor(agents, seed = 0, stream = process.stdout) {
         super(agents);
 
         this.random = seedrandom(seed);
-        this.stream = process.stdout.pipe(stream);
     }
 
     getPlayerIndexInitial(agentToken) {
@@ -85,16 +80,12 @@ class LoveLetter extends IGame {
 
                     let act = await agent.playCard(topCard)
                     try {
-                        this.stream.write(gameState.update(act, topCard) + '\n');
+                        gameState.update(act, topCard);
                     } catch {
-                        this.stream.write(
-                            `Illegal action performed by player ${agent} (${gameState.player[0]}).\n` +
-                            `Random Move Substituted.`
-                        );
                         this.randomAgent.newRound(gameState.playerState(gameState.getNextPlayer()));
                         act = this.randomAgent.playCard(topCard);
                         console.log('Random action.', act);
-                        this.stream.write(gameState.update(act, topCard) + '\n');
+                        gameState.update(act, topCard);
                     }
                     for (let i = 0; i < numPlayers; i++) { this.agents[i].see(act, playerStates[i]); }
                 }
@@ -107,12 +98,10 @@ class LoveLetter extends IGame {
                 );
                 gameState.newRound();
             }
-            this.stream.write(`Player ${gameState.gameWinner()} wins the Princess's heart!\n`);
             const scoreboard = new Array(numPlayers);
             for (let i = 0; i < numPlayers; i++) { scoreboard[i] = gameState.score(i); }
             return scoreboard;
         } catch (e) {
-            this.stream.write('Something went wrong.\n', e);
             process.error(e);
             return null;
         }
