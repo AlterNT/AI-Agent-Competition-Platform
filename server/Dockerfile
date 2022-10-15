@@ -7,4 +7,4 @@ COPY . .
 EXPOSE 8080
 RUN chown -R node /usr/src/app
 USER node
-CMD ["npm", "start"]
+CMD sleep 60 && npm start
