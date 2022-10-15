@@ -39,6 +39,12 @@ async function apiResult(endpoint) {
         } else if (!values?.length) {
             return ({ error: [{ Error: 'No Data To Display For Current Query Insufficient Or Does Not Exist' }] });
         } else {
+            // filter out gamestate as it is too verbose
+            resultJson?.games?.forEach((row) => {
+                if ('gameState' in row) {
+                    delete row.gameState;
+                }
+            });
             return resultJson;
         }
     } catch (err) {
