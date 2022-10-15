@@ -2,6 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "java",
+      "name": "Launch App",
+      "request": "launch",
+      "mainClass": "javaclient.App",
+      "projectName": "client"
+    },
+    {
       "name": "Run Server",
       "cwd": "${workspaceFolder}/server",
       "program": "./index.js",
