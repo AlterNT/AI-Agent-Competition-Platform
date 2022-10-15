@@ -1,6 +1,6 @@
 import Database from "../database.js";
 import IAgent from "./i-agent.js";
-import gzip from "zlib";
+import { gzip } from "zlib";
 import fs from 'fs'
 import { Readable } from "stream";
 
@@ -73,11 +73,15 @@ class IGame {
         })
 
         const logs = JSON.stringify(this.events)
-        // Important! Brings 500KB -> ~6KB.
-        const compressed = gzip(logs)
 
-        await Database.recordGame(scores, compressed)
-        this.finished = true
+        // Important! Brings 500KB -> ~6KB.
+        // Instead of dumping all of state ideally we should only record initial state and moves
+        gzip(logs, (_, buffer) => {
+            const compressed = buffer.toString('base64');
+            Database.recordGame(scores, compressed).then(() => {
+                this.finished = true;
+            });
+        })
     }
 }
 
