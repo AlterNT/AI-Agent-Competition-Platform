@@ -291,11 +291,11 @@ class Neo4jDatabase {
      * @return {Boolean}
      */
     static async isUserEligibleToPlay(userToken) {
-        const user = await this.dbInstance.find(
-            'User', userToken
+        const user = await this.dbInstance.first(
+            'User', 'authToken', userToken
         );
 
-        return !!user && !!await this.getUserAgent(userToken);
+        return !!user && !!await this.getUserAgent(user.properties().studentNumber);
     }
 
     /**
