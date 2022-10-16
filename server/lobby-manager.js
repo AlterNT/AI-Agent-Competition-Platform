@@ -106,7 +106,7 @@ class LobbyManager {
 
     static lastPlayedAction(agentToken) {
         const game = this.agentGame[agentToken]
-        const action = game.lastPlayedAction()
+        const action = game.getLastPlayedAction()
 
         return action
     }

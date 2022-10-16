@@ -224,7 +224,7 @@ public class API {
     public JsonNode get_action() throws IOException {
         try {
             // Sets up connection parameters
-            String output = "http://localhost:8080/api/getAction?agentToken=" + this.token;
+            String output = "http://localhost:8080/api/lastAction?agentToken=" + this.token;
             URL url = new URL(output);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
