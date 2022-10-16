@@ -39,6 +39,10 @@
             "description": "Methods that are available to be run by Students for information and bots."
         },
         {
+            "name": "Agent Methods",
+            "description": "Methods that are available to use for agents."
+        },
+        {
             "name": "Admin Methods",
             "description": "Admin utilities to assist in running the server."
         }
@@ -453,6 +457,62 @@
                 ]
             }
         },
+        "/api/winrate": {
+            "get": {
+                "summary": "Get the Win-rate of a specific Agent",
+                "description": "Returns data relevant to the provided agent name.",
+                "parameters": [
+                    {
+                        "name": "agentId",
+                        "in": "query",
+                        "description": "The display name of the agent to query.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The returned agent.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "winrate": {
+                                            "type": "object",
+                                            "properties": {
+                                                "displayName": {
+                                                    "type": "string",
+                                                    "description": "The agent's display name.",
+                                                    "example": "ExcitedYellowPear32"
+                                                },
+                                                "initialWinPercent": {
+                                                    "type": "integer",
+                                                    "description": "The original win-percentage of the agent."
+                                                },
+                                                "lastWinPercent": {
+                                                    "type": "integer",
+                                                    "description": "The win-percentage of the agent as of it's last game."
+                                                },
+                                                "percentageImproved": {
+                                                    "type": "integer",
+                                                    "description": "The percentage improvement of the agent."
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Student Methods"
+                ]
+            }
+        },
         "/api/most-improved": {
             "get": {
                 "summary": "Get the Most Improved Agents",
@@ -501,6 +561,130 @@
                 ]
             }
         },
+        "/api/improvement": {
+            "get": {
+                "summary": "Get the Improvement of a specific Agent",
+                "description": "Returns data relevant to the provided agent name.",
+                "parameters": [
+                    {
+                        "name": "agentId",
+                        "in": "query",
+                        "description": "The display name of the agent to query.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The returned agent.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "improvement": {
+                                            "type": "object",
+                                            "properties": {
+                                                "displayName": {
+                                                    "type": "string",
+                                                    "description": "The agent's display name.",
+                                                    "example": "ExcitedYellowPear32"
+                                                },
+                                                "initialWinPercent": {
+                                                    "type": "integer",
+                                                    "description": "The original win-percentage of the agent."
+                                                },
+                                                "lastWinPercent": {
+                                                    "type": "integer",
+                                                    "description": "The win-percentage of the agent as of it's last game."
+                                                },
+                                                "percentageImproved": {
+                                                    "type": "integer",
+                                                    "description": "The percentage improvement of the agent."
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Student Methods"
+                ]
+            }
+        },
+        "/api/available-games": {
+            "get": {
+                "summary": "Get the Available Games",
+                "description": "Returns a list of available games.",
+                "responses": {
+                    "200": {
+                        "description": "List of available games.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "gameIDs": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "description": "The ID of the game."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Student Methods"
+                ]
+            }
+        },
+        "/api/authentication": {
+            "post": {
+                "summary": "Get the Available Games",
+                "description": "Returns a list of available games.",
+                "parameters": [
+                    {
+                        "name": "agentToken",
+                        "in": "query",
+                        "description": "The student token to verify.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "If the token is valid.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "authenticated": {
+                                            "type": "boolean",
+                                            "description": "If the token is valid."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Student Methods"
+                ]
+            }
+        },
         "/api/check-admin": {
             "get": {
                 "summary": "Validate an Admin Token",
@@ -518,7 +702,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "List of matching games",
+                        "description": "If the token is valid.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -591,18 +775,451 @@
                 ]
             }
         },
-        "/api/generate-token": {},
-        "/api/generate-admin-token": {},
-        "/api/winrate": {},
-        "/api/improvement": {},
-        "/api/available-games": {},
-        "/api/authentication": {},
-        "/api/started": {},
-        "/api/finished": {},
-        "/api/turn": {},
-        "/api/state": {},
-        "/api/action": {},
-        "/api/method": {},
-        "/api/join": {}
+        "/api/generate-token": {
+            "post": {
+                "summary": "Create a new Student Token",
+                "description": "Creates a new student token, given a seed input and authorization.",
+                "parameters": [
+                    {
+                        "name": "adminToken",
+                        "in": "query",
+                        "description": "Admin token required.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "seed",
+                        "in": "query",
+                        "description": "The seed to generate the token.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The generated token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "description": "The generated token."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Admin Methods"
+                ]
+            }
+        },
+        "/api/generate-admin-token": {
+            "post": {
+                "summary": "Create a new Admin Token",
+                "description": "Creates a new student token, given a seed input and authorization.",
+                "parameters": [
+                    {
+                        "name": "adminToken",
+                        "in": "query",
+                        "description": "Admin token required.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "seed",
+                        "in": "query",
+                        "description": "The seed to generate the token.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The generated token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "description": "The generated token."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Admin Methods"
+                ]
+            }
+        },
+        "/api/started": {
+            "get": {
+                "summary": "Returns if the Game has Started",
+                "description": "Returns a boolean indicating if the game has begun for an agent.",
+                "parameters": [
+                    {
+                        "name": "agentToken",
+                        "in": "query",
+                        "description": "The token belonging to the agent who is checking.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "If the game has started.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "gameStarted": {
+                                            "type": "boolean",
+                                            "description": "If the game has started."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Agent Methods"
+                ]
+            }
+        },
+        "/api/finished": {
+            "get": {
+                "summary": "Returns if the Game has Finished",
+                "description": "Returns a boolean indicating if the game has ended for an agent.",
+                "parameters": [
+                    {
+                        "name": "agentToken",
+                        "in": "query",
+                        "description": "The token belonging to the agent who is checking.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "If the game has finished.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "gameFinished": {
+                                            "type": "boolean",
+                                            "description": "If the game has finished."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Agent Methods"
+                ]
+            }
+        },
+        "/api/turn": {
+            "get": {
+                "summary": "Returns if it is an Agent's Turn",
+                "description": "Returns a boolean indicating if it is an agent's turn in a game.",
+                "parameters": [
+                    {
+                        "name": "agentToken",
+                        "in": "query",
+                        "description": "The token belonging to the agent who is checking.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "If it is the agent's turn.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "isTurn": {
+                                            "type": "boolean",
+                                            "description": "If it is the agent's turn."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Agent Methods"
+                ]
+            }
+        },
+        "/api/state": {
+            "get": {
+                "summary": "Returns the state for an Agent",
+                "description": "Returns the state object for a specific player..",
+                "parameters": [
+                    {
+                        "name": "agentToken",
+                        "in": "query",
+                        "description": "The token belonging to the agent who is requesting.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The returned state.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "state": {
+                                            "type": "object",
+                                            "description": "The game state. The schema for this depends on the game."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Agent Methods"
+                ]
+            }
+        },
+        "/api/action": {
+            "post": {
+                "summary": "Returns the state for an Agent",
+                "description": "Returns the state object for a specific player.",
+                "parameters": [
+                    {
+                        "name": "agentToken",
+                        "in": "query",
+                        "description": "The token belonging to the agent who is requesting.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "action",
+                        "in": "query",
+                        "description": "The action to play when it is the agent's turn.",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "description": "The action. The schema for this depends on the game being played."
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "If the action was successful.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "object",
+                                            "description": "If the action was successful."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Agent Methods"
+                ]
+            }
+        },
+        "/api/method": {
+            "get": {
+                "summary": "Run a Method on a Game Object",
+                "description": "Returns the result of a method run on the game object.",
+                "parameters": [
+                    {
+                        "name": "agentToken",
+                        "in": "query",
+                        "description": "The token belonging to the agent who is requesting.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "keys",
+                        "in": "query",
+                        "description": "The sequence of keys to access in the game object.",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    {
+                        "name": "method",
+                        "in": "query",
+                        "description": "The method to call at the end of keys.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "params",
+                        "in": "query",
+                        "description": "The arguments of the method being called.",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "description": "The supplied arguments depend on the method being called."
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The returned result.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "object",
+                                            "description": "The result of the method. The schema for this depends on the game."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Agent Methods"
+                ]
+            }
+        },
+        "/api/join": {
+            "post": {
+                "summary": "Join a Lobby",
+                "description": "Joins a lobby with the provided options. If a lobbyID is specified and it doesn't exist, a lobby will be joined with the provided options.",
+                "parameters": [
+                    {
+                        "name": "agentToken",
+                        "in": "query",
+                        "description": "The token belonging to the agent who is joining.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "gameID",
+                        "in": "query",
+                        "description": "The ID of the game that is to be played.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "lobbyID",
+                        "in": "query",
+                        "description": "The ID of the lobby that is to be joined/created if it doesn't exist.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "options",
+                        "in": "query",
+                        "description": "The options to be supplied to the lobby if it is being created.",
+                        "required": false,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "bots": {
+                                    "type": "integer",
+                                    "description": "The number of bots to be added to the game."
+                                },
+                                "slots": {
+                                    "type": "integer",
+                                    "description": "The number of players to start the game."
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "description": "The password to join the lobby specified."
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "If joining was successful.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "description": "If the lobby was joined/created successfully."
+                                        },
+                                        "lobbyID": {
+                                            "type": "string",
+                                            "description": "The lobby that was joined."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Agent Methods"
+                ]
+            }
+        }
     }
 }
