@@ -17,8 +17,6 @@ class Lobby {
     bots = 0;
     /** @type {String} */
     password = '';
-    /** @type {Boolean} */
-    tournament = false;
 
     constructor(gameID, options) {
         this.gameSettings = config.games[gameID].settings;
@@ -28,7 +26,6 @@ class Lobby {
         this.slots = Math.min(Math.max(options?.slots ?? this.gameSettings.maxPlayers, this.gameSettings.minPlayers), this.gameSettings.maxPlayers);
         console.log(this.slots)
         this.password = options?.password ?? this.password;
-        this.tournament = options?.tournament ?? this.tournament;
         this.gameID = gameID;
     }
 
