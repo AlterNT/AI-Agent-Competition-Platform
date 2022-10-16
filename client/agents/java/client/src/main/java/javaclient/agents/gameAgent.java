@@ -12,7 +12,7 @@ import javaclient.loveletter.State;
  * An interface for representing an agent in the game Love Letter
  * All agent's must have a 0 parameter constructor
  */
-public class RandomAgent implements Agent {
+public class gameAgent implements Agent {
 
     private Random rand;
     private State current;
@@ -20,7 +20,7 @@ public class RandomAgent implements Agent {
     private int myIndex;
 
     // 0 place default constructor
-    public RandomAgent() {
+    public gameAgent() {
         rand = new Random();
     }
 

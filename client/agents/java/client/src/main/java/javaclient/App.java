@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Random;
 
-import javaclient.agents.RandomAgent;
+import javaclient.agents.gameAgent;
 import javaclient.loveletter.Action;
 import javaclient.loveletter.Agent;
 import javaclient.loveletter.Card;
@@ -47,7 +47,7 @@ public class App {
         /**
          * Using Command line arguments is currently unstable
          * though four hard coded agents can play together by changing
-         * the value of agent token
+         * the value of agent token.
          */
         String agent_token = args[0];
         String game = args[1];
@@ -59,10 +59,10 @@ public class App {
         builder = new objectBuilder();
 
         // agent to be used in game
-        agent1 = new RandomAgent();
+        agent1 = new gameAgent();
         // the state controller requires a minimum of 2 players to create game so
         // placeholder agent is used but never acessed
-        placeholderAgent = new RandomAgent();
+        placeholderAgent = new gameAgent();
         // assign agents into array that can be passed in the state constructor
         agents = new Agent[2];
         agents[0] = agent1;

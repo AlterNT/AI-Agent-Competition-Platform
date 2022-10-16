@@ -31,12 +31,37 @@ npm i
 node . start
 ```
 ## Client Program
-All command under this section are executed under the `/client` directory.
-First change to the client directory and install dependencies:
-```bash
-cd client
-npm i
+> All command under this section are executed under the `/client` directory. 
+```bash 
+cd /client 
+```
+### Java Client 
+#### install dependencies:
+1. Download and install [Java 1.8](https://www.oracle.com/au/java/technologies/javase/javase8-archive-downloads.html).
+2. Download and install [Apache Maven 3.8.6](https://maven.apache.org/install.html).
+3. Set required environment variables for Java and Maven as outlined in the maven install link.
+      - Make sure JAVA_HOME system variable points to the 1.8 version of JDK. 
+4. Make sure you can run maven commands by running the following:
+```bash 
+mvn -v
+```
+#### Running the client through CLI:
 
+```bash
+cd /agent/java/client 
+mvn clean compile assembly:single
+java -jar target/client-1.0-SNAPSHOT-jar-with-dependencies.jar [agentToken] [game]
+```
+
+### Node Client 
+
+#### install dependencies:
+```bash
+npm i
+```
+### Python Client 
+#### install dependencies:
+```bash
 # if using python3:
 pip3 install -r requirements.txt
 

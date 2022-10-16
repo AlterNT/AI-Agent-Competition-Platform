@@ -9,21 +9,37 @@ import javaclient.loveletter.State;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * 
+ * This is a class created with the intention of taking a json api responses and
+ * building
+ * useable objects of the State and Action class that can be used for game logic
+ * control
+ * to adhere to the original code provided by the client.
  */
 public class objectBuilder {
 
     /**
-     * 
+     * Constructor method
      */
     public objectBuilder() {
 
     }
 
+    /**
+     * This function takes in the api response for the updated state in json and
+     * uses the provided state controller to update itself.
+     * 
+     * @param json          the updated state object in json as a JsonNode
+     * @param controller    the state controller
+     * @param stateToUpdate the controllers previous state object
+     * @return a new state object that is up to date with the server state
+     *         controller
+     * @throws IllegalActionException
+     */
     public State buildControllerState(JsonNode json, State controller, State playerState)
             throws IllegalActionException {
+        // get the state node in the json response
         JsonNode state = json.get("state");
-        // use external functions so individual iterators can be used more clearly
+        // Create each required variable to update the state class in full
         int num = state.get("num").intValue();
         int[] discardCount = buildDiscardCount(state.get("discardCount"));
         Card[][] discards = buildDiscards(state.get("discards"));
@@ -34,9 +50,7 @@ public class objectBuilder {
         boolean[] handmaid = buildHandmaid(state.get("handmaid"));
         int[] scores = getScores(state.get("scores"));
         int[] nextPlayer = getNextPlayer(state.get("nextPlayer"));
-
-        // use game controller to update playerState through the endpoint handlers that
-        // were added
+        // use game controller to update new controller state
         playerState.updateNum(controller, num);
         playerState.updateDiscards(controller, discards);
         playerState.updateDiscardcount(controller, discardCount);
@@ -52,15 +66,21 @@ public class objectBuilder {
     }
 
     /**
+     * This function takes in the api response for the updated state in json and
+     * uses the provided state controller to update and access the provided player
+     * state.
      * 
-     * @param json
-     * @return
+     * @param json        the state object response in json from the api
+     * @param controller  the state controller used for game logic
+     * @param playerState the players previous state object to be updated
+     * @returna new state object that is up to date with the server state
+     *          controller
      * @throws IllegalActionException
      */
     public State buildState(JsonNode json, State controller, State playerState) throws IllegalActionException {
+        // get the state node in the json response
         JsonNode state = json.get("state");
-
-        // use external functions so individual iterators can be used more clearly
+        // Create each required variable to update the state class in full
         int player = state.get("player").intValue();
         int num = state.get("num").intValue();
         int[] discardCount = buildDiscardCount(state.get("discardCount"));
@@ -72,9 +92,7 @@ public class objectBuilder {
         boolean[] handmaid = buildHandmaid(state.get("handmaid"));
         int[] scores = getScores(state.get("scores"));
         int[] nextPlayer = getNextPlayer(state.get("nextPlayer"));
-
-        // use game controller to update playerState through the endpoint handlers that
-        // were added
+        // use game controller to update the players state object
         playerState.updatePlayer(controller, player);
         playerState.updateNum(controller, num);
         playerState.updateDiscards(controller, discards);
@@ -90,6 +108,21 @@ public class objectBuilder {
         return playerState;
     }
 
+    /**
+     * This function takes a JsonNode object and uses two iterators
+     * traverse all values in that node and build the state variable
+     * discards.
+     * 
+     * one iterator is used to access each direct desendant
+     * of the node and the second iterator is used on each
+     * direct desendant to access every one of their children.
+     * 
+     * the first iterator represents the player
+     * the second represents the card value
+     * 
+     * @param discards the state variable of discards in json
+     * @return state variable instance discards
+     */
     public Card[][] buildDiscards(JsonNode discards) {
         Iterator<JsonNode> it = discards.iterator();
         int playerCount = 0;
@@ -100,12 +133,14 @@ public class objectBuilder {
             Iterator<JsonNode> it2 = temp.iterator();
             while (it2.hasNext()) {
                 JsonNode temp2 = it2.next();
+                // check to see if node is null and assign it if required
                 if (temp2.isNull()) {
                     results[playerCount][cardCount] = null;
                 } else {
                     results[playerCount][cardCount] = buildCard(temp2);
                 }
                 cardCount++;
+                // avoid index out of bounds and reset counte
                 if (cardCount == 16) {
                     cardCount = 0;
                 }
@@ -115,6 +150,13 @@ public class objectBuilder {
         return results;
     }
 
+    /**
+     * Creates state variable discardCount from a JsonNode and converts into form
+     * int[]
+     * 
+     * @param discardCount state variable discardCount in json
+     * @return state variable instance of discardCount
+     */
     public int[] buildDiscardCount(JsonNode discardCount) {
         Iterator<JsonNode> it = discardCount.iterator();
         int count = 0;
