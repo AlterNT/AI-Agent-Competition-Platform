@@ -35,8 +35,8 @@ node . start
 ```bash 
 cd /client 
 ```
-### Java Client 
-#### install dependencies:
+## Java Client 
+### install dependencies:
 1. Download and install [Java 1.8](https://www.oracle.com/au/java/technologies/javase/javase8-archive-downloads.html).
 2. Download and install [Apache Maven 3.8.6](https://maven.apache.org/install.html).
 3. Set required environment variables for Java and Maven as outlined in the maven install link.
@@ -45,23 +45,43 @@ cd /client
 ```bash 
 mvn -v
 ```
-#### Running the client through CLI:
+### Running the client via commands:
 
 ```bash
 cd /agent/java/client 
 mvn clean compile assembly:single
 java -jar target/client-1.0-SNAPSHOT-jar-with-dependencies.jar [agentToken] [game]
 ```
+### CLI-Mode
 
-### Node Client 
 
 #### install dependencies:
 ```bash
 npm i
 ```
-### Python Client 
+> The agent file has been updated and requires recompilation of java project
+```bash
+node . -t [agentToken] -l java -g love-letter -c true
+```
+> No update to code base and need to run the agent
+```bash
+node . -t [agentToken] -l java -g love-letter
+```
+### CLI-Options
+If you would like to change the options:
+```bash
+      --version   Show version number                                  [boolean]
+  -t, --token     Agent authentication token                 [string] [required]
+  -l, --language  Language of agent  [string] [required] [choices: "py", "java"]
+  -g, --game      Game to be played
+             [string] [required] [choices: "paper-scissors-rock", "love-letter"]
+  -c, --compile   flag to recompile java client                        [boolean]
+  -h, --help      Show help                                            [boolean]
+```
+## Python Client 
 #### install dependencies:
 ```bash
+npm i
 # if using python3:
 pip3 install -r requirements.txt
 
@@ -99,6 +119,7 @@ If you would like to change the options:
   -l, --language  Language of agent  [string] [required] [choices: "py", "java"]
   -g, --game      Game to be played
              [string] [required] [choices: "paper-scissors-rock", "love-letter"]
+  -c, --compile   flag to recompile java client                        [boolean]
   -h, --help      Show help                                            [boolean]
 ```
 
