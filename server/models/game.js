@@ -10,9 +10,15 @@ export default {
     },
     gameState: {
         type: 'string',
-        default: '{}',
+        default: '[]',
         required: true,
     }, // to be stored as a JSON string
+    isTournament: {
+        type: 'boolean',
+        required: true,
+        unique: false,
+        default: false,
+    },
     playedIn: {
         type: 'relationships',
         relationship: 'PLAYED_IN',

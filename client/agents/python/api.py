@@ -1,14 +1,16 @@
 import requests
+from zmq import SERVER
 
-SERVER_API = 'http://localhost:8080/api'
+SERVER_API = 'http://localhost:8080'
 
 class API:
-    def __init__(self, agent_token):
+    def __init__(self, agent_token, server = SERVER_API):
         self.agent_token = agent_token
+        self.server = server
         
     def join_lobby(self, game_id):
         try:
-            response = requests.post(SERVER_API + '/join', json={
+            response = requests.post(self.server + '/api/join', json={
                 'agentToken': self.agent_token,
                 'gameID': game_id
             })
@@ -20,7 +22,7 @@ class API:
     
     def game_started(self):
         try:
-            response = requests.get(SERVER_API + '/started', params={
+            response = requests.get(self.server + '/api/started', params={
                 'agentToken': self.agent_token
             })
             data = response.json()
@@ -31,7 +33,7 @@ class API:
         
     def game_finished(self):
         try:
-            response = requests.get(SERVER_API + '/finished', params={
+            response = requests.get(self.server + '/api/finished', params={
                 'agentToken': self.agent_token
             })
             data = response.json()
@@ -42,7 +44,7 @@ class API:
         
     def is_turn(self):
         try:
-            response = requests.get(SERVER_API + '/turn', params={
+            response = requests.get(self.server + '/api/turn', params={
                 'agentToken': self.agent_token
             })
             data = response.json()
@@ -53,7 +55,7 @@ class API:
         
     def get_state(self):
         try:
-            response = requests.get(SERVER_API + '/state', params={
+            response = requests.get(self.server + '/api/state', params={
                 'agentToken': self.agent_token
             })
             data = response.json()
@@ -64,7 +66,7 @@ class API:
         
     def send_action(self, action):
         try:
-            response = requests.post(SERVER_API + '/action', json={
+            response = requests.post(self.server + '/api/action', json={
                 'agentToken': self.agent_token,
                 'action': action
             })
@@ -76,7 +78,7 @@ class API:
         
     def request_method(self, keys, method, params):
         try:
-            response = requests.get(SERVER_API + '/method', json={
+            response = requests.get(self.server + '/api/method', json={
                 'agentToken': self.agent_token,
                 'keys': keys,
                 'method': method,

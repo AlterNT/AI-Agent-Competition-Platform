@@ -14,6 +14,9 @@ class API {
     static async init() {
         const databaseDisabledError = { error: 'Database not implemented' };
         const incorrectQueryParamsError = { error: 'Incorrect query parameters' };
+        const adminAuthError = { error: 'Lacking Admin Authentication' };
+        const tokenAlreadyExistsError = { error: 'Token Already Exists' };
+
         this.app = express()
         const app = this.app
 
@@ -69,14 +72,22 @@ class API {
         app.get('/api/count-game-pages', (_, res) => {
             Database.countPages()
                 .then((numPages) => {
-                    const pages = numPages || databaseDisabledError;
+                    const pages = numPages ?? databaseDisabledError;
                     res.json({pages});
                 });
         });
 
         app.post('/api/set-display-name', (req, res) => {
-            const { userToken, displayName } = req.query;
-            Database.setDisplayName(userToken, displayName)
+            const { studentNumber, displayName } = req.query;
+
+            if ( studentNumber === '' || displayName === '') {
+                res.json({
+                    error: "Invalid username or student number."
+                });
+                return;
+            }
+
+            Database.setDisplayName(studentNumber, displayName)
                 .then((success) => {
                     res.json({success});
                 });
@@ -139,6 +150,88 @@ class API {
             .then((improvement) => {
                 res.json({ improvement })
             });
+        });
+
+        // ---------------------------------------------------------------
+        // Admin Routes
+        // Changing display name can be done by admin as they can view student numbers
+
+        app.get('/api/check-admin', (req, res) => {
+            const { adminToken } = req.query;
+            if (!adminToken) {
+                res.json({ authenticated: false });
+            } else {
+                Database.authenticateAdmin(adminToken)
+                .then((authenticated) => {
+                    res.json({ authenticated });
+                })
+            }
+        });
+
+
+        app.get('/api/admin-view', (req, res) => {
+            const { adminToken } = req.query;
+            if (!adminToken) {
+                res.json({ users: adminAuthError })
+            } else {
+                Database.authenticateAdmin(adminToken)
+                    .then((authenticated) => {
+                        if (!authenticated) {
+                            res.json({ users: adminAuthError })
+                        } else {
+                            Database.getQueryResult(Database.queryAdminView)
+                            .then((users) => {
+                                res.json({ users })
+                            });
+                        }
+                    });
+            }
+        });
+
+        app.post('/api/generate-token', (req, res) => {
+            let { adminToken, seed } = req.query;
+            seed = Number(seed);
+            if (!adminToken) {
+                res.json({ token: adminAuthError });
+            } else if (!seed || !Number.isInteger(seed)) {
+                // seed must be a student number (integer)
+                res.json({ token: incorrectQueryParamsError });
+            } else {
+                Database.authenticateAdmin(adminToken)
+                    .then((authenticated) => {
+                        if (!authenticated) {
+                            res.json({ token: adminAuthError });
+                        } else {
+                            Database.generateUserTokens([seed], false)
+                                .then((tokens) => {
+                                    const token = tokens?.[0] || tokenAlreadyExistsError;
+                                    res.json({ token });
+                                });
+                        }
+                    });
+            }
+        });
+
+        app.post('/api/generate-admin-token', (req, res) => {
+            const { adminToken, seed } = req.query;
+            if (!adminToken) {
+                res.json({ token: adminAuthError });
+            } else if (!seed) {
+                res.json({ token: incorrectQueryParamsError });
+            } else {
+                Database.authenticateAdmin(adminToken)
+                    .then((authenticated) => {
+                        if (!authenticated) {
+                            res.json({ token: adminAuthError });
+                        } else {
+                            Database.generateUserTokens([seed], true)
+                                .then((tokens) => {
+                                    const token = tokens?.[0] || tokenAlreadyExistsError;
+                                    res.json({ token });
+                                });
+                        }
+                    });
+            }
         });
 
         // ---------------------------------------------------------------
@@ -247,8 +340,8 @@ class API {
         })
 
         app.post('/api/join', async (req, res) => {
-            const { agentToken, gameID, lobbyID } = req.body
-            const result = await LobbyManager.joinLobby(agentToken, gameID, lobbyID);
+            const { agentToken, gameID, lobbyID, options } = req.body
+            const result = await LobbyManager.joinLobby(agentToken, gameID, lobbyID, JSON.parse(options ?? "{}"));
             res.json(result);
         })
 

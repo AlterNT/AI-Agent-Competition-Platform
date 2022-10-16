@@ -28,9 +28,31 @@
 
 /*End Media Queries*/
 
+#adminBox {
+  padding: 10px;
+  display: none;
+  border: 1px solid whitesmoke;
+  border-radius: 5px;
+  position: absolute;
+}
+
+label {
+  display: block!important;
+}
+
+#tableWrapperWrapper {
+  width: 120%;
+}
+
+#queryForm {
+  width: 95%;
+  padding-top: 10%;
+}
+
 /*Table Styles*/
 td + td { 
-  border-left: 1px rgba(255, 255, 255, 0.374) solid; 
+  border-left: 1px rgba(255, 255, 255, 0.374) solid;
+  overflow-wrap: anywhere;
  }
  
  .excelTableData {
@@ -38,7 +60,6 @@ td + td {
  }
  
  .tableWrapper {
- background-color: rgba(10,14,26, 0.8);
  overflow: scroll;
  pointer-events: all; 
  height: 600px;
@@ -388,6 +409,7 @@ th {
   border-color: inherit;
   border-style: solid;
   border-width: 0;
+  overflow-wrap: anywhere;
 }
 
 label {
@@ -11385,7 +11407,6 @@ video.bg-video {
 
 @media (pointer: coarse) and (hover: none) {
   body {
-    background: url("../assets/img/bg-mobile-fallback.jpg") #2a5555 no-repeat center center scroll;
     background-size: cover;
   }
 

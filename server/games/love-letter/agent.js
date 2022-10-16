@@ -20,6 +20,7 @@ class Agent extends IAgent {
 
     async playCard(card) {
         const action = await this.awaitEvent()
+        if (action === null) return null;
         return Action[action.action](...action.params);
     }
 

@@ -1,8 +1,8 @@
 from love_letter.agent_io import AgentIO
 
 class Agent:
-    def __init__(self, token):
-        self.agentIO = AgentIO(token)
+    def __init__(self, token, server):
+        self.agentIO = AgentIO(token, server)
         self.token = token
         self.state = None
         

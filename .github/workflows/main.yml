@@ -1,0 +1,40 @@
+name: Deploy To Server on Main Push
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+ deploy:
+  runs-on: ubuntu-latest
+  steps:
+  
+   - name: Install SSH key
+     uses: shimataro/ssh-key-action@v2
+     with:
+       key: ${{ secrets.SSH_PRIVATE_KEY }}
+       known_hosts: ${{ secrets.KNOWN_HOSTS }}
+       
+   - name: deploy code
+     uses: appleboy/ssh-action@master
+     with:
+          host: 194.195.253.84
+          username: testing
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd AgentServer
+            rm -rf AI-Agent-Competition-Platform
+            git clone git@github.com:AlterNT/AI-Agent-Competition-Platform.git
+            cd AI-Agent-Competition-Platform
+
+            ids=$(docker ps -a -q)
+            for id in $ids
+            do
+             echo "$id"
+             docker stop $id && docker rm $id
+            done
+            
+            docker compose build
+            docker compose up &
+            bg

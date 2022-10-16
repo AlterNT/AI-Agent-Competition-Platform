@@ -9,12 +9,13 @@ import paper_scissors_rock
 def main():
     agent_token = sys.argv[1]
     game = sys.argv[2]
+    server = sys.argv[3]
     
     # create agent for selected game
     if game == 'love-letter':
-        agent = love_letter.RandomAgent(agent_token)
+        agent = love_letter.RandomAgent(agent_token, server)
     if game == 'paper-scissors-rock':
-        agent = paper_scissors_rock.RandomAgent(agent_token)
+        agent = paper_scissors_rock.RandomAgent(agent_token, server)
 
     # multiple games loop
     while True:
