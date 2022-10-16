@@ -302,10 +302,11 @@ class Neo4jDatabase {
      * Creates agent <-> game edges in the db
      * @TODO add isTournament?
      * @param {{ userToken: String, score: Number}} gameOutcome
+     * @param {Boolean} tournamentMode
      */
-    static async recordGame(gameOutcome, gameState) {
+    static async recordGame(gameOutcome, gameState, tournamentMode = false) {
         const game = await this.createGameNode();
-        await game.update({ gameState })
+        await game.update({ gameState: gameState, isTournament: tournamentMode })
 
         const relationMappings = [];
         for (const [ userToken, score ] of Object.entries(gameOutcome)) {
