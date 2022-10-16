@@ -103,6 +103,13 @@ class LobbyManager {
         const result = object[method](...params)
         return result
     }
+
+    static lastPlayedAction(agentToken) {
+        const game = this.agentGame[agentToken]
+        const action = game.lastPlayedAction()
+
+        return action
+    }
 }
 
 export default LobbyManager;

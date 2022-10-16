@@ -24,6 +24,7 @@ class LoveLetter extends IGame {
     turn = null;
     topCard = null;
     result = null;
+    lastPlayedAction = null;
 
     /**
      * Constructs a LoveLetter game.
@@ -52,6 +53,10 @@ class LoveLetter extends IGame {
 
     getTopCard() {
         return this.topCard;
+    }
+
+    getLastPlayedAction() {
+        return this.lastPlayedAction;
     }
 
     /**
@@ -84,6 +89,7 @@ class LoveLetter extends IGame {
                     this.turn = agent.token;
 
                     let act = await agent.playCard(topCard)
+                    this.lastPlayedAction = act
                     try {
                         this.stream.write(gameState.update(act, topCard) + '\n');
                     } catch {

@@ -310,6 +310,12 @@ class API {
             res.json({ success })
         })
 
+        app.get('/api/lastAction'), (req, res) => {
+            const agentToken = req.query.agentToken
+            const action = LobbyManager.lastPlayedAction(agentToken)
+            res.json({ action })
+        }
+
         app.get('/api/method', (req, res) => {
             const { agentToken, keys, method, params } = req.body
             const result = LobbyManager.method(agentToken, keys, method, params)
