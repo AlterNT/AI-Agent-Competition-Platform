@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class stateUpdater {
 
+    private static Action playerAction;
     /**
      * 
      */
@@ -34,7 +35,7 @@ public class stateUpdater {
     public void updatePlayerState(State controller, JsonNode state, JsonNode action, Agent agent, State playerState)
             throws IllegalActionException {
         try {
-            Action playerAction = builder.buildAction(action);
+            playerAction = builder.buildAction(action);
             State updatedPlayerState = builder.buildState(state, controller, playerState);
             if (playerAction == null) {
                 agent.newRound(updatedPlayerState);
