@@ -68,6 +68,24 @@ class API {
                 });
         });
 
+        // returns all games played
+        app.get('/api/gamelogs', (req, res) => {
+            let { page } = req.query;
+            page = Number(page);
+
+            if (!page || !Number.isInteger(page)) {
+                const games = incorrectQueryParamsError;
+                res.json({games});
+                return;
+            }
+
+            Database.paginateGameHistories(page)
+                .then((result) => {
+                    const games = result || databaseDisabledError;
+                    res.json({games})
+                });
+        });
+
         // returns number of pages for the games query
         app.get('/api/count-game-pages', (_, res) => {
             Database.countPages()
