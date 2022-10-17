@@ -1,3 +1,13 @@
+# Implementing Agnet
+## Java
+Base Class is located at `./agents/java/client/src/main/java/javaclient/agents/gameAgent.java`
+Override methods in order to implement own agent.
+
+## Python
+The `agent.py` file can be found in `src/agents/python/[game]/agent.py`
+
+`agent.py` is the only file that should be changed when implementing your agent.
+
 # Client Execution
 ## Java Client
 ### install dependencies:
@@ -59,11 +69,6 @@ pip3 install -r requirements.txt
 # if using pip:
 pip install -r requirements.txt
 ```
-
-### Implementing Agent
-The `agent.py` file can be found in `src/agents/python/[game]/agent.py`
-
-`agent.py` is the only file that should be changed when implementing your agent.
 
 ### CLI-Mode
 ```bash
