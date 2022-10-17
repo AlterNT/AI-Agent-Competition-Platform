@@ -29,6 +29,28 @@ Note that when the server is started an admin user is created when, but not dele
 ### Setting The Game
 Add a key/value pair to `config.games` in the format of the existing examples.
 
+### Generating Tokens
+Token file contain student numbers in the following format:
+```csv
+20000000
+30000000
+40000000
+...
+```
+
+#### User Tokens
+```bash
+# in /server
+docker compose up neo4j
+sleep 60 && docker compose run server node . tokens <path-to-token-file>
+```
+
+#### Admin Tokens
+```bash
+# in /server
+sleep 60 && docker compose run server node . admin-tokens <path-to-token-file>
+```
+
 ## Execution
 ## Running The Server
 ```bash
@@ -97,31 +119,6 @@ cp config.json5.example config.json5
 ```bash
 node . start
 ```
-
-# Development and DevOps
-## Server
-### Generating Test Data
-WARNING: running this will CLEAR your database, do NOT use it on the same machine as a running server
-
-In case of an error on the delete operation: run the command again until it works.
-```bash
-node . load-test-data
-```
-
-### Token Generation
-```bash
-# in /server
-node . tokens <path-to-token-file>
-```
-
-Token file looks as so:
-```csv
-StudentNumber1
-StudentNumber2
-StudentNumber3
-...
-```
-
 
 ### Connection to DB Instance With Neo4j Browser
 1. Start Neo4j
@@ -260,79 +257,4 @@ If you would like to change the options:
              [string] [required] [choices: "paper-scissors-rock", "love-letter"]
   -c, --compile   flag to recompile java client                        [boolean]
   -h, --help      Show help                                            [boolean]
-```
-
----
-
-# Old Client Setup
-Test the following commands:
-```bash
-python3 --version
-python --version
-```
-
-If `python3` isn't installed and `python` is version 2 then install python3.
-If `python3` isn't installed and `python` is version 3 then change `python3` to `python` in `Client/main.py`
-
-# Client Program WIP?
-All command under this section are executed under the `/client` directory.
-First change to the client directory and install dependencies:
-```bash
-cd client
-npm ci
-
-# if using python3:
-pip3 install -r requirements.txt
-
-# if using python:
-pip install -r requirements.txt
-```
-
-### CLI-Mode
-```bash
-node . <options>
-
-# options required for a game,
-# change the -t flag to be different for each agent
-node . -t 1 -l py -g love-letter
-```
-
-Run 4 agent processes as above with the `-t` flag being different in each case.
-Agent processes should all be run in their own terminal for readability.
-
-Alternatively you can run them all as background processes **(not recommended)**:
-```bash
-node . -t 1 -l py -g love-letter &\
-   node . -t 2 -l py -g love-letter &\
-   node . -t 3 -l py -g love-letter &\
-   node . -t 4 -l py -g love-letter
-```
-
-The client process quits if it detects the server is not running so cleanup of dangling processes is not an issue.
-
-### CLI-Options
-If you would like to change the options:
-```bash
-      --version   Show version number                                  [boolean]
-  -t, --token     Agent authentication token                 [string] [required]
-  -l, --language  Language of agent  [string] [required] [choices: "py", "java"]
-  -g, --game      Game to be played
-             [string] [required] [choices: "paper-scissors-rock", "love-letter"]
-  -h, --help      Show help                                            [boolean]
-```
-
-<!-- ## With Electron GUI
-TODO -->
-
-**INFORMATION BELOW THIS LINE ONLY APPLICABLE TO DEVELOPERS OR IF DEPLOYING**
-
-## Running
-Start the server:
-```bash
-node index.js # Server/API
-```
-
-Start the client:
-```bash
-python3 main.py # Client
 ```
