@@ -537,7 +537,7 @@ class Neo4jDatabase {
      * @TODO maybe this should be top 10 agents?
      * @return {any[]} array of single, most improved agent
      */
-    static async queryTopWinrate(isTournamentInput=true) {
+    static async queryTopWinrate(isTournamentInput=false) {
         const isTournament = !!isTournamentInput;
         const res = await this.dbInstance.cypher(`
             MATCH (u:User)-[:CONTROLS]->(a:Agent)-[p:PLAYED_IN]-> (g:Game)
