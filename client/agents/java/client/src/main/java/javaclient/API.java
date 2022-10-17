@@ -25,14 +25,16 @@ import java.net.HttpURLConnection;
 public class API {
 
     private String token;
+    private String URL;
     private objectBuilder builder;
 
     /**
      * 
      * @param agentToken
      */
-    public API(String agentToken) {
+    public API(String agentToken, String URL) {
         this.token = agentToken;
+        this.URL = URL;
         this.builder = new objectBuilder();
     }
 
@@ -46,7 +48,7 @@ public class API {
     public Boolean join_lobby(String gameID) throws IOException {
         try {
             // Sets up connection parameters
-            URL url = new URL("http://localhost:8080/api/join");
+            URL url = new URL(this.URL+"/api/join");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
@@ -94,7 +96,7 @@ public class API {
     public Boolean game_started() throws IOException {
         try {
             // Sets up connection parameters
-            String output = "http://localhost:8080/api/started?agentToken=" + this.token;
+            String output = this.URL + "/api/started?agentToken=" + this.token;
             URL url = new URL(output);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -128,7 +130,7 @@ public class API {
     public Boolean game_finished() throws IOException {
         try {
             // Sets up connection parameters
-            String output = "http://localhost:8080/api/finished?agentToken=" + this.token;
+            String output = this.URL + "/api/finished?agentToken=" + this.token;
             URL url = new URL(output);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -162,7 +164,7 @@ public class API {
     public Boolean is_turn() throws IOException {
         try {
             // Sets up connection parameters
-            String output = "http://localhost:8080/api/turn?agentToken=" + this.token;
+            String output = this.URL + "/api/turn?agentToken=" + this.token;
             URL url = new URL(output);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -196,7 +198,7 @@ public class API {
     public JsonNode get_state() throws IOException {
         try {
             // Sets up connection parameters
-            String output = "http://localhost:8080/api/state?agentToken=" + this.token;
+            String output = this.URL + "/api/state?agentToken=" + this.token;
             URL url = new URL(output);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -224,7 +226,7 @@ public class API {
     public JsonNode get_action() throws IOException {
         try {
             // Sets up connection parameters
-            String output = "http://localhost:8080/api/lastAction?agentToken=" + this.token;
+            String output = this.URL + "/api/lastAction?agentToken=" + this.token;
             URL url = new URL(output);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -258,7 +260,7 @@ public class API {
             String[] params = builder.buildParams(action);
 
             // Sets up connection parameters
-            URL url = new URL("http://localhost:8080/api/action");
+            URL url = new URL(this.URL + "/api/action");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
