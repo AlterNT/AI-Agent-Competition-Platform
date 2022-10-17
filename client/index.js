@@ -2,15 +2,11 @@ import chalk from 'chalk'
 import commandExists from 'command-exists'
 import child_process from 'child_process'
 import yargs from 'yargs'
-import path from 'path'
-
 
 import API from './api.js'
-import { syncBuiltinESMExports } from 'module'
 
 const LANGUAGES = ['py', 'java']
 const GAMES = ['paper-scissors-rock', 'love-letter']
-var compiled = false
 
 const pathLookup = async (lookupList) => {
     for (const programName of lookupList) {
@@ -38,7 +34,9 @@ const getJavaPath = async () => {
         throw new Error('Java not installed or not in path?')
     }
 }
-
+/**
+ * Function used to create a new terminal process instance and compile the maven project dependant on the processes operating system
+ */
 const compileMaven = async () => {
     try {
         if(process.platform == "win32"){
@@ -116,6 +114,8 @@ async function main() {
             break
 
         case 'java':
+            // Checks to see if the java project needs to be recompiled
+            // sets timeout through sleep function to wait for compilation 
             if(compile === true){
                 try {
                     let compile = await compileMaven()
@@ -127,6 +127,7 @@ async function main() {
                     console.log(error)
                 }
             }
+            // Creates new process of the compiled java project with the given token and game-id
             try {
                 console.log(await getJavaPath())
                 fp = child_process.spawn(await getJavaPath(), ['-jar', './agents/java/client/target/client-1.0-SNAPSHOT-jar-with-dependencies.jar', token, game])
@@ -136,6 +137,7 @@ async function main() {
             }
             break
     }
+    
     fp.stdout.on('data', (data) => {
         console.log(`${data}`)
     })
