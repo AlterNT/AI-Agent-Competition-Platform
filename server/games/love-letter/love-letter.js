@@ -18,10 +18,8 @@ class LoveLetter extends IGame {
     random;
     randomAgent = new LoveLetter.Bot();
 
-    turn = null;
     topCard = null;
     result = null;
-    lastPlayedAction = null;
 
     /**
      * Constructs a LoveLetter game.
@@ -39,8 +37,7 @@ class LoveLetter extends IGame {
     }
 
     getState(agentToken) {
-        const index = this.indexMap[agentToken]
-        const state = { ...this.agents[index].state }
+        let state = super.getState(agentToken)
         delete state.agents
 
         return state
@@ -48,10 +45,6 @@ class LoveLetter extends IGame {
 
     getTopCard() {
         return this.topCard;
-    }
-
-    getLastPlayedAction() {
-        return this.lastPlayedAction;
     }
 
     /**
