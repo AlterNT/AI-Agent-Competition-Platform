@@ -68,7 +68,7 @@ class State {
     }
 
     /**
-     * Resets state for a new round, with new deck of cards, 
+     * Resets state for a new round, with new deck of cards,
      * and everyone's hand and discards reset.
      * @throws IllegalActionException if this is a player state.
      **/
@@ -121,8 +121,8 @@ class State {
      * b) It must be player a's turn.
      * c) If the player holds the Countess, they cannot play the Prince or the King.
      * d) If the action has a target, they cannot be eliminated.
-     * e) If the target is protected by the Handmaid and their is some player other than the target and a not protected, 
-     *    then that player must be targeted instead. 
+     * e) If the target is protected by the Handmaid and their is some player other than the target and a not protected,
+     *    then that player must be targeted instead.
      * f) If all players are protected by the Handmaid and the player a plays a Prince, they must target themselves.
      * @param a The index of the playing agent.
      * @param t The index of the targeted player or -1, of no such target exists.
@@ -160,8 +160,8 @@ class State {
      * b) It must be player a's turn.
      * c) If the player holds the Countess, they cannot play the Prince or the King.
      * d) If the action has a target, they cannot be eliminated.
-     * e) If the target is protected by the Handmaid and their is some player other than the target and a not protected, 
-     *    then that player must be targeted instead. 
+     * e) If the target is protected by the Handmaid and their is some player other than the target and a not protected,
+     *    then that player must be targeted instead.
      * f) If all players are protected by the Handmaid and the player a plays a Prince, they must target themselves.
      * There are other rules (such as a player not targeting themselves) that is enforced in the Action class.
      * @param act The action to be performed.
@@ -184,7 +184,7 @@ class State {
 
     /**
      * Draws a card for a player from the shuffled deck. May only be performed in the game state.
-     * The card is no longer available on the top of the deck. 
+     * The card is no longer available on the top of the deck.
      * @return The top card of the deck.
      * @throws IllegalActionException if an agent attempts to access this from a player state.
      **/
@@ -199,7 +199,7 @@ class State {
      * @param act The action to be performed.
      * @param card The card drawn by the actor.
      * @return A plain English description of the action.
-     * @throws IllegalActionException if the state is a player state, or if the action is against the rules. 
+     * @throws IllegalActionException if the state is a player state, or if the action is against the rules.
      **/
     update(act, card) {
         if (this.player != -1) {
@@ -472,7 +472,7 @@ class State {
 
     /**
      * Helper method to determine the winner of the round.
-     * In the unlikely event of a total draw, 
+     * In the unlikely event of a total draw,
      * the player with the smallest index is the winner.
      * @return The index of the winner, or -1 if the round is not yet over.
      **/

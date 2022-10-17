@@ -105,12 +105,12 @@ export default class Action {
     }
 
     /**
-     * Constructs a PRINCE action for the player requiring 
+     * Constructs a PRINCE action for the player requiring
      * the targetted player to discard their card and draw a new one.
      * @param player the player performing the action
      * @param target the player targetted by this action
      * @return the action ob
-     * 
+     *
      * @throws Error if an illegal action.
      **/
     static playPrince(player, target) {
@@ -119,7 +119,7 @@ export default class Action {
     }
 
     /**
-     * Constructs a KING action for the player requiring 
+     * Constructs a KING action for the player requiring
      * swapping cards with the target.
      * @param player the player performing the action
      * @param target the player targetted by this action

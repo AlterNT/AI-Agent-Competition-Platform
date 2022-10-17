@@ -60,7 +60,7 @@ async function tabulateFromEndpoint(endpoint) {
         tabulateSingle(resultJson);
         return
     }
-    
+
     const values = Object.values(resultJson)[0];
     const headers = Object.keys(values[0])
 
@@ -121,7 +121,7 @@ async function download_table_as_csv(table_id, separator = ',') {
         csv.push(row.join(separator));
     }
     var csv_string = csv.join('\n');
-    
+
     // Download Table
     var filename = 'AI_Platform_Data' + '.csv';
     var link = document.createElement('a');
@@ -145,7 +145,7 @@ function getQuery() {
     var starter = "/api/";
     var q = $('#query').val();
     var id = $('#single').val();
-    
+
     const requestCalls = {'game': 'gameId', 'agent-games': 'agentId', 'winrate': 'agentId', 'improvement': 'agentId', 'games': 'page'};
 
     if (q in requestCalls) {
@@ -209,7 +209,7 @@ function tabulateSingle(dataJson) {
 async function saveAuthString() {
 
     $("tr").remove();
-    
+
     var authString = document.getElementById('auth').value;
     localStorage.setItem('aiCompetitionAdminToken', authString);
 

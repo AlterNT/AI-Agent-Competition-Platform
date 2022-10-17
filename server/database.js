@@ -572,8 +572,8 @@ class Neo4jDatabase {
         WITH a, u, Scores[0..5] as FFGS, Scores[-5..] as LFGS, Games[0..5] as FFG, Games[-5..] as LFG
         WITH a,
             u,
-            size(FFG) as FFGSize, size(LFG) as LFGSize, 
-            size([i in FFGS WHERE i=1]) as FFGWins, 
+            size(FFG) as FFGSize, size(LFG) as LFGSize,
+            size([i in FFGS WHERE i=1]) as FFGWins,
             size([i in LFGS WHERE i=1]) as LFGWins
         WITH a,
             u,
@@ -606,8 +606,8 @@ class Neo4jDatabase {
         WITH a, u, Scores[-10..-5] as FFGS, Scores[-5..] as LFGS, Games[-10..-5] as FFG, Games[-5..] as LFG
         WITH a,
             u,
-            size(FFG) as FFGSize, size(LFG) as LFGSize, 
-            size([i in FFGS WHERE i=1]) as FFGWins, 
+            size(FFG) as FFGSize, size(LFG) as LFGSize,
+            size([i in FFGS WHERE i=1]) as FFGWins,
             size([i in LFGS WHERE i=1]) as LFGWins
         WITH a,
             u,

@@ -53,8 +53,8 @@ const compileMaven = async () => {
 
 /**
  * Function used to stop processing of Node to wait for the Maven Java Compilation run course.
- * 
- * @param {*} ms time to wait in milliseconds 
+ *
+ * @param {*} ms time to wait in milliseconds
  * @returns {Promise} a new promise that stops excution until timeout is fufilled
  */
 function sleep(ms) {
@@ -121,12 +121,12 @@ async function main() {
 
         case 'java':
             // Checks to see if the java project needs to be recompiled
-            // sets timeout through sleep function to wait for compilation 
+            // sets timeout through sleep function to wait for compilation
             if(compile === true){
                 try {
                     let compile = await compileMaven()
                     console.log("compiling java client")
-                    // EDIT THE BELOW INPUT PARAMETER TO CHANGE 
+                    // EDIT THE BELOW INPUT PARAMETER TO CHANGE
                     // THE AMOUNT OF TIME WAITED FOR COMPILATION
                     await sleep(10000);
                 } catch (error) {
@@ -143,7 +143,7 @@ async function main() {
             }
             break
     }
-    
+
     fp.stdout.on('data', (data) => {
         console.log(`${data}`)
     })

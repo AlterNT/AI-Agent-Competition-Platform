@@ -389,7 +389,7 @@ class API {
             API.server = app.listen(
                 this.port,
                 () => {
-                    console.log(`listening at http://localhost:${this.port}`) 
+                    console.log(`listening at http://localhost:${this.port}`)
                     resolve()
                 }
             )

@@ -24,12 +24,15 @@ class Agent extends IAgent {
         return Action[action.action](...action.params);
     }
 
+    /**
+     * @returns The state corresponding to this agent.
+     */
     getState() {
         const agentState = {...this.state};
         delete agentState.agents;
         return agentState;
     }
-    
+
 }
 
 export default Agent;
