@@ -297,7 +297,7 @@ class API {
         app.get('/api/improvement-rate', (req, res) => {
             const { agentId } = req.query;
             if (agentId) {
-                Database.getQueryResult(Database.queryMostImproved, {displayName: agentId})
+                Database.getQueryResult(Database.queryMostImproving, {displayName: agentId})
                 .then((improvementArray) => {
                     const improvement = improvementArray?.[0] || null;
                     res.json({ improvement });
