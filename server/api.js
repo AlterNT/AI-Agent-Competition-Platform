@@ -206,6 +206,23 @@ class API {
             }
         });
 
+        app.get('/api/admin-get-tournament-winrate', (req, res) => {
+            const { adminToken } = req.query;
+            if (!adminToken) {
+                res.json({ users: adminAuthError })
+            } else {
+                Database.authenticateAdmin(adminToken)
+                    .then(async (authenticated) => {
+                        if (!authenticated) {
+                            res.json({ users: adminAuthError })
+                        } else {
+                            const winrate = await Database.queryTopWinrate(true)
+                            res.json({ winrate })
+                        }
+                    });
+            }
+        });
+
         app.post('/api/generate-token', (req, res) => {
             let { adminToken, seed } = req.query;
             seed = Number(seed);

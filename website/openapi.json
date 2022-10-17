@@ -937,6 +937,69 @@
                 ]
             }
         },
+        "/api/admin-get-tournament-winrate": {
+            "get": {
+                "summary": "Get the Agents with the Top Win-Rates in Tournament Games",
+                "description": "Returns an array of data corresponding to the top agents. (Warning, this query may lock up the server, hence admin auth required.)",
+                "parameters": [
+                    {
+                        "name": "adminToken",
+                        "in": "query",
+                        "description": "Admin token required.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "winrate": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "displayName": {
+                                                        "type": "string",
+                                                        "description": "The agent's display name.",
+                                                        "example": "ExcitedYellowPear32"
+                                                    },
+                                                    "isBot": {
+                                                        "type": "boolean",
+                                                        "description": "If the agent is a bot."
+                                                    },
+                                                    "gamesPlayed": {
+                                                        "type": "integer",
+                                                        "description": "How many games the agent has played."
+                                                    },
+                                                    "wins": {
+                                                        "type": "integer",
+                                                        "description": "How many games the agent has won."
+                                                    },
+                                                    "winPercent": {
+                                                        "type": "number",
+                                                        "description": "The agent's percentage win-rate."
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Admin Methods"
+                ]
+            }
+        },
         "/api/started": {
             "get": {
                 "summary": "Returns if the Game has Started",
