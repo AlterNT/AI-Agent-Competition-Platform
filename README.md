@@ -1,41 +1,96 @@
-# Running The Project
+# Server Installation And Execution
+## Dependencies
+The only required dependency to run the server is [docker](https://docs.docker.com/engine/install/).
+As everyone's environment is different there are no installation instructions that are guaranteed to work natively.
+
+## Setup & Configuration
+```bash
+# under the /server directory copy the config example
+cp config.json5.example config.json5
+```
+
+### Setting The Server Password
+in `docker-compose.yml` replace `password` with your desired password in the following line:
+`- NEO4J_AUTH=neo4j/password`
+
+In `config.json5` change `database.password` to be the same password.
+
+### Setting The Secret Key And Salt
+Set the following 2 properties in `config.json5`, they determine how authentication tokens are generated from student number:
+- config.database.aiPlatformSecretKey
+- config.database.aiPlatformSalt
+
+### Setting The Admin Token
+Set the following property in `config.json5`, it determines what the admin password is by default:
+- config.database.defaultAdminToken
+
+Note that when the server is started an admin user is created when, but not deleted when the default admin token changes, and must be manually deleted through [neo4j browser](TODO-link-here).
+
+### Setting The Game
+Add a key/value pair to `config.games` in the format of the existing examples.
+
+## Execution
+## Running The Server
+```bash
+# under the project directory (not in server!)
+docker compose build && docker compose up
+```
+
+You may wish to `docker compose up neo4j` and then run `docker compose up` once neo4j has started. The server is prone to crashing upon losing connection to the database.
+
+The server runs on port `8080` with the website running at port `3000`. The two are not managed by the same program but their own separate containers.
+
+## Running Tests
+```bash
+cd tests
+docker compose build && docker compose up
+```
+
+The process for running tests is the same as that of running the server but done with the docker containers in the `/tests` directory.
+
+Make sure that the server or the database are not running at the same time (as they use the same ports).
+
+# Native Server Installation And Execution
+This is heavily advised against and only applicable to development of the project.
+The project is expected to be run in docker containers and not officially supported natively.
+
 ## Dependencies
 `node.js`/`npm` and `python` (3) are the only required dependencies.
 
 Installation tutorials:
 - [node.js](https://enterflash.io/posts/how-to-install-nodejs-and-npm-on-windows-mac-or-linux)
-- [python](https://www.tutorialsteacher.com/python/install-python)
-  - must be added to path during the installation or the agent won't work
 
 ### Versions
 Recommended:
 - node: >14
-- python: >3.6
 
-Optional (do not install unless deploying, or developing):
+Requirements for Neo4j:
 - java: openjdk version >11 (or equivalent)
 - neo4j: >4.4
 - apoc: >4.4
 
-## Server
-All command under this section are executed under the `/server` directory.
-First change to the server directory and install dependencies:
+### Installation of Node Modules
 ```bash
 cd server
-cp .env-example .env
-npm i
+npm ci
 ```
+
+### Installation of Neo4j
+This step is optional, please refer [here](#installation-of-neo4j).
 
 ### Starting the Server
 ```bash
-node . start
+# in the /server directory
+node .
 ```
+
+# TODO: Remove
 ## Client Program
 All command under this section are executed under the `/client` directory.
 First change to the client directory and install dependencies:
 ```bash
 cd client
-npm i
+npm ci
 
 # if using python3:
 pip3 install -r requirements.txt
@@ -130,7 +185,7 @@ StudentNumber3
 5. If lacking any styling run `:style reset`
 6. If server hangs indefinitely disconnect Neo4j browser, and reconnect to the db from the server
 
-# Installation
+# Neo4j Installation (NOT REQUIRED)
 ## Dependencies
 - [npm](https://phoenixnap.com/kb/install-node-js-npm-on-windows)
 - [neo4j](https://neo4j.com/)
