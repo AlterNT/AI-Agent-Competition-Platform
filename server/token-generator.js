@@ -44,7 +44,7 @@ class TokenGenerator {
         return studentNumbers.map((number) => {
             return {
                 studentNumber: number,
-                authToken: this.generateToken(number),
+                authToken: this.generateToken(`${number}${config.database.aiPlatformSalt}`),
             }
         });
     }
