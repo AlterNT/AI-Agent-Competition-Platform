@@ -280,13 +280,13 @@ class Neo4jDatabase {
     }
 
     /**
-     * @param {String} userToken
+     * @param {String} userToken (can actually be either authToken or Student Number);
      * @return {Neode.Node<Models.Agent> | null} Agent model
      */
     static async getUserAgent(userToken) {
         const user = await this.dbInstance.first(
             'User', 'authToken', userToken
-        );
+        ) || await this.dbInstance.find('User', userToken);
 
         const edge = user.get('controls');
         if (!edge) {
