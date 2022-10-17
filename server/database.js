@@ -6,6 +6,7 @@ import Models from './models/index.js';
 import TokenGenerator from './token-generator.js';
 import DBSync from './db-sync.js';
 import config from './config.js';
+import { gunzip, gunzipSync } from 'zlib';
 
 class Neo4jDatabase {
     /** @type {[String]} */
@@ -411,6 +412,10 @@ class Neo4jDatabase {
                 agentScores[agentId] = score;
             });
 
+            // Remove game-log object.
+            let props = game.properties();
+            delete props.gameState;
+
             return {
                 ...game.properties(),
                 agentScores,
@@ -444,6 +449,45 @@ class Neo4jDatabase {
             })
             const gameProperties = {...game.properties};
             gameProperties.timePlayed = gameProperties.timePlayed.toString();
+            // Remove game-log object.
+            delete gameProperties.gameState;
+
+            return {
+                ...gameProperties,
+                agentScores,
+            }
+        });
+    }
+
+    /**
+     * @param {Integer} page
+     * @return {any[]} array of all games
+     */
+    static async paginateGameHistories(page) {
+        const gamesPerPage = 100;
+        const res = await this.dbInstance.cypher(`
+            MATCH (g:Game)<-[rel]-(a:Agent)
+            WITH g, collect({score: rel.score, agent: a.id}) as scores
+            RETURN g, scores
+            ORDER BY g.timePlayed ASC
+            SKIP (toInteger($page) - 1) * toInteger($gamesPerPage)
+            LIMIT toInteger($gamesPerPage);
+        `, {
+            gamesPerPage, page
+        });
+
+        return res.records.map((res) => {
+            const game = res.get('g');
+            const scores = res.get('scores');
+            const agentScores = {};
+            scores.forEach(({ score, agent }) => {
+                agentScores[agent] = score;
+            })
+            const gameProperties = {...game.properties};
+            gameProperties.timePlayed = gameProperties.timePlayed.toString();
+            // Decompress game-log object.
+            let props = game.properties();
+            props.gameState = JSON.parse(gunzipSync(Buffer.from(props.gameState)).toString)
 
             return {
                 ...gameProperties,
@@ -510,6 +554,7 @@ class Neo4jDatabase {
             winPercent: record.get('WinPercent').toNumber().toFixed(2),
         }));
     }
+
 
     /**
      * Finds the most improved agents comparing past performance to recent performance
