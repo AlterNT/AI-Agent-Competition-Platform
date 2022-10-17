@@ -13,8 +13,14 @@ const readConfig = (searchPath) => {
     }).search()?.config;
 }
 
-/** @type {{tournamentMode: Boolean, database: {enabled: Boolean, protocol: String, host: String, port: Number, username: String, password},games: Object.<String, {path: String, settings: {maxPlayers: Number, minPlayers: Number, timeout: Number, failClause: String, bot: String}, tournament: {}}>}} */
-let config = readConfig('config.json5')
+/** @type {{tournamentMode: Boolean, database: {enabled: Boolean, protocol: String, host: String, port: Number, username: String, password},games: Object.<String, {path: String, settings: {maxPlayers: Number, minPlayers: Number, autoLogging: Boolean, loggingEnabled: Boolean, failClause: String, bot: String}}>}} */
+let path = 'config.json5';
+let config = readConfig(path)
+
+// This is an extra safety measure to ensure that the tests can't be run
+// on the actual database since that would wipe all the data
+if (process.env.NODE_ENV == "test") config.database.database = "test";
+
 
 if (!config) {
     console.error('`config.json5` not found, defaulting to `config.json5.example`')

@@ -10,6 +10,7 @@
         port: 7687,
         username: 'neo4j',
         password: 'password',
+        database: 'neo4j',
         defaultAdminToken: 'admin',
     },
     // Game-specific settings.

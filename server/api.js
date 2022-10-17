@@ -7,6 +7,7 @@ class API {
 
     /** @type {import('express').Application} */
     static app;
+    static server;
 
     static port = 8080
 
@@ -96,19 +97,29 @@ class API {
         // TODO: update docs
         app.get('/api/game', (req, res) => {
             const { gameId } = req.query;
-            Database.getQueryResult(Database.queryGames, { id: gameId })
-            .then((games) => {
-                res.json({games});
-            });
+            if (gameId && gameId.length==36) {
+                Database.getQueryResult(Database.queryGames, { id: gameId })
+                .then((games) => {
+                    res.json({games});
+                });
+            } else {
+                res.json({ games: incorrectQueryParamsError })
+            }
+
         });
 
         // return all games for a given user
         app.get('/api/agent-games', (req, res) => {
             const { agentId } = req.query;
-            Database.getQueryResult(Database.queryGames, { agentScores: agentId })
-            .then((games) => {
-                res.json({games});
-            });
+            if (agentId) {
+                Database.getQueryResult(Database.queryGames, { agentScores: agentId })
+                .then((games) => {
+                    res.json({games});
+                });
+            } else {
+                res.json({ games: incorrectQueryParamsError })
+            }
+
         });
 
         // ---------------------------------------------------------------
@@ -231,22 +242,30 @@ class API {
         // returns null if not enough games played
         app.get('/api/winrate', (req, res) => {
             const { agentId } = req.query;
-            Database.getQueryResult(Database.queryTopWinrate, {displayName: agentId})
-            .then((winrateArray) => {
-                const winrate = winrateArray?.[0] || null;
-                res.json({ winrate })
-            });
+            if (agentId) {
+                Database.getQueryResult(Database.queryTopWinrate, {displayName: agentId})
+                .then((winrateArray) => {
+                    const winrate = winrateArray?.[0] || null;
+                    res.json({ winrate })
+                });
+            } else {
+                res.json({ winrate: incorrectQueryParamsError })
+            }
         });
 
         // improvement of agent since its first game
         // returns null if not enough games played
         app.get('/api/improvement', (req, res) => {
             const { agentId } = req.query;
-            Database.getQueryResult(Database.queryMostImproved, {displayName: agentId})
-            .then((improvementArray) => {
-                const improvement = improvementArray?.[0] || null;
-                res.json({ improvement })
-            });
+            if (agentId) {
+                Database.getQueryResult(Database.queryMostImproved, {displayName: agentId})
+                .then((improvementArray) => {
+                    const improvement = improvementArray?.[0] || null;
+                    res.json({ improvement })
+                });
+            } else {
+                res.json({ improvement: incorrectQueryParamsError })
+            }
         });
 
         // returns all available gameIDs to play.
@@ -259,11 +278,15 @@ class API {
         // returns null if not enough games played
         app.get('/api/improvement-rate', (req, res) => {
             const { agentId } = req.query;
-            Database.getQueryResult(Database.queryMostImproved, {displayName: agentId})
-            .then((improvementArray) => {
-                const improvement = improvementArray?.[0] || null;
-                res.json({ improvement })
-            });
+            if (agentId) {
+                Database.getQueryResult(Database.queryMostImproved, {displayName: agentId})
+                .then((improvementArray) => {
+                    const improvement = improvementArray?.[0] || null;
+                    res.json({ improvement });
+                });
+            } else {
+                res.json({ improvement: incorrectQueryParamsError });
+            }
         });
 
 
@@ -278,7 +301,6 @@ class API {
 
         // ---------------------------------------------------------------
         // game statistics: single agent
-        // @TODO: implement by reusing cached batch query results
 
         app.get('/api/started', (req, res) => {
             const agentToken = req.query.agentToken;
@@ -323,7 +345,7 @@ class API {
         })
 
         return new Promise((resolve) => {
-            app.listen(
+            API.server = app.listen(
                 this.port,
                 () => {
                     console.log(`listening at http://localhost:${this.port}`) 

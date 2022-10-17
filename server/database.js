@@ -14,9 +14,13 @@ class Neo4jDatabase {
     static dbSync;
 
     static async init() {
+        const dbHost = process.env.NODE_ENV === 'test' && config.database.host === 'neo4j'
+            ? `${config.database.host}-test`
+            : config.database.host;
+
         /** @type {Neode} */
         this.dbInstance = new Neode(
-            `${config.database.protocol}://${config.database.host}:${config.database.port}`,
+            `${config.database.protocol}://${dbHost}:${config.database.port}`,
             config.database.username,
             config.database.password,
         ).with(Models);
@@ -60,6 +64,24 @@ class Neo4jDatabase {
         return users.map((_, i) => users.get(i).properties().displayName);
     }
 
+    static async closeConnectionWithDelay(ms) {
+        return new Promise(resolve => setTimeout(() => {
+            this.dbInstance.close();
+            resolve();
+        }, ms));
+    }
+
+    static async close(deleteDatabase=false) {
+        this.dbSync.close();
+
+        if (deleteDatabase) {
+            this.deleteAll();
+        }
+
+        // wait for all dbSync timeouts to end???
+        await this.closeConnectionWithDelay(10_000);
+    }
+
     // Has a 0.4% chance for a collision given 200 students
     static async generateRandomName() {
         const words =  JSON.parse(fs.readFileSync('./wordlists.json'));
@@ -92,10 +114,10 @@ class Neo4jDatabase {
     }
 
     static async loadTestData() {
-        const numAgents = 8;
-        const gamesPerAgent = 10;
+        const numAgents = 6;
+        const gamesPerAgent = 70;
         const agentsPerGame = 4;
-        const numGames = numAgents * gamesPerAgent;
+        const numGames = Math.ceil(numAgents * gamesPerAgent / agentsPerGame);
 
         console.log('Cleaning Database...');
         await this.deleteAll();
@@ -141,7 +163,9 @@ class Neo4jDatabase {
      * Drops every instance of every label from the db
      */
     static async deleteAll() {
-        await Promise.all(Object.keys(Models).map((label) => this.dbInstance.deleteAll(label)));
+        for (const label in Models) {
+            await this.dbInstance.deleteAll(label);
+        }
     }
 
     /**
@@ -256,13 +280,13 @@ class Neo4jDatabase {
     }
 
     /**
-     * @param {String} userToken
+     * @param {String} userToken (can actually be either authToken or Student Number);
      * @return {Neode.Node<Models.Agent> | null} Agent model
      */
     static async getUserAgent(userToken) {
         const user = await this.dbInstance.first(
             'User', 'authToken', userToken
-        );
+        ) || await this.dbInstance.find('User', userToken);
 
         const edge = user.get('controls');
         if (!edge) {
@@ -428,13 +452,18 @@ class Neo4jDatabase {
         });
     }
 
+    // TODO this returns number of games, not number of pages
     static async countPages() {
         const res = await this.dbInstance.cypher(`
             MATCH (g:Game)
             RETURN count(g) as pages;
         `);
 
-        return res.records[0].get('pages').toInt();
+        const gamesPerPage = 100;
+        const numGames = res.records[0].get('pages').toInt();
+        const numPages = Math.ceil(numGames / gamesPerPage);
+
+        return numPages;
     }
 
     /**
@@ -600,7 +629,7 @@ const getMockDatabase = () => {
     });
 }
 
-const Database = process.env.NODE_ENV !== 'test' && config.database.enabled ?
+const Database = process.env.NODE_ENV === 'test' || config.database.enabled ?
     Neo4jDatabase :
     getMockDatabase();
 

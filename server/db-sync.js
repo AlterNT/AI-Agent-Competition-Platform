@@ -14,13 +14,18 @@ class CachedQuery {
         } catch (err) {
             console.error(`Database not available yet: ${err}`)
         }
-        setInterval(async () => {
+
+        this.interval = setInterval(async () => {
             try {
                 this.result = await queryFunction.bind(Database)(), timeoutDuration
             } catch (err) {
                 console.error(`Database not available: ${err}`)
             }
         });
+    }
+
+    close() {
+        clearInterval(this.interval);
     }
 }
 
@@ -33,6 +38,8 @@ export default class DBSync {
      */
     async start(batchQueries, timeoutDuration) {
         // Maps query names to query results
+
+        /** @type {Map<string, CachedQuery>} */
         this.queryMap = new Map();
         for (let queryFunction of batchQueries) {
             const cachedQuery = new CachedQuery();
@@ -42,6 +49,11 @@ export default class DBSync {
                 cachedQuery,
             );
         }
+    }
+
+    close() {
+        this.queryMap.forEach((cachedQuery) => cachedQuery.close());
+        this.queryMap = null;
     }
 
     /**
