@@ -68,6 +68,24 @@ class API {
                 });
         });
 
+        // returns all games played
+        app.get('/api/gamelogs', (req, res) => {
+            let { page } = req.query;
+            page = Number(page);
+
+            if (!page || !Number.isInteger(page)) {
+                const games = incorrectQueryParamsError;
+                res.json({games});
+                return;
+            }
+
+            Database.paginateGameHistories(page)
+                .then((result) => {
+                    const games = result || databaseDisabledError;
+                    res.json({games})
+                });
+        });
+
         // returns number of pages for the games query
         app.get('/api/count-game-pages', (_, res) => {
             Database.countPages()
@@ -188,6 +206,23 @@ class API {
             }
         });
 
+        app.get('/api/admin-get-tournament-winrate', (req, res) => {
+            const { adminToken } = req.query;
+            if (!adminToken) {
+                res.json({ users: adminAuthError })
+            } else {
+                Database.authenticateAdmin(adminToken)
+                    .then(async (authenticated) => {
+                        if (!authenticated) {
+                            res.json({ users: adminAuthError })
+                        } else {
+                            const winrate = await Database.queryTopWinrate(true)
+                            res.json({ winrate })
+                        }
+                    });
+            }
+        });
+
         app.post('/api/generate-token', (req, res) => {
             let { adminToken, seed } = req.query;
             seed = Number(seed);
@@ -279,7 +314,7 @@ class API {
         app.get('/api/improvement-rate', (req, res) => {
             const { agentId } = req.query;
             if (agentId) {
-                Database.getQueryResult(Database.queryMostImproved, {displayName: agentId})
+                Database.getQueryResult(Database.queryMostImproving, {displayName: agentId})
                 .then((improvementArray) => {
                     const improvement = improvementArray?.[0] || null;
                     res.json({ improvement });
