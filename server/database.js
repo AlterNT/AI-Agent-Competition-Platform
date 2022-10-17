@@ -35,6 +35,7 @@ class Neo4jDatabase {
             this.queryAgents,
             this.queryTopWinrate,
             this.queryMostImproved,
+            this.queryMostImproving,
             this.queryAdminView,
         ];
 
@@ -594,6 +595,39 @@ class Neo4jDatabase {
         }));
     }
 
+    /**
+     * Finds the most improved agents comparing past performance to recent performance
+     * @return {any[]} list of agents and improvements sorted by most improved
+     */
+     static async queryMostImproving() {
+        const res = await this.dbInstance.cypher(`
+        MATCH (u:User)-[:CONTROLS]->(a:Agent) -[p:PLAYED_IN]-> (g:Game)
+        WITH a, u, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
+        WITH a, u, Scores[-10..-5] as FFGS, Scores[-5..] as LFGS, Games[-10..-5] as FFG, Games[-5..] as LFG
+        WITH a,
+            u,
+            size(FFG) as FFGSize, size(LFG) as LFGSize, 
+            size([i in FFGS WHERE i=1]) as FFGWins, 
+            size([i in LFGS WHERE i=1]) as LFGWins
+        WITH a,
+            u,
+            100 * FFGWins/FFGSize as InitialWinPercent,
+            100 * LFGWins/LFGSize as LastWinPercent
+        RETURN a as Agent,
+            u.displayName as DisplayName,
+            InitialWinPercent,
+            LastWinPercent,
+            LastWinPercent - InitialWinPercent as PercentageImprovement
+        ORDER BY PercentageImprovement DESC;
+        `);
+
+        return res.records.map((record) => ({
+            displayName: record.get('DisplayName').toString(),
+            initialWinPercent: record.get('InitialWinPercent').toInt(),
+            lastWinPercent: record.get('LastWinPercent').toInt(),
+            percentageImproved: record.get('PercentageImprovement').toInt(),
+        }));
+    }
 
     /**
      * @TODO agent param
