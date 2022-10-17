@@ -4,6 +4,7 @@ import { gzip } from "zlib";
 import fs from 'fs'
 import { Readable } from "stream";
 import config from "../config.js";
+import TokenGenerator from "../token-generator.js";
 
 class IGame {
 
@@ -36,6 +37,10 @@ class IGame {
     events = [];
     /** @type {Object.<String, Number>} A map of tokens to player indices. */
     indexMap = {};
+    /** @type {String} The current player's turn. */
+    turn = null;
+    /** @type {{}} The last action played. */
+    lastPlayedAction = null;
 
     /**
      * Constructs a new Game instance and assigns
@@ -46,14 +51,6 @@ class IGame {
             agent.index = i
             this.indexMap[agent.token] = i
         })
-    }
-
-    /**
-     * @returns If the game is finished.
-     * Implement this.
-     */
-    gameFinished() {
-        return this.finished
     }
 
     /**
@@ -71,7 +68,10 @@ class IGame {
      * Implement this.
      */
     getState(token) {
+        const index = this.indexMap[token]
+        const state = { ...this.agents[index].state }
 
+        return state
     }
 
     /**
@@ -81,6 +81,22 @@ class IGame {
     action(token, action) {
         this.agents[this.indexMap[token]].resolve(action)
         return true
+    }
+
+    /**
+     * @returns If the game is finished.
+     * Do not override this.
+     */
+    gameFinished() {
+        return this.finished
+    }
+
+    /**
+     * @returns The last played action.
+     * Do not override this.
+     */
+    getLastPlayedAction() {
+        return this.lastPlayedAction;
     }
 
     /**
