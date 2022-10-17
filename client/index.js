@@ -2,11 +2,15 @@ import chalk from 'chalk'
 import commandExists from 'command-exists'
 import child_process from 'child_process'
 import yargs from 'yargs'
+import path from 'path'
+
 
 import API from './api.js'
+import { syncBuiltinESMExports } from 'module'
 
 const LANGUAGES = ['py', 'java']
 const GAMES = ['paper-scissors-rock', 'love-letter']
+var compiled = false
 
 const pathLookup = async (lookupList) => {
     for (const programName of lookupList) {
@@ -28,13 +32,39 @@ const getPythonPath = async () => {
 }
 
 const getJavaPath = async () => {
-    throw new Error('Java Agents Not Implemented Yet: Try Python Agents')
     try {
         return await pathLookup(['java'])
     } catch {
         throw new Error('Java not installed or not in path?')
     }
 }
+
+const compileMaven = async () => {
+    try {
+        if(process.platform == "win32"){
+            let cmd = child_process.spawn('cmd.exe', ['/c', 'mavenCompileScripts\\compileMaven.bat'])
+        } else if (process.platform == 'darwin' || process.platform == 'linux') {
+            let cmd = child_process.exec('mavenCompileScripts/compiler.sh')
+        } else {
+            throw new Error('This system architecture is not supported aswell ')
+        }
+    } catch {
+        throw new Error('Couldnt compile maven project')
+    }
+}
+
+/**
+ * Function used to stop processing of Node to wait for the Maven Java Compilation run course.
+ * 
+ * @param {*} ms time to wait in milliseconds 
+ * @returns {Promise} a new promise that stops excution until timeout is fufilled
+ */
+function sleep(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
+
 
 async function main() {
     const argv = yargs(process.argv)
@@ -59,10 +89,15 @@ async function main() {
         choices: GAMES,
         demandOption: true
     })
+    .option('compile', {
+        alias: 'c',
+        description: "Flag for whether the java client needs to be compiled",
+        type: 'boolean'
+    })
     .help()
     .alias('help', 'h').argv
 
-    const { token, language, game } = argv
+    const { token, language, game, compile } = argv
 
     // checks if token is authorised
     // const authorised = await API.authenticate(token)
@@ -79,9 +114,22 @@ async function main() {
                 return
             }
             break
+
         case 'java':
+            if(compile === true){
+                try {
+                    let compile = await compileMaven()
+                    console.log("compiling java client")
+                    // EDIT THE BELOW INPUT PARAMETER TO CHANGE 
+                    // THE AMOUNT OF TIME WAITED FOR COMPILATION
+                    await sleep(10000);
+                } catch (error) {
+                    console.log(error)
+                }
+            }
             try {
-                fp = child_process.spawn(await getJavaPath(), ['./agents/java/Main.java', token, game])
+                console.log(await getJavaPath())
+                fp = child_process.spawn(await getJavaPath(), ['-jar', './agents/java/client/target/client-1.0-SNAPSHOT-jar-with-dependencies.jar', token, game])
             } catch (pathError) {
                 console.error(pathError)
                 return

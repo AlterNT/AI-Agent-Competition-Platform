@@ -172,9 +172,77 @@
                                                         "description": "The time the game was played.",
                                                         "example": "Mon Sep 08 1998 14:36:22 GMT-0700 (PDT)"
                                                     },
+                                                    "isTournament": {
+                                                        "type": "boolean",
+                                                        "description": "If the game is a tournament game."
+                                                    },
+                                                    "agentScores": {
+                                                        "type": "object",
+                                                        "additionalProperties": {
+                                                            "type": "number",
+                                                            "description": "Map of agent IDs to scores."
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Student Methods"
+                ]
+            }
+        },
+        "/api/gamelog": {
+            "get": {
+                "summary": "Get all Game Logs",
+                "description": "Returns all logs of games (paginated groups of 100).",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "The page of game history to request.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of games with logs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "games": {
+                                            "type": "array",
+                                            "maxLength": 100,
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "example": "uuid"
+                                                    },
+                                                    "timePlayed": {
+                                                        "type": "string",
+                                                        "description": "The time the game was played.",
+                                                        "example": "Mon Sep 08 1998 14:36:22 GMT-0700 (PDT)"
+                                                    },
                                                     "gameState": {
                                                         "type": "string",
-                                                        "description": "The game's log as a gzip compressed JSON. Look into 'gunzip'."
+                                                        "description": "The game's log."
+                                                    },
+                                                    "isTournament": {
+                                                        "type": "boolean",
+                                                        "description": "If the game is a tournament game."
                                                     },
                                                     "agentScores": {
                                                         "type": "object",
@@ -857,6 +925,69 @@
                                         "token": {
                                             "type": "string",
                                             "description": "The generated token."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Admin Methods"
+                ]
+            }
+        },
+        "/api/admin-get-tournament-winrate": {
+            "get": {
+                "summary": "Get the Agents with the Top Win-Rates in Tournament Games",
+                "description": "Returns an array of data corresponding to the top agents. (Warning, this query may lock up the server, hence admin auth required.)",
+                "parameters": [
+                    {
+                        "name": "adminToken",
+                        "in": "query",
+                        "description": "Admin token required.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "winrate": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "displayName": {
+                                                        "type": "string",
+                                                        "description": "The agent's display name.",
+                                                        "example": "ExcitedYellowPear32"
+                                                    },
+                                                    "isBot": {
+                                                        "type": "boolean",
+                                                        "description": "If the agent is a bot."
+                                                    },
+                                                    "gamesPlayed": {
+                                                        "type": "integer",
+                                                        "description": "How many games the agent has played."
+                                                    },
+                                                    "wins": {
+                                                        "type": "integer",
+                                                        "description": "How many games the agent has won."
+                                                    },
+                                                    "winPercent": {
+                                                        "type": "number",
+                                                        "description": "The agent's percentage win-rate."
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }

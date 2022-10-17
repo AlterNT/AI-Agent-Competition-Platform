@@ -6,6 +6,7 @@ import Models from './models/index.js';
 import TokenGenerator from './token-generator.js';
 import DBSync from './db-sync.js';
 import config from './config.js';
+import { gunzip, gunzipSync } from 'zlib';
 
 class Neo4jDatabase {
     /** @type {[String]} */
@@ -34,6 +35,7 @@ class Neo4jDatabase {
             this.queryAgents,
             this.queryTopWinrate,
             this.queryMostImproved,
+            this.queryMostImproving,
             this.queryAdminView,
         ];
 
@@ -411,6 +413,10 @@ class Neo4jDatabase {
                 agentScores[agentId] = score;
             });
 
+            // Remove game-log object.
+            let props = game.properties();
+            delete props.gameState;
+
             return {
                 ...game.properties(),
                 agentScores,
@@ -444,6 +450,45 @@ class Neo4jDatabase {
             })
             const gameProperties = {...game.properties};
             gameProperties.timePlayed = gameProperties.timePlayed.toString();
+            // Remove game-log object.
+            delete gameProperties.gameState;
+
+            return {
+                ...gameProperties,
+                agentScores,
+            }
+        });
+    }
+
+    /**
+     * @param {Integer} page
+     * @return {any[]} array of all games
+     */
+    static async paginateGameHistories(page) {
+        const gamesPerPage = 100;
+        const res = await this.dbInstance.cypher(`
+            MATCH (g:Game)<-[rel]-(a:Agent)
+            WITH g, collect({score: rel.score, agent: a.id}) as scores
+            RETURN g, scores
+            ORDER BY g.timePlayed ASC
+            SKIP (toInteger($page) - 1) * toInteger($gamesPerPage)
+            LIMIT toInteger($gamesPerPage);
+        `, {
+            gamesPerPage, page
+        });
+
+        return res.records.map((res) => {
+            const game = res.get('g');
+            const scores = res.get('scores');
+            const agentScores = {};
+            scores.forEach(({ score, agent }) => {
+                agentScores[agent] = score;
+            })
+            const gameProperties = {...game.properties};
+            gameProperties.timePlayed = gameProperties.timePlayed.toString();
+            // Decompress game-log object.
+            let props = game.properties();
+            props.gameState = JSON.parse(gunzipSync(Buffer.from(props.gameState)).toString)
 
             return {
                 ...gameProperties,
@@ -493,7 +538,7 @@ class Neo4jDatabase {
      * @TODO maybe this should be top 10 agents?
      * @return {any[]} array of single, most improved agent
      */
-    static async queryTopWinrate(isTournamentInput=true) {
+    static async queryTopWinrate(isTournamentInput=false) {
         const isTournament = !!isTournamentInput;
         const res = await this.dbInstance.cypher(`
             MATCH (u:User)-[:CONTROLS]->(a:Agent)-[p:PLAYED_IN]-> (g:Game)
@@ -514,6 +559,7 @@ class Neo4jDatabase {
             winPercent: record.get('WinPercent').toNumber().toFixed(2),
         }));
     }
+
 
     /**
      * Finds the most improved agents comparing past performance to recent performance
@@ -549,6 +595,39 @@ class Neo4jDatabase {
         }));
     }
 
+    /**
+     * Finds the most improved agents comparing past performance to recent performance
+     * @return {any[]} list of agents and improvements sorted by most improved
+     */
+     static async queryMostImproving() {
+        const res = await this.dbInstance.cypher(`
+        MATCH (u:User)-[:CONTROLS]->(a:Agent) -[p:PLAYED_IN]-> (g:Game)
+        WITH a, u, collect(p.score) as Scores, apoc.coll.sortNodes(collect(g), 'timePlayed') as Games
+        WITH a, u, Scores[-10..-5] as FFGS, Scores[-5..] as LFGS, Games[-10..-5] as FFG, Games[-5..] as LFG
+        WITH a,
+            u,
+            size(FFG) as FFGSize, size(LFG) as LFGSize, 
+            size([i in FFGS WHERE i=1]) as FFGWins, 
+            size([i in LFGS WHERE i=1]) as LFGWins
+        WITH a,
+            u,
+            100 * FFGWins/FFGSize as InitialWinPercent,
+            100 * LFGWins/LFGSize as LastWinPercent
+        RETURN a as Agent,
+            u.displayName as DisplayName,
+            InitialWinPercent,
+            LastWinPercent,
+            LastWinPercent - InitialWinPercent as PercentageImprovement
+        ORDER BY PercentageImprovement DESC;
+        `);
+
+        return res.records.map((record) => ({
+            displayName: record.get('DisplayName').toString(),
+            initialWinPercent: record.get('InitialWinPercent').toInt(),
+            lastWinPercent: record.get('LastWinPercent').toInt(),
+            percentageImproved: record.get('PercentageImprovement').toInt(),
+        }));
+    }
 
     /**
      * @TODO agent param

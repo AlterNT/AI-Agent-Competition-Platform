@@ -4,7 +4,7 @@
     // Database settings.
     database: {
         // (Boolean) If the database is enabled.
-        enabled: true,
+        enabled: false,
         protocol: 'neo4j',
         host: 'neo4j',
         port: 7687,

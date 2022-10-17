@@ -1,0 +1,102 @@
+undefined (0)
+Player undefined (0) discards the Baron.
+
+
+undefined (1)
+Player undefined (1) does not have the Priest.
+
+undefined (2)
+Player undefined (3) sees player undefined (2)'s card.
+
+undefined (2)
+Player undefined (2) does not have the Baron.
+
+undefined (2)
+Player undefined (2) does not have the Priest.
+
+
+undefined (3)
+Player undefined (3) discarded the Princess and is eliminated.
+
+undefined (2)
+Player undefined (0) and player undefined (2) swap cards.
+
+
+Player 0 wins the round.
+undefined (3)
+Player undefined (3) does not have the Countess.
+
+undefined (2)
+Player undefined (1) sees player undefined (2)'s card.
+
+
+
+undefined (1)
+Player undefined (1) does not have the Baron.
+
+
+undefined (0)
+Player undefined (0) does not have the Baron.
+
+
+undefined (2)
+Player undefined (0) and player undefined (2) swap cards.
+
+undefined (2)
+Player undefined (1) holds the lesser card: Priest, and is eliminated.
+
+undefined (2)
+Player undefined (2) discarded the Princess and is eliminated.
+
+Player 0 wins the round.
+
+undefined (2)
+Player undefined (2) does not have the Princess.
+
+undefined (3)
+Both players hold the same card, and neither is eliminated.
+
+
+
+undefined (2)
+Player undefined (2) does not have the Baron.
+
+undefined (1)
+Player undefined (1) does not have the Countess.
+
+undefined (3)
+Player undefined (3) discards the Guard.
+
+undefined (1)
+Player undefined (0) sees player undefined (1)'s card.
+
+undefined (3)
+Player undefined (3) discards the Prince.
+
+Player 0 wins the round.
+
+undefined (3)
+Player undefined (3) does not have the Priest.
+
+undefined (1)
+Player undefined (1) does not have the Handmaid.
+
+undefined (2)
+Player undefined (3) sees player undefined (2)'s card.
+
+undefined (3)
+Player undefined (3) discards the Guard.
+
+undefined (2)
+Player undefined (2) discards the Baron.
+
+undefined (0)
+Player undefined (2) and player undefined (0) swap cards.
+
+undefined (2)
+Player undefined (2) does not have the King.
+
+undefined (1)
+Player undefined (1) does not have the King.
+
+Player 0 wins the round.

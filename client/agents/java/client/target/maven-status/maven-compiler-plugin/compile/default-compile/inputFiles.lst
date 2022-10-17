@@ -1,0 +1,15 @@
+/Users/kyronmilton/project3200/AI-Agent-Competition-Platform/client/agents/java/client/src/main/java/javaclient/App.java
+/Users/kyronmilton/project3200/AI-Agent-Competition-Platform/client/agents/java/client/src/main/java/javaclient/loveletter/Agent.java
+/Users/kyronmilton/project3200/AI-Agent-Competition-Platform/client/agents/java/client/src/main/java/javaclient/stateUpdater.java
+/Users/kyronmilton/project3200/AI-Agent-Competition-Platform/client/agents/java/client/src/main/java/javaclient/loveletter/Card.java
+/Users/kyronmilton/project3200/AI-Agent-Competition-Platform/client/agents/java/client/src/main/java/javaclient/jsonobjects/isTurn.java
+/Users/kyronmilton/project3200/AI-Agent-Competition-Platform/client/agents/java/client/src/main/java/javaclient/jsonobjects/joinLobby.java
+/Users/kyronmilton/project3200/AI-Agent-Competition-Platform/client/agents/java/client/src/main/java/javaclient/objectBuilder.java
+/Users/kyronmilton/project3200/AI-Agent-Competition-Platform/client/agents/java/client/src/main/java/javaclient/jsonobjects/gameFinished.java
+/Users/kyronmilton/project3200/AI-Agent-Competition-Platform/client/agents/java/client/src/main/java/javaclient/loveletter/IllegalActionException.java
+/Users/kyronmilton/project3200/AI-Agent-Competition-Platform/client/agents/java/client/src/main/java/javaclient/loveletter/Action.java
+/Users/kyronmilton/project3200/AI-Agent-Competition-Platform/client/agents/java/client/src/main/java/javaclient/jsonobjects/sendActionResponse.java
+/Users/kyronmilton/project3200/AI-Agent-Competition-Platform/client/agents/java/client/src/main/java/javaclient/loveletter/State.java
+/Users/kyronmilton/project3200/AI-Agent-Competition-Platform/client/agents/java/client/src/main/java/javaclient/API.java
+/Users/kyronmilton/project3200/AI-Agent-Competition-Platform/client/agents/java/client/src/main/java/javaclient/agents/gameAgent.java
+/Users/kyronmilton/project3200/AI-Agent-Competition-Platform/client/agents/java/client/src/main/java/javaclient/jsonobjects/gameStarted.java
