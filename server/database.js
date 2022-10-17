@@ -14,9 +14,13 @@ class Neo4jDatabase {
     static dbSync;
 
     static async init() {
+        const dbHost = process.env.NODE_ENV === 'test' && config.database.host === 'neo4j'
+            ? `${config.database.host}-test`
+            : config.database.host;
+
         /** @type {Neode} */
         this.dbInstance = new Neode(
-            `${config.database.protocol}://${config.database.host}:${config.database.port}`,
+            `${config.database.protocol}://${dbHost}:${config.database.port}`,
             config.database.username,
             config.database.password,
         ).with(Models);

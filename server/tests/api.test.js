@@ -3,7 +3,6 @@ import request from "supertest";
 import API from "../api.js";
 import Database from "../database.js";
 
-const databaseDisabledError = { error: 'Database not implemented' };
 const incorrectQueryParamsError = { error: 'Incorrect query parameters' };
 console.assert(process.env.NODE_ENV == "test", "This test suite should only be run in the test environment");
 if (process.env.NODE_ENV != "test") process.exit(0);

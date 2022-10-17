@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   neo4j-test:
-    image: neo4j:4.2.2
+    image: neo4j
     ports:
       - 7474:7474
       - 7687:7687
@@ -17,6 +17,6 @@ services:
     ports:
       - 8080:8080
     depends_on:
-      - neo4j-test
+      - "neo4j-test"
     links:
-      - neo4j-test
+      - "neo4j-test"
