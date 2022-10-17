@@ -1,1356 +1,1304 @@
 {
-    "openapi": "3.0.2",
-    "info": {
-        "title": "AI Competition Platform API",
-        "description": "The API documentation for the various methods that are available for querying data, setting properties or accessing info from an agent.\nQueries are cached and therefore do not update in real-time, but should always provide recent data.",
-        "license": {
-            "name": "MIT",
-            "url": "https://opensource.org/licenses/MIT"
-        },
-        "version": "1.0",
-        "x-logo": {
-            "url": "",
-            "altText": "AI Competition Platform"
-        }
+  "openapi": "3.0.2",
+  "info": {
+    "title": "AI Competition Platform API",
+    "description": "The API documentation for the various methods that are available for querying data, setting properties or accessing info from an agent.\nQueries are cached and therefore do not update in real-time, but should always provide recent data.",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
     },
-    "servers": [
-        {
-            "url": "http://localhost:8080",
-            "description": "Development"
-        },
-        {
-            "url": "{address}:{port}",
-            "description": "Custom",
-            "variables": {
-                "address": {
-                    "default": "http://localhost",
-                    "description": "The address of the server."
-                },
-                "port": {
-                    "default": "8080",
-                    "description": "The port on which the API is run."
-                }
-            }
-        }
-    ],
-    "tags": [
-        {
-            "name": "Student Methods",
-            "description": "Methods that are available to be run by Students for information and bots."
-        },
-        {
-            "name": "Agent Methods",
-            "description": "Methods that are available to use for agents."
-        },
-        {
-            "name": "Admin Methods",
-            "description": "Admin utilities to assist in running the server."
-        }
-    ],
-    "paths": {
-        "/api/agents": {
-            "get": {
-                "summary": "Get all Agent IDs",
-                "description": "Returns all agent IDs and their corresponding owner's display name.",
-                "responses": {
-                    "200": {
-                        "description": "List of agents",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "agents": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "agentId": {
-                                                        "type": "string",
-                                                        "example": "uuid"
-                                                    },
-                                                    "isBot": {
-                                                        "type": "boolean"
-                                                    },
-                                                    "displayName": {
-                                                        "type": "string",
-                                                        "example": "ExcitedYellowPear32"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Student Methods"
-                ]
-            }
-        },
-        "/api/bots": {
-            "get": {
-                "summary": "Get all Bot IDs",
-                "description": "Returns all agent IDs that belong to bots and their corresponding display name.",
-                "responses": {
-                    "200": {
-                        "description": "List of bots",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "bots": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "agentId": {
-                                                        "type": "string",
-                                                        "example": "uuid"
-                                                    },
-                                                    "isBot": {
-                                                        "type": "boolean",
-                                                        "example": "false"
-                                                    },
-                                                    "displayName": {
-                                                        "type": "string",
-                                                        "example": "ExcitedYellowPear32"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Student Methods"
-                ]
-            }
-        },
-        "/api/games": {
-            "get": {
-                "summary": "Get all Games played",
-                "description": "Returns all games ever played (paginated groups of 100).",
-                "parameters": [
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "description": "The page of game history to request.",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int32"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of games",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "games": {
-                                            "type": "array",
-                                            "maxLength": 100,
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "string",
-                                                        "example": "uuid"
-                                                    },
-                                                    "timePlayed": {
-                                                        "type": "string",
-                                                        "description": "The time the game was played.",
-                                                        "example": "Mon Sep 08 1998 14:36:22 GMT-0700 (PDT)"
-                                                    },
-                                                    "isTournament": {
-                                                        "type": "boolean",
-                                                        "description": "If the game is a tournament game."
-                                                    },
-                                                    "agentScores": {
-                                                        "type": "object",
-                                                        "additionalProperties": {
-                                                            "type": "number",
-                                                            "description": "Map of agent IDs to scores."
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Student Methods"
-                ]
-            }
-        },
-        "/api/gamelog": {
-            "get": {
-                "summary": "Get all Game Logs",
-                "description": "Returns all logs of games (paginated groups of 100).",
-                "parameters": [
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "description": "The page of game history to request.",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int32"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of games with logs",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "games": {
-                                            "type": "array",
-                                            "maxLength": 100,
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "string",
-                                                        "example": "uuid"
-                                                    },
-                                                    "timePlayed": {
-                                                        "type": "string",
-                                                        "description": "The time the game was played.",
-                                                        "example": "Mon Sep 08 1998 14:36:22 GMT-0700 (PDT)"
-                                                    },
-                                                    "gameState": {
-                                                        "type": "string",
-                                                        "description": "The game's log."
-                                                    },
-                                                    "isTournament": {
-                                                        "type": "boolean",
-                                                        "description": "If the game is a tournament game."
-                                                    },
-                                                    "agentScores": {
-                                                        "type": "object",
-                                                        "additionalProperties": {
-                                                            "type": "number",
-                                                            "description": "Map of agent IDs to scores."
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Student Methods"
-                ]
-            }
-        },
-        "/api/count-game-pages": {
-            "get": {
-                "summary": "Get number of Game Pages",
-                "description": "Returns the number of pages of games that can be requested.",
-                "responses": {
-                    "200": {
-                        "description": "Number of pages",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "pages": {
-                                            "type": "integer",
-                                            "minimum": 1
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Student Methods"
-                ]
-            }
-        },
-        "/api/game": {
-            "get": {
-                "summary": "Get a Game by it's ID",
-                "description": "Returns the game with the specified ID.",
-                "parameters": [
-                    {
-                        "name": "gameId",
-                        "in": "query",
-                        "description": "The game ID to search for.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of matching games",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "games": {
-                                            "type": "array",
-                                            "maxLength": 100,
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "string",
-                                                        "example": "uuid"
-                                                    },
-                                                    "timePlayed": {
-                                                        "type": "string",
-                                                        "description": "The time the game was played.",
-                                                        "example": "Mon Sep 08 1998 14:36:22 GMT-0700 (PDT)"
-                                                    },
-                                                    "gameState": {
-                                                        "type": "string",
-                                                        "description": "The game's log as a gzip compressed JSON. Look into 'gunzip'."
-                                                    },
-                                                    "agentScores": {
-                                                        "type": "object",
-                                                        "additionalProperties": {
-                                                            "type": "number",
-                                                            "description": "Map of agent IDs to scores."
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Student Methods"
-                ]
-            }
-        },
-        "/api/agent-games": {
-            "get": {
-                "summary": "Get all Games played by an Agent",
-                "description": "Returns the game where the specified Agent played in.",
-                "parameters": [
-                    {
-                        "name": "agentId",
-                        "in": "query",
-                        "description": "The agent ID to search for.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of matching games",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "games": {
-                                            "type": "array",
-                                            "maxLength": 100,
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "string",
-                                                        "example": "uuid"
-                                                    },
-                                                    "timePlayed": {
-                                                        "type": "string",
-                                                        "description": "The time the game was played.",
-                                                        "example": "Mon Sep 08 1998 14:36:22 GMT-0700 (PDT)"
-                                                    },
-                                                    "gameState": {
-                                                        "type": "string",
-                                                        "description": "The game's log as a gzip compressed JSON. Look into 'gunzip'."
-                                                    },
-                                                    "agentScores": {
-                                                        "type": "object",
-                                                        "additionalProperties": {
-                                                            "type": "number",
-                                                            "description": "Map of agent IDs to scores."
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Student Methods"
-                ]
-            }
-        },
-        "/api/set-display-name": {
-            "post": {
-                "summary": "Sets your Display Name",
-                "description": "Given a student number and a new name, the display name of the student number's agent is set.",
-                "parameters": [
-                    {
-                        "name": "studentNumber",
-                        "in": "query",
-                        "description": "A valid user token.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "displayName",
-                        "in": "query",
-                        "description": "The new display name to be set.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "object",
-                                            "properties": {
-                                                "success": {
-                                                    "type": "boolean"
-                                                },
-                                                "error": {
-                                                    "type": "string",
-                                                    "example": "Error Message"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Student Methods"
-                ]
-            }
-        },
-        "/api/top-winrate": {
-            "get": {
-                "summary": "Get the Agents with the Top Win-Rates",
-                "description": "Returns an array of data corresponding to the top agents.",
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "winrate": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "displayName": {
-                                                        "type": "string",
-                                                        "description": "The agent's display name.",
-                                                        "example": "ExcitedYellowPear32"
-                                                    },
-                                                    "isBot": {
-                                                        "type": "boolean",
-                                                        "description": "If the agent is a bot."
-                                                    },
-                                                    "gamesPlayed": {
-                                                        "type": "integer",
-                                                        "description": "How many games the agent has played."
-                                                    },
-                                                    "wins": {
-                                                        "type": "integer",
-                                                        "description": "How many games the agent has won."
-                                                    },
-                                                    "winPercent": {
-                                                        "type": "number",
-                                                        "description": "The agent's percentage win-rate."
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Student Methods"
-                ]
-            }
-        },
-        "/api/winrate": {
-            "get": {
-                "summary": "Get the Win-rate of a specific Agent",
-                "description": "Returns data relevant to the provided agent name.",
-                "parameters": [
-                    {
-                        "name": "agentId",
-                        "in": "query",
-                        "description": "The display name of the agent to query.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "The returned agent.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "winrate": {
-                                            "type": "object",
-                                            "properties": {
-                                                "displayName": {
-                                                    "type": "string",
-                                                    "description": "The agent's display name.",
-                                                    "example": "ExcitedYellowPear32"
-                                                },
-                                                "initialWinPercent": {
-                                                    "type": "integer",
-                                                    "description": "The original win-percentage of the agent."
-                                                },
-                                                "lastWinPercent": {
-                                                    "type": "integer",
-                                                    "description": "The win-percentage of the agent as of it's last game."
-                                                },
-                                                "percentageImproved": {
-                                                    "type": "integer",
-                                                    "description": "The percentage improvement of the agent."
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Student Methods"
-                ]
-            }
-        },
-        "/api/most-improved": {
-            "get": {
-                "summary": "Get the Most Improved Agents",
-                "description": "Returns an array of data corresponding to the most improved agents.",
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "improvement": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "displayName": {
-                                                        "type": "string",
-                                                        "description": "The agent's display name.",
-                                                        "example": "ExcitedYellowPear32"
-                                                    },
-                                                    "initialWinPercent": {
-                                                        "type": "integer",
-                                                        "description": "The original win-percentage of the agent."
-                                                    },
-                                                    "lastWinPercent": {
-                                                        "type": "integer",
-                                                        "description": "The win-percentage of the agent as of it's last game."
-                                                    },
-                                                    "percentageImproved": {
-                                                        "type": "integer",
-                                                        "description": "The percentage improvement of the agent."
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Student Methods"
-                ]
-            }
-        },
-        "/api/improvement": {
-            "get": {
-                "summary": "Get the Improvement of a specific Agent",
-                "description": "Returns data relevant to the provided agent name.",
-                "parameters": [
-                    {
-                        "name": "agentId",
-                        "in": "query",
-                        "description": "The display name of the agent to query.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "The returned agent.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "improvement": {
-                                            "type": "object",
-                                            "properties": {
-                                                "displayName": {
-                                                    "type": "string",
-                                                    "description": "The agent's display name.",
-                                                    "example": "ExcitedYellowPear32"
-                                                },
-                                                "initialWinPercent": {
-                                                    "type": "integer",
-                                                    "description": "The original win-percentage of the agent."
-                                                },
-                                                "lastWinPercent": {
-                                                    "type": "integer",
-                                                    "description": "The win-percentage of the agent as of it's last game."
-                                                },
-                                                "percentageImproved": {
-                                                    "type": "integer",
-                                                    "description": "The percentage improvement of the agent."
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Student Methods"
-                ]
-            }
-        },
-        "/api/available-games": {
-            "get": {
-                "summary": "Get the Available Games",
-                "description": "Returns a list of available games.",
-                "responses": {
-                    "200": {
-                        "description": "List of available games.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "gameIDs": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string",
-                                                "description": "The ID of the game."
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Student Methods"
-                ]
-            }
-        },
-        "/api/authentication": {
-            "post": {
-                "summary": "Get the Available Games",
-                "description": "Returns a list of available games.",
-                "parameters": [
-                    {
-                        "name": "agentToken",
-                        "in": "query",
-                        "description": "The student token to verify.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "If the token is valid.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "authenticated": {
-                                            "type": "boolean",
-                                            "description": "If the token is valid."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Student Methods"
-                ]
-            }
-        },
-        "/api/check-admin": {
-            "get": {
-                "summary": "Validate an Admin Token",
-                "description": "Returns a success if the provided token is an admin token.",
-                "parameters": [
-                    {
-                        "name": "adminToken",
-                        "in": "query",
-                        "description": "The admin token to verify.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "If the token is valid.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "authenticated": {
-                                            "type": "boolean",
-                                            "description": "If the token is valid or not."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Admin Methods"
-                ]
-            }
-        },
-        "/api/admin-view": {
-            "get": {
-                "summary": "Get a list of all Users",
-                "description": "Returns a list of all users, showing their student number, display name and token.",
-                "parameters": [
-                    {
-                        "name": "adminToken",
-                        "in": "query",
-                        "description": "Admin token required.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of all users.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "users": {
-                                            "type": "object",
-                                            "properties": {
-                                                "studentNumber": {
-                                                    "type": "string",
-                                                    "description": "The student number of this user."
-                                                },
-                                                "displayName": {
-                                                    "type": "string",
-                                                    "description": "The display name of this user.",
-                                                    "example": "ExcitedYellowPear32"
-                                                },
-                                                "authToken": {
-                                                    "type": "string",
-                                                    "description": "The authentication token of this user."
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Admin Methods"
-                ]
-            }
-        },
-        "/api/generate-token": {
-            "post": {
-                "summary": "Create a new Student Token",
-                "description": "Creates a new student token, given a seed input and authorization.",
-                "parameters": [
-                    {
-                        "name": "adminToken",
-                        "in": "query",
-                        "description": "Admin token required.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "seed",
-                        "in": "query",
-                        "description": "The seed to generate the token.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "The generated token",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "token": {
-                                            "type": "string",
-                                            "description": "The generated token."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Admin Methods"
-                ]
-            }
-        },
-        "/api/generate-admin-token": {
-            "post": {
-                "summary": "Create a new Admin Token",
-                "description": "Creates a new student token, given a seed input and authorization.",
-                "parameters": [
-                    {
-                        "name": "adminToken",
-                        "in": "query",
-                        "description": "Admin token required.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "seed",
-                        "in": "query",
-                        "description": "The seed to generate the token.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "The generated token",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "token": {
-                                            "type": "string",
-                                            "description": "The generated token."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Admin Methods"
-                ]
-            }
-        },
-        "/api/admin-get-tournament-winrate": {
-            "get": {
-                "summary": "Get the Agents with the Top Win-Rates in Tournament Games",
-                "description": "Returns an array of data corresponding to the top agents. (Warning, this query may lock up the server, hence admin auth required.)",
-                "parameters": [
-                    {
-                        "name": "adminToken",
-                        "in": "query",
-                        "description": "Admin token required.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "winrate": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "displayName": {
-                                                        "type": "string",
-                                                        "description": "The agent's display name.",
-                                                        "example": "ExcitedYellowPear32"
-                                                    },
-                                                    "isBot": {
-                                                        "type": "boolean",
-                                                        "description": "If the agent is a bot."
-                                                    },
-                                                    "gamesPlayed": {
-                                                        "type": "integer",
-                                                        "description": "How many games the agent has played."
-                                                    },
-                                                    "wins": {
-                                                        "type": "integer",
-                                                        "description": "How many games the agent has won."
-                                                    },
-                                                    "winPercent": {
-                                                        "type": "number",
-                                                        "description": "The agent's percentage win-rate."
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Admin Methods"
-                ]
-            }
-        },
-        "/api/started": {
-            "get": {
-                "summary": "Returns if the Game has Started",
-                "description": "Returns a boolean indicating if the game has begun for an agent.",
-                "parameters": [
-                    {
-                        "name": "agentToken",
-                        "in": "query",
-                        "description": "The token belonging to the agent who is checking.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "If the game has started.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "gameStarted": {
-                                            "type": "boolean",
-                                            "description": "If the game has started."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Agent Methods"
-                ]
-            }
-        },
-        "/api/finished": {
-            "get": {
-                "summary": "Returns if the Game has Finished",
-                "description": "Returns a boolean indicating if the game has ended for an agent.",
-                "parameters": [
-                    {
-                        "name": "agentToken",
-                        "in": "query",
-                        "description": "The token belonging to the agent who is checking.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "If the game has finished.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "gameFinished": {
-                                            "type": "boolean",
-                                            "description": "If the game has finished."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Agent Methods"
-                ]
-            }
-        },
-        "/api/turn": {
-            "get": {
-                "summary": "Returns if it is an Agent's Turn",
-                "description": "Returns a boolean indicating if it is an agent's turn in a game.",
-                "parameters": [
-                    {
-                        "name": "agentToken",
-                        "in": "query",
-                        "description": "The token belonging to the agent who is checking.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "If it is the agent's turn.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "isTurn": {
-                                            "type": "boolean",
-                                            "description": "If it is the agent's turn."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Agent Methods"
-                ]
-            }
-        },
-        "/api/state": {
-            "get": {
-                "summary": "Returns the state for an Agent",
-                "description": "Returns the state object for a specific player..",
-                "parameters": [
-                    {
-                        "name": "agentToken",
-                        "in": "query",
-                        "description": "The token belonging to the agent who is requesting.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "The returned state.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "state": {
-                                            "type": "object",
-                                            "description": "The game state. The schema for this depends on the game."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Agent Methods"
-                ]
-            }
-        },
-        "/api/action": {
-            "post": {
-                "summary": "Returns the state for an Agent",
-                "description": "Returns the state object for a specific player.",
-                "parameters": [
-                    {
-                        "name": "agentToken",
-                        "in": "query",
-                        "description": "The token belonging to the agent who is requesting.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "action",
-                        "in": "query",
-                        "description": "The action to play when it is the agent's turn.",
-                        "required": true,
-                        "schema": {
-                            "type": "object",
-                            "description": "The action. The schema for this depends on the game being played."
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "If the action was successful.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "object",
-                                            "description": "If the action was successful."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Agent Methods"
-                ]
-            }
-        },
-        "/api/method": {
-            "get": {
-                "summary": "Run a Method on a Game Object",
-                "description": "Returns the result of a method run on the game object.",
-                "parameters": [
-                    {
-                        "name": "agentToken",
-                        "in": "query",
-                        "description": "The token belonging to the agent who is requesting.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "keys",
-                        "in": "query",
-                        "description": "The sequence of keys to access in the game object.",
-                        "required": true,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    {
-                        "name": "method",
-                        "in": "query",
-                        "description": "The method to call at the end of keys.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "params",
-                        "in": "query",
-                        "description": "The arguments of the method being called.",
-                        "required": true,
-                        "schema": {
-                            "type": "array",
-                            "description": "The supplied arguments depend on the method being called."
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "The returned result.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "result": {
-                                            "type": "object",
-                                            "description": "The result of the method. The schema for this depends on the game."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Agent Methods"
-                ]
-            }
-        },
-        "/api/join": {
-            "post": {
-                "summary": "Join a Lobby",
-                "description": "Joins a lobby with the provided options. If a lobbyID is specified and it doesn't exist, a lobby will be joined with the provided options.",
-                "parameters": [
-                    {
-                        "name": "agentToken",
-                        "in": "query",
-                        "description": "The token belonging to the agent who is joining.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "gameID",
-                        "in": "query",
-                        "description": "The ID of the game that is to be played.",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "lobbyID",
-                        "in": "query",
-                        "description": "The ID of the lobby that is to be joined/created if it doesn't exist.",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "options",
-                        "in": "query",
-                        "description": "The options to be supplied to the lobby if it is being created.",
-                        "required": false,
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "bots": {
-                                    "type": "integer",
-                                    "description": "The number of bots to be added to the game."
-                                },
-                                "slots": {
-                                    "type": "integer",
-                                    "description": "The number of players to start the game."
-                                },
-                                "password": {
-                                    "type": "string",
-                                    "description": "The password to join the lobby specified."
-                                }
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "If joining was successful.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "description": "If the lobby was joined/created successfully."
-                                        },
-                                        "lobbyID": {
-                                            "type": "string",
-                                            "description": "The lobby that was joined."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Agent Methods"
-                ]
-            }
-        }
+    "version": "1.0",
+    "x-logo": {
+      "url": "",
+      "altText": "AI Competition Platform"
     }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Development"
+    },
+    {
+      "url": "{address}:{port}",
+      "description": "Custom",
+      "variables": {
+        "address": {
+          "default": "http://localhost",
+          "description": "The address of the server."
+        },
+        "port": {
+          "default": "8080",
+          "description": "The port on which the API is run."
+        }
+      }
+    }
+  ],
+  "tags": [
+    {
+      "name": "Student Methods",
+      "description": "Methods that are available to be run by Students for information and bots."
+    },
+    {
+      "name": "Agent Methods",
+      "description": "Methods that are available to use for agents."
+    },
+    {
+      "name": "Admin Methods",
+      "description": "Admin utilities to assist in running the server."
+    }
+  ],
+  "paths": {
+    "/api/agents": {
+      "get": {
+        "summary": "Get all Agent IDs",
+        "description": "Returns all agent IDs and their corresponding owner's display name.",
+        "responses": {
+          "200": {
+            "description": "List of agents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "agents": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "agentId": {
+                            "type": "string",
+                            "example": "uuid"
+                          },
+                          "isBot": {
+                            "type": "boolean"
+                          },
+                          "displayName": {
+                            "type": "string",
+                            "example": "ExcitedYellowPear32"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Student Methods"]
+      }
+    },
+    "/api/bots": {
+      "get": {
+        "summary": "Get all Bot IDs",
+        "description": "Returns all agent IDs that belong to bots and their corresponding display name.",
+        "responses": {
+          "200": {
+            "description": "List of bots",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "bots": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "agentId": {
+                            "type": "string",
+                            "example": "uuid"
+                          },
+                          "isBot": {
+                            "type": "boolean",
+                            "example": "false"
+                          },
+                          "displayName": {
+                            "type": "string",
+                            "example": "ExcitedYellowPear32"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Student Methods"]
+      }
+    },
+    "/api/games": {
+      "get": {
+        "summary": "Get all Games played",
+        "description": "Returns all games ever played (paginated groups of 100).",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page of game history to request.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of games",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "games": {
+                      "type": "array",
+                      "maxLength": 100,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "uuid"
+                          },
+                          "timePlayed": {
+                            "type": "string",
+                            "description": "The time the game was played.",
+                            "example": "Mon Sep 08 1998 14:36:22 GMT-0700 (PDT)"
+                          },
+                          "isTournament": {
+                            "type": "boolean",
+                            "description": "If the game is a tournament game."
+                          },
+                          "agentScores": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "number",
+                              "description": "Map of agent IDs to scores."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Student Methods"]
+      }
+    },
+    "/api/gamelog": {
+      "get": {
+        "summary": "Get all Game Logs",
+        "description": "Returns all logs of games (paginated groups of 100).",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page of game history to request.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of games with logs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "games": {
+                      "type": "array",
+                      "maxLength": 100,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "uuid"
+                          },
+                          "timePlayed": {
+                            "type": "string",
+                            "description": "The time the game was played.",
+                            "example": "Mon Sep 08 1998 14:36:22 GMT-0700 (PDT)"
+                          },
+                          "gameState": {
+                            "type": "string",
+                            "description": "The game's log."
+                          },
+                          "isTournament": {
+                            "type": "boolean",
+                            "description": "If the game is a tournament game."
+                          },
+                          "agentScores": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "number",
+                              "description": "Map of agent IDs to scores."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Student Methods"]
+      }
+    },
+    "/api/count-game-pages": {
+      "get": {
+        "summary": "Get number of Game Pages",
+        "description": "Returns the number of pages of games that can be requested.",
+        "responses": {
+          "200": {
+            "description": "Number of pages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "pages": {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Student Methods"]
+      }
+    },
+    "/api/game": {
+      "get": {
+        "summary": "Get a Game by it's ID",
+        "description": "Returns the game with the specified ID.",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "query",
+            "description": "The game ID to search for.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of matching games",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "games": {
+                      "type": "array",
+                      "maxLength": 100,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "uuid"
+                          },
+                          "timePlayed": {
+                            "type": "string",
+                            "description": "The time the game was played.",
+                            "example": "Mon Sep 08 1998 14:36:22 GMT-0700 (PDT)"
+                          },
+                          "gameState": {
+                            "type": "string",
+                            "description": "The game's log as a gzip compressed JSON. Look into 'gunzip'."
+                          },
+                          "agentScores": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "number",
+                              "description": "Map of agent IDs to scores."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Student Methods"]
+      }
+    },
+    "/api/agent-games": {
+      "get": {
+        "summary": "Get all Games played by an Agent",
+        "description": "Returns the game where the specified Agent played in.",
+        "parameters": [
+          {
+            "name": "agentId",
+            "in": "query",
+            "description": "The agent ID to search for.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of matching games",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "games": {
+                      "type": "array",
+                      "maxLength": 100,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "uuid"
+                          },
+                          "timePlayed": {
+                            "type": "string",
+                            "description": "The time the game was played.",
+                            "example": "Mon Sep 08 1998 14:36:22 GMT-0700 (PDT)"
+                          },
+                          "gameState": {
+                            "type": "string",
+                            "description": "The game's log as a gzip compressed JSON. Look into 'gunzip'."
+                          },
+                          "agentScores": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "number",
+                              "description": "Map of agent IDs to scores."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Student Methods"]
+      }
+    },
+    "/api/set-display-name": {
+      "post": {
+        "summary": "Sets your Display Name",
+        "description": "Given a student number and a new name, the display name of the student number's agent is set.",
+        "parameters": [
+          {
+            "name": "studentNumber",
+            "in": "query",
+            "description": "A valid user token.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "displayName",
+            "in": "query",
+            "description": "The new display name to be set.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        },
+                        "error": {
+                          "type": "string",
+                          "example": "Error Message"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Student Methods"]
+      }
+    },
+    "/api/top-winrate": {
+      "get": {
+        "summary": "Get the Agents with the Top Win-Rates",
+        "description": "Returns an array of data corresponding to the top agents.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "winrate": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "displayName": {
+                            "type": "string",
+                            "description": "The agent's display name.",
+                            "example": "ExcitedYellowPear32"
+                          },
+                          "isBot": {
+                            "type": "boolean",
+                            "description": "If the agent is a bot."
+                          },
+                          "gamesPlayed": {
+                            "type": "integer",
+                            "description": "How many games the agent has played."
+                          },
+                          "wins": {
+                            "type": "integer",
+                            "description": "How many games the agent has won."
+                          },
+                          "winPercent": {
+                            "type": "number",
+                            "description": "The agent's percentage win-rate."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Student Methods"]
+      }
+    },
+    "/api/winrate": {
+      "get": {
+        "summary": "Get the Win-rate of a specific Agent",
+        "description": "Returns data relevant to the provided agent name.",
+        "parameters": [
+          {
+            "name": "agentId",
+            "in": "query",
+            "description": "The display name of the agent to query.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The returned agent.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "winrate": {
+                      "type": "object",
+                      "properties": {
+                        "displayName": {
+                          "type": "string",
+                          "description": "The agent's display name.",
+                          "example": "ExcitedYellowPear32"
+                        },
+                        "initialWinPercent": {
+                          "type": "integer",
+                          "description": "The original win-percentage of the agent."
+                        },
+                        "lastWinPercent": {
+                          "type": "integer",
+                          "description": "The win-percentage of the agent as of it's last game."
+                        },
+                        "percentageImproved": {
+                          "type": "integer",
+                          "description": "The percentage improvement of the agent."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Student Methods"]
+      }
+    },
+    "/api/most-improved": {
+      "get": {
+        "summary": "Get the Most Improved Agents",
+        "description": "Returns an array of data corresponding to the most improved agents.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "improvement": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "displayName": {
+                            "type": "string",
+                            "description": "The agent's display name.",
+                            "example": "ExcitedYellowPear32"
+                          },
+                          "initialWinPercent": {
+                            "type": "integer",
+                            "description": "The original win-percentage of the agent."
+                          },
+                          "lastWinPercent": {
+                            "type": "integer",
+                            "description": "The win-percentage of the agent as of it's last game."
+                          },
+                          "percentageImproved": {
+                            "type": "integer",
+                            "description": "The percentage improvement of the agent."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Student Methods"]
+      }
+    },
+    "/api/improvement": {
+      "get": {
+        "summary": "Get the Improvement of a specific Agent",
+        "description": "Returns data relevant to the provided agent name.",
+        "parameters": [
+          {
+            "name": "agentId",
+            "in": "query",
+            "description": "The display name of the agent to query.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The returned agent.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "improvement": {
+                      "type": "object",
+                      "properties": {
+                        "displayName": {
+                          "type": "string",
+                          "description": "The agent's display name.",
+                          "example": "ExcitedYellowPear32"
+                        },
+                        "initialWinPercent": {
+                          "type": "integer",
+                          "description": "The original win-percentage of the agent."
+                        },
+                        "lastWinPercent": {
+                          "type": "integer",
+                          "description": "The win-percentage of the agent as of it's last game."
+                        },
+                        "percentageImproved": {
+                          "type": "integer",
+                          "description": "The percentage improvement of the agent."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Student Methods"]
+      }
+    },
+    "/api/available-games": {
+      "get": {
+        "summary": "Get the Available Games",
+        "description": "Returns a list of available games.",
+        "responses": {
+          "200": {
+            "description": "List of available games.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "gameIDs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "The ID of the game."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Student Methods"]
+      }
+    },
+    "/api/authentication": {
+      "post": {
+        "summary": "Get the Available Games",
+        "description": "Returns a list of available games.",
+        "parameters": [
+          {
+            "name": "agentToken",
+            "in": "query",
+            "description": "The student token to verify.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "If the token is valid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "authenticated": {
+                      "type": "boolean",
+                      "description": "If the token is valid."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Student Methods"]
+      }
+    },
+    "/api/check-admin": {
+      "get": {
+        "summary": "Validate an Admin Token",
+        "description": "Returns a success if the provided token is an admin token.",
+        "parameters": [
+          {
+            "name": "adminToken",
+            "in": "query",
+            "description": "The admin token to verify.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "If the token is valid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "authenticated": {
+                      "type": "boolean",
+                      "description": "If the token is valid or not."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Admin Methods"]
+      }
+    },
+    "/api/admin-view": {
+      "get": {
+        "summary": "Get a list of all Users",
+        "description": "Returns a list of all users, showing their student number, display name and token.",
+        "parameters": [
+          {
+            "name": "adminToken",
+            "in": "query",
+            "description": "Admin token required.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all users.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "users": {
+                      "type": "object",
+                      "properties": {
+                        "studentNumber": {
+                          "type": "string",
+                          "description": "The student number of this user."
+                        },
+                        "displayName": {
+                          "type": "string",
+                          "description": "The display name of this user.",
+                          "example": "ExcitedYellowPear32"
+                        },
+                        "authToken": {
+                          "type": "string",
+                          "description": "The authentication token of this user."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Admin Methods"]
+      }
+    },
+    "/api/generate-token": {
+      "post": {
+        "summary": "Create a new Student Token",
+        "description": "Creates a new student token, given a seed input and authorization.",
+        "parameters": [
+          {
+            "name": "adminToken",
+            "in": "query",
+            "description": "Admin token required.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "seed",
+            "in": "query",
+            "description": "The seed to generate the token.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The generated token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "The generated token."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Admin Methods"]
+      }
+    },
+    "/api/generate-admin-token": {
+      "post": {
+        "summary": "Create a new Admin Token",
+        "description": "Creates a new student token, given a seed input and authorization.",
+        "parameters": [
+          {
+            "name": "adminToken",
+            "in": "query",
+            "description": "Admin token required.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "seed",
+            "in": "query",
+            "description": "The seed to generate the token.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The generated token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "The generated token."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Admin Methods"]
+      }
+    },
+    "/api/admin-get-tournament-winrate": {
+      "get": {
+        "summary": "Get the Agents with the Top Win-Rates in Tournament Games",
+        "description": "Returns an array of data corresponding to the top agents. (Warning, this query may lock up the server, hence admin auth required.)",
+        "parameters": [
+          {
+            "name": "adminToken",
+            "in": "query",
+            "description": "Admin token required.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "winrate": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "displayName": {
+                            "type": "string",
+                            "description": "The agent's display name.",
+                            "example": "ExcitedYellowPear32"
+                          },
+                          "isBot": {
+                            "type": "boolean",
+                            "description": "If the agent is a bot."
+                          },
+                          "gamesPlayed": {
+                            "type": "integer",
+                            "description": "How many games the agent has played."
+                          },
+                          "wins": {
+                            "type": "integer",
+                            "description": "How many games the agent has won."
+                          },
+                          "winPercent": {
+                            "type": "number",
+                            "description": "The agent's percentage win-rate."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Admin Methods"]
+      }
+    },
+    "/api/started": {
+      "get": {
+        "summary": "Returns if the Game has Started",
+        "description": "Returns a boolean indicating if the game has begun for an agent.",
+        "parameters": [
+          {
+            "name": "agentToken",
+            "in": "query",
+            "description": "The token belonging to the agent who is checking.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "If the game has started.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "gameStarted": {
+                      "type": "boolean",
+                      "description": "If the game has started."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Agent Methods"]
+      }
+    },
+    "/api/finished": {
+      "get": {
+        "summary": "Returns if the Game has Finished",
+        "description": "Returns a boolean indicating if the game has ended for an agent.",
+        "parameters": [
+          {
+            "name": "agentToken",
+            "in": "query",
+            "description": "The token belonging to the agent who is checking.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "If the game has finished.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "gameFinished": {
+                      "type": "boolean",
+                      "description": "If the game has finished."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Agent Methods"]
+      }
+    },
+    "/api/turn": {
+      "get": {
+        "summary": "Returns if it is an Agent's Turn",
+        "description": "Returns a boolean indicating if it is an agent's turn in a game.",
+        "parameters": [
+          {
+            "name": "agentToken",
+            "in": "query",
+            "description": "The token belonging to the agent who is checking.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "If it is the agent's turn.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "isTurn": {
+                      "type": "boolean",
+                      "description": "If it is the agent's turn."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Agent Methods"]
+      }
+    },
+    "/api/state": {
+      "get": {
+        "summary": "Returns the state for an Agent",
+        "description": "Returns the state object for a specific player..",
+        "parameters": [
+          {
+            "name": "agentToken",
+            "in": "query",
+            "description": "The token belonging to the agent who is requesting.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The returned state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "state": {
+                      "type": "object",
+                      "description": "The game state. The schema for this depends on the game."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Agent Methods"]
+      }
+    },
+    "/api/action": {
+      "post": {
+        "summary": "Returns the state for an Agent",
+        "description": "Returns the state object for a specific player.",
+        "parameters": [
+          {
+            "name": "agentToken",
+            "in": "query",
+            "description": "The token belonging to the agent who is requesting.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "description": "The action to play when it is the agent's turn.",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "description": "The action. The schema for this depends on the game being played."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "If the action was successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "object",
+                      "description": "If the action was successful."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Agent Methods"]
+      }
+    },
+    "/api/method": {
+      "get": {
+        "summary": "Run a Method on a Game Object",
+        "description": "Returns the result of a method run on the game object.",
+        "parameters": [
+          {
+            "name": "agentToken",
+            "in": "query",
+            "description": "The token belonging to the agent who is requesting.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "keys",
+            "in": "query",
+            "description": "The sequence of keys to access in the game object.",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "method",
+            "in": "query",
+            "description": "The method to call at the end of keys.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "params",
+            "in": "query",
+            "description": "The arguments of the method being called.",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "description": "The supplied arguments depend on the method being called."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The returned result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "object",
+                      "description": "The result of the method. The schema for this depends on the game."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Agent Methods"]
+      }
+    },
+    "/api/join": {
+      "post": {
+        "summary": "Join a Lobby",
+        "description": "Joins a lobby with the provided options. If a lobbyID is specified and it doesn't exist, a lobby will be joined with the provided options.",
+        "parameters": [
+          {
+            "name": "agentToken",
+            "in": "query",
+            "description": "The token belonging to the agent who is joining.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gameID",
+            "in": "query",
+            "description": "The ID of the game that is to be played.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lobbyID",
+            "in": "query",
+            "description": "The ID of the lobby that is to be joined/created if it doesn't exist.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "options",
+            "in": "query",
+            "description": "The options to be supplied to the lobby if it is being created.",
+            "required": false,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "bots": {
+                  "type": "integer",
+                  "description": "The number of bots to be added to the game."
+                },
+                "slots": {
+                  "type": "integer",
+                  "description": "The number of players to start the game."
+                },
+                "password": {
+                  "type": "string",
+                  "description": "The password to join the lobby specified."
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "If joining was successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "If the lobby was joined/created successfully."
+                    },
+                    "lobbyID": {
+                      "type": "string",
+                      "description": "The lobby that was joined."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Agent Methods"]
+      }
+    }
+  }
 }

@@ -1,8 +1,7 @@
 export default class Agent {
+  token;
 
-    token;
-
-    constructor(agentToken) {
-        this.token = agentToken;
-    }
+  constructor(agentToken) {
+    this.token = agentToken;
+  }
 }

@@ -1,11 +1,5 @@
-describe('Testing Database Queries (database.js):', () => {
-    test('', () => {
-
-    });
-    test('', () => {
-
-    });
-    test('', () => {
-
-    });
+describe("Testing Database Queries (database.js):", () => {
+  test("", () => {});
+  test("", () => {});
+  test("", () => {});
 });

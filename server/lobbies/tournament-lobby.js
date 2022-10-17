@@ -1,7 +1,5 @@
-import Lobby from './lobby.js'
+import Lobby from "./lobby.js";
 
-class TournamentLobby extends Lobby {
+class TournamentLobby extends Lobby {}
 
-}
-
-export default TournamentLobby
+export default TournamentLobby;

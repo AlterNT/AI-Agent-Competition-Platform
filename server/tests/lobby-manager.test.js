@@ -1,12 +1,5 @@
-describe('Testing Lobby Manager System (lobby-manager.js):', () => {
-    test('', () => {
-
-    });
-    test('', () => {
-
-    });
-    test('', () => {
-
-    });
+describe("Testing Lobby Manager System (lobby-manager.js):", () => {
+  test("", () => {});
+  test("", () => {});
+  test("", () => {});
 });
-

@@ -1,5 +1,7 @@
 # Domain
+
 ## Platform Overview
+
 This project is a platform for multiplayer games where multiple agents (users) can connect to a central server and play against each other. The server handles the matchmaking and provides an API to the state and actions while the agents use the API to query the updated gamestate and to play their turn.
 
 The platform must be flexible to reprogram for other games, but the game 'LoveLetter' will be implemented as part of the project.
@@ -7,72 +9,80 @@ The platform must be flexible to reprogram for other games, but the game 'LoveLe
 The program consists of the server that runs the games, and the client (agent) program that plays the games. The clients are all located on different machines and communicate to the server remotely.
 
 ## Entities
+
 There are three entities in the domain: Users, Agents, and Games.
 
 ### Users
+
 Users represent the real human person who is participating in the tournament.
 They have a student number and an authentication token: each user also owns an agent.
 
 There is a 'bot' user that controls all non-student controlled agents. Its student number is set as '00000000'
 
 ### Agents
+
 Agents represent the code on the client program that is making actions in the game.
 They have a unique id and have their source code uploaded and store on the server. The source code is available on demand after the tournament.
 
 Each agent is owned by a user and participates in games.
 
 ### Games
+
 Games represent instances of the game played on the server. Every game played has its actions logged on the server.
 The events of the game are stored in the gamestate and each agent participating is assigned a score.
 
 Each game is played by multiple agents.
 
 # Database
+
 ## Structure
+
 The schema of the database. The database is a Neo4J Graph Database. Nodes are analogous to tables of a relational databases and relationships are analogous to relations of a relational database. The relationships, like in a relational database are bidirectional (although they appear directed in the schema diagrams).
 
 A graph database was used as the relationships in a graph database are far less rigid than in relational databases and so the same schema can be used for any game without having to pad the database with `NULL` values.
 
 ## Schema
+
 ![](schema.png)
 
 # Typings
+
 All typings are written in Typescript types in order to formalize
 
 ## Utility Types
 
 ```typescript
 // utility
-type Integer        = Number;               // unfortunately Number and Int aren't different in typescript
-type Float          = Number;               // unfortunately Number and Float aren't different in typescript
+type Integer = Number; // unfortunately Number and Int aren't different in typescript
+type Float = Number; // unfortunately Number and Float aren't different in typescript
 
 // domain logic
-type AgentId        = String;               // uuid of an agent:    e.g. 'ce030dee-1533-4b62-b53b-568ef9f7ef8c'
-type StudentNumber  = String;               // UWA student number:  e.g. '20000000'
-type GameScores     = Map<AgentId, Float>;  // maps agent ids to scores: agentId : agentScore
-type GameState      = String;               // JSON string of game state
+type AgentId = String; // uuid of an agent:    e.g. 'ce030dee-1533-4b62-b53b-568ef9f7ef8c'
+type StudentNumber = String; // UWA student number:  e.g. '20000000'
+type GameScores = Map<AgentId, Float>; // maps agent ids to scores: agentId : agentScore
+type GameState = String; // JSON string of game state
 ```
 
 ## Domain Objects
 
 ```typescript
 type Game = {
-    agentScores:        GameScores,
-    gameState:          GameState,
+  agentScores: GameScores;
+  gameState: GameState;
 };
 
 type Winrate = {
-    agentId:            AgentId,
-    gamesPlayed:        Integer,
-    wins:               Integer,
-    winPercent:         Integer,
+  agentId: AgentId;
+  gamesPlayed: Integer;
+  wins: Integer;
+  winPercent: Integer;
 };
 
 type Improvement = {
-    agentId:            AgentId,
-    initialWinPercent:  Float,
-    lastWinPercent:     Float,
-    percentageImproved: Float,
+  agentId: AgentId;
+  initialWinPercent: Float;
+  lastWinPercent: Float;
+  percentageImproved: Float;
 };
 ```
 
@@ -103,10 +113,10 @@ Student number of '00000000' is reserved for the bot user.
 
 ```typescript
 type Agents = {
-    agents: {
-        studentNumber:  StudentNumber,
-        agentId:        AgentId,
-    }[],
+  agents: {
+    studentNumber: StudentNumber;
+    agentId: AgentId;
+  }[];
 };
 ```
 
@@ -126,9 +136,9 @@ Returns every bot agent. Student number is assumed to be '00000000'
 
 ```typescript
 type Bots = {
-    bots: {
-        agentId: AgentId,
-    }[],
+  bots: {
+    agentId: AgentId;
+  }[];
 };
 ```
 
@@ -148,7 +158,7 @@ Returns the outcome and state of all past games.
 
 ```typescript
 type Games = {
-    games: Game[],
+  games: Game[];
 };
 ```
 
@@ -168,7 +178,7 @@ Returns all past games for the given agent
 
 ```typescript
 type AgentGames = {
-    games: Game[],
+  games: Game[];
 };
 ```
 
@@ -192,7 +202,7 @@ Returns all agents and their winrates, sorted by descending order of winrate.
 
 ```typescript
 type TopWinrate = {
-   winrate: Winrate[],
+  winrate: Winrate[];
 };
 ```
 
@@ -212,7 +222,7 @@ Returns agents and their improvement since they first started playing, sorted by
 
 ```typescript
 type MostImproved = {
-   improvements: Improvement[],
+  improvements: Improvement[];
 };
 ```
 
@@ -232,7 +242,7 @@ Returns agents and their improvement in their recent few games, sorted by descen
 
 ```typescript
 type MostImproving = {
-   improvements: Improvement[],
+  improvements: Improvement[];
 };
 ```
 
@@ -256,7 +266,7 @@ Returns the overall winrate of a single agent.
 
 ```typescript
 type Winrate = {
-   winrate: Winrate | null,
+  winrate: Winrate | null;
 };
 ```
 
@@ -276,7 +286,7 @@ Returns improvement of an agent since its first game.
 
 ```typescript
 type Improvement = {
-   improvement: Improvement | null,
+  improvement: Improvement | null;
 };
 ```
 
@@ -296,6 +306,6 @@ Returns current improvement for an agent.
 
 ```typescript
 type ImprovementRate = {
-   improvement: Improvement | null,
+  improvement: Improvement | null;
 };
 ```
