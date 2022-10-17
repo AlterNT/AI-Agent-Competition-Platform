@@ -29,6 +29,33 @@ Note that when the server is started an admin user is created when, but not dele
 ### Setting The Game
 Add a key/value pair to `config.games` in the format of the existing examples.
 
+### Generating Tokens
+Tokens for students and admins can be generated either from the CLI or the website.
+The instructions for generating them in the website are located in the website README.
+Token file contain student numbers in the following format:
+```csv
+20000000
+30000000
+40000000
+...
+```
+
+#### User Tokens
+```bash
+# in /server
+docker compose up neo4j
+sleep 60 && docker compose run server node . tokens <path-to-token-file>
+```
+
+#### Admin Tokens
+```bash
+# in /server
+sleep 60 && docker compose run server node . admin-tokens <path-to-token-file>
+```
+
+### Configuring The Website
+Please see the website README at `/website/README.md` for information.
+
 ## Execution
 ## Running The Server
 ```bash
@@ -98,31 +125,6 @@ cp config.json5.example config.json5
 node . start
 ```
 
-# Development and DevOps
-## Server
-### Generating Test Data
-WARNING: running this will CLEAR your database, do NOT use it on the same machine as a running server
-
-In case of an error on the delete operation: run the command again until it works.
-```bash
-node . load-test-data
-```
-
-### Token Generation
-```bash
-# in /server
-node . tokens <path-to-token-file>
-```
-
-Token file looks as so:
-```csv
-StudentNumber1
-StudentNumber2
-StudentNumber3
-...
-```
-
-
 ### Connection to DB Instance With Neo4j Browser
 1. Start Neo4j
 2. In Neo4j Browser: Add --> Remote Connection
@@ -162,177 +164,3 @@ The development build of this project is using:
    - Debian-based Linux: `/var/lib/neo4j/plugins`
    - MacOS/Linux: `<neo4j-home>/plugins`
    - Windows: `<neo4j-home>\plugins`
-
----
-
-# Client Execution
-## Java Client
-### install dependencies:
-1. Download and install [Java 1.8](https://www.oracle.com/au/java/technologies/javase/javase8-archive-downloads.html).
-2. Download and install [Apache Maven 3.8.6](https://maven.apache.org/install.html).
-3. Set required environment variables for Java and Maven as outlined in the maven install link.
-      - Make sure JAVA_HOME system variable points to the 1.8 version of JDK.
-      - If you get an error for the java_home variable not beign set properly on mac based systems remove all other JDKs in the '/usr/libexec/java_home' folder except 1.8.
-4. Make sure you can run maven commands by running the following:
-```bash
-mvn -v
-```
-### Preform Maven Install and Complete First Compilation from CLI
-```bash
-cd /agent/java/client
-mvn install
-mvn clean compile assembly:single
-```
-### Running the client via commands:
-```bash
-cd /agent/java/client
-mvn clean compile assembly:single
-java -jar target/client-1.0-SNAPSHOT-jar-with-dependencies.jar [agentToken] [game]
-```
-
-### CLI-Mode
-#### install dependencies:
-```bash
-npm i
-```
-> The agent file has been updated and requires recompilation of java project
-```bash
-node . -t [agentToken] -l java -g love-letter -c true
-```
-> No update to code base and need to run the agent
-```bash
-node . -t [agentToken] -l java -g love-letter
-```
-
-### CLI-Options
-If you would like to change the options:
-```bash
-      --version   Show version number                                  [boolean]
-  -t, --token     Agent authentication token                 [string] [required]
-  -l, --language  Language of agent  [string] [required] [choices: "py", "java"]
-  -g, --game      Game to be played
-             [string] [required] [choices: "paper-scissors-rock", "love-letter"]
-  -c, --compile   flag to recompile java client                        [boolean]
-  -h, --help      Show help                                            [boolean]
-```
-
-## Python Client
-#### install dependencies:
-```bash
-npm i
-# if using pip3:
-pip3 install -r requirements.txt
-
-# if using pip:
-pip install -r requirements.txt
-```
-
-### CLI-Mode
-```bash
-node . <options>
-
-# options required for a game,
-# change the -t flag to be different for each agent
-
-node . -t 1 -l py -g love-letter
-```
-
-- Run 4 agent processes as above with the `-t` flag being different in each case.
-- Agent processes should all be run in their own terminal for readability.
-
-Alternatively you can run them all as background processes **(not recommended)**:
-```bash
-node . -t 1 -l py -g love-letter &\
-   node . -t 2 -l py -g love-letter &\
-   node . -t 3 -l py -g love-letter &\
-   node . -t 4 -l py -g love-letter
-```
-
-The client process quits if it detects the server is not running so cleanup of dangling processes is not an issue.
-
-### CLI-Options
-If you would like to change the options:
-```bash
-      --version   Show version number                                  [boolean]
-  -t, --token     Agent authentication token                 [string] [required]
-  -l, --language  Language of agent  [string] [required] [choices: "py", "java"]
-  -g, --game      Game to be played
-             [string] [required] [choices: "paper-scissors-rock", "love-letter"]
-  -c, --compile   flag to recompile java client                        [boolean]
-  -h, --help      Show help                                            [boolean]
-```
-
----
-
-# Old Client Setup
-Test the following commands:
-```bash
-python3 --version
-python --version
-```
-
-If `python3` isn't installed and `python` is version 2 then install python3.
-If `python3` isn't installed and `python` is version 3 then change `python3` to `python` in `Client/main.py`
-
-# Client Program WIP?
-All command under this section are executed under the `/client` directory.
-First change to the client directory and install dependencies:
-```bash
-cd client
-npm ci
-
-# if using python3:
-pip3 install -r requirements.txt
-
-# if using python:
-pip install -r requirements.txt
-```
-
-### CLI-Mode
-```bash
-node . <options>
-
-# options required for a game,
-# change the -t flag to be different for each agent
-node . -t 1 -l py -g love-letter
-```
-
-Run 4 agent processes as above with the `-t` flag being different in each case.
-Agent processes should all be run in their own terminal for readability.
-
-Alternatively you can run them all as background processes **(not recommended)**:
-```bash
-node . -t 1 -l py -g love-letter &\
-   node . -t 2 -l py -g love-letter &\
-   node . -t 3 -l py -g love-letter &\
-   node . -t 4 -l py -g love-letter
-```
-
-The client process quits if it detects the server is not running so cleanup of dangling processes is not an issue.
-
-### CLI-Options
-If you would like to change the options:
-```bash
-      --version   Show version number                                  [boolean]
-  -t, --token     Agent authentication token                 [string] [required]
-  -l, --language  Language of agent  [string] [required] [choices: "py", "java"]
-  -g, --game      Game to be played
-             [string] [required] [choices: "paper-scissors-rock", "love-letter"]
-  -h, --help      Show help                                            [boolean]
-```
-
-<!-- ## With Electron GUI
-TODO -->
-
-**INFORMATION BELOW THIS LINE ONLY APPLICABLE TO DEVELOPERS OR IF DEPLOYING**
-
-## Running
-Start the server:
-```bash
-node index.js # Server/API
-```
-
-Start the client:
-```bash
-python3 main.py # Client
-```
