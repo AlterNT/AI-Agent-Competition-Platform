@@ -61,9 +61,9 @@ pip install -r requirements.txt
 ```
 
 ### Implementing Agent
-The agent.py file can be found in src/agents/python/[game]/agent.py
+The `agent.py` file can be found in src/agents/python/[game]/agent.py
 
-agent.py is the only file that should be changed when implementing your agent.
+`agent.py` is the only file that should be changed when implementing your agent.
 
 ### CLI-Mode
 ```bash
