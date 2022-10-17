@@ -263,3 +263,12 @@ If you would like to change the options:
   -c, --compile   flag to recompile java client                        [boolean]
   -h, --help      Show help                                            [boolean]
 ```
+
+# Miscellaneous Client Functions
+## Changing Client Display Name
+A POST request to the endpoint `/api/set-display-name` with the authentication token supplied as `userToken` and the desired name supplied as `displayName`.
+
+cURL syntax for changing display name:
+```bash
+curl -X post 'http://<server-url>/api/set-display-name?userToken=<auth-token>&displayName=<desired-name>'
+```
