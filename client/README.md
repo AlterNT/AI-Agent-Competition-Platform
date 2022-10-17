@@ -50,7 +50,7 @@ If you would like to change the options:
 ```
 
 ## Python Client
-#### install dependencies:
+### install dependencies:
 ```bash
 npm i
 # if using pip3:
@@ -60,6 +60,11 @@ pip3 install -r requirements.txt
 pip install -r requirements.txt
 ```
 
+### Implementing Agent
+The agent.py file can be found in src/agents/python/[game]/agent.py
+
+agent.py is the only file that should be changed when implementing your agent.
+
 ### CLI-Mode
 ```bash
 node . <options>
@@ -67,7 +72,7 @@ node . <options>
 # options required for a game,
 # change the -t flag to be different for each agent
 
-node . -t [agentToken] -u [url] -l py -g love-letter
+node . -t [agentToken] -u [url] -l py -g [game]
 ```
 
 The client process quits if it detects the server is not running so cleanup of dangling processes is not an issue.
