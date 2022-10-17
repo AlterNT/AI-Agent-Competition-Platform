@@ -8,6 +8,8 @@ import javaclient.loveletter.Card;
 import javaclient.loveletter.IllegalActionException;
 import javaclient.loveletter.State;
 
+// ---------- DO NOT EDIT ABOVE THIS LINE ----------
+
 /**
  * An interface for representing an agent in the game Love Letter
  * All agent's must have a 0 parameter constructor
