@@ -42,17 +42,23 @@ const getJavaPath = async () => {
 const compileMaven = async () => {
     try {
         if(process.platform == "win32"){
-        let cmd = child_process.spawn('cmd.exe', ['/c', 'mavenCompileScript\\compileMaven.bat'])
-        } else if (process.platform == 'darwin') {
-            return null
-        } else if (process.platform == 'linux'){
-            return null
+            let cmd = child_process.spawn('cmd.exe', ['/c', 'mavenCompileScripts\\compileMaven.bat'])
+        } else if (process.platform == 'darwin' || process.platform == 'linux') {
+            let cmd = child_process.exec('mavenCompileScripts/compiler.sh')
+        } else {
+            throw new Error('This system architecture is not supported aswell ')
         }
     } catch {
         throw new Error('Couldnt compile maven project')
     }
 }
 
+/**
+ * Function used to stop processing of Node to wait for the Maven Java Compilation run course.
+ * 
+ * @param {*} ms time to wait in milliseconds 
+ * @returns {Promise} a new promise that stops excution until timeout is fufilled
+ */
 function sleep(ms) {
     return new Promise((resolve) => {
       setTimeout(resolve, ms);
@@ -108,17 +114,19 @@ async function main() {
                 return
             }
             break
+
         case 'java':
             if(compile === true){
                 try {
                     let compile = await compileMaven()
                     console.log("compiling java client")
+                    // EDIT THE BELOW INPUT PARAMETER TO CHANGE 
+                    // THE AMOUNT OF TIME WAITED FOR COMPILATION
                     await sleep(10000);
                 } catch (error) {
                     console.log(error)
                 }
             }
-
             try {
                 console.log(await getJavaPath())
                 fp = child_process.spawn(await getJavaPath(), ['-jar', './agents/java/client/target/client-1.0-SNAPSHOT-jar-with-dependencies.jar', token, game])

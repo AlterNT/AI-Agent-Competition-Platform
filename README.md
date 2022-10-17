@@ -40,10 +40,17 @@ cd /client
 1. Download and install [Java 1.8](https://www.oracle.com/au/java/technologies/javase/javase8-archive-downloads.html).
 2. Download and install [Apache Maven 3.8.6](https://maven.apache.org/install.html).
 3. Set required environment variables for Java and Maven as outlined in the maven install link.
-      - Make sure JAVA_HOME system variable points to the 1.8 version of JDK. 
+      - Make sure JAVA_HOME system variable points to the 1.8 version of JDK.
+      - If you get an error for the java_home variable not beign set properly on mac based systems remove all other JDKs in the '/usr/libexec/java_home' folder except 1.8.
 4. Make sure you can run maven commands by running the following:
 ```bash 
 mvn -v
+```
+### Preform Maven Install and Complete First Compilation from CLI
+```bash 
+cd /agent/java/client 
+mvn install 
+mvn clean compile assembly:single
 ```
 ### Running the client via commands:
 
