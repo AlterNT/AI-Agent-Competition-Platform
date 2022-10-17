@@ -30,6 +30,8 @@ Note that when the server is started an admin user is created when, but not dele
 Add a key/value pair to `config.games` in the format of the existing examples.
 
 ### Generating Tokens
+Tokens for students and admins can be generated either from the CLI or the website.
+The instructions for generating them in the website are located in the website README.
 Token file contain student numbers in the following format:
 ```csv
 20000000
@@ -50,6 +52,9 @@ sleep 60 && docker compose run server node . tokens <path-to-token-file>
 # in /server
 sleep 60 && docker compose run server node . admin-tokens <path-to-token-file>
 ```
+
+### Configuring The Website
+Please see the website README at `/website/README.md` for information.
 
 ## Execution
 ## Running The Server
