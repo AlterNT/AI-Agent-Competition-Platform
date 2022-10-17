@@ -51,10 +51,11 @@ public class App {
          */
         String agent_token = args[0];
         String game = args[1];
+        String url = args[2];
 
         // Create instances of required classes to control game logic and access
         // endpoints
-        gameAPI = new API(agent_token);
+        gameAPI = new API(agent_token, url);
         stateUpdater = new stateUpdater();
         builder = new objectBuilder();
 

@@ -1,5 +1,4 @@
 import requests
-from zmq import SERVER
 
 SERVER_API = 'http://localhost:8080'
 

@@ -92,10 +92,16 @@ async function main() {
         description: "Flag for whether the java client needs to be compiled",
         type: 'boolean'
     })
+    .option('url', {
+        alias: 'u',
+        Description: 'Url of the host server',
+        type: 'string',
+        demandOption: true
+    })
     .help()
     .alias('help', 'h').argv
 
-    const { token, language, game, compile } = argv
+    const { token, language, game, compile, url } = argv
 
     // checks if token is authorised
     // const authorised = await API.authenticate(token)
@@ -106,7 +112,7 @@ async function main() {
     switch (language) {
         case 'py':
             try {
-                fp = child_process.spawn(await getPythonPath(), ['-u', './agents/python/main.py', token, game])
+                fp = child_process.spawn(await getPythonPath(), ['-u', './agents/python/main.py', token, game, url])
             } catch (pathError) {
                 console.error(pathError)
                 return
@@ -130,7 +136,7 @@ async function main() {
             // Creates new process of the compiled java project with the given token and game-id
             try {
                 console.log(await getJavaPath())
-                fp = child_process.spawn(await getJavaPath(), ['-jar', './agents/java/client/target/client-1.0-SNAPSHOT-jar-with-dependencies.jar', token, game])
+                fp = child_process.spawn(await getJavaPath(), ['-jar', './agents/java/client/target/client-1.0-SNAPSHOT-jar-with-dependencies.jar', token, game, url])
             } catch (pathError) {
                 console.error(pathError)
                 return
