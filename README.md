@@ -199,11 +199,11 @@ npm i
 ```
 > The agent file has been updated and requires recompilation of java project
 ```bash
-node . -t [agentToken] -l java -g love-letter -c true
+node . -t [agentToken] -u [url] -l java -g love-letter -c true
 ```
 > No update to code base and need to run the agent
 ```bash
-node . -t [agentToken] -l java -g love-letter
+node . -t [agentToken] -u [url] -l java -g love-letter
 ```
 
 ### CLI-Options
@@ -236,18 +236,7 @@ node . <options>
 # options required for a game,
 # change the -t flag to be different for each agent
 
-node . -t 1 -l py -g love-letter
-```
-
-- Run 4 agent processes as above with the `-t` flag being different in each case.
-- Agent processes should all be run in their own terminal for readability.
-
-Alternatively you can run them all as background processes **(not recommended)**:
-```bash
-node . -t 1 -l py -g love-letter &\
-   node . -t 2 -l py -g love-letter &\
-   node . -t 3 -l py -g love-letter &\
-   node . -t 4 -l py -g love-letter
+node . -t [agentToken] -u [url] -l py -g love-letter
 ```
 
 The client process quits if it detects the server is not running so cleanup of dangling processes is not an issue.
