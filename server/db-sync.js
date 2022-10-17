@@ -15,7 +15,6 @@ class CachedQuery {
             console.error(`Database not available yet: ${err}`)
         }
 
-        // @TODO: Experimental
         this.interval = setInterval(async () => {
             try {
                 this.result = await queryFunction.bind(Database)(), timeoutDuration

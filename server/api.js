@@ -301,7 +301,6 @@ class API {
 
         // ---------------------------------------------------------------
         // game statistics: single agent
-        // @TODO: implement by reusing cached batch query results
 
         app.get('/api/started', (req, res) => {
             const agentToken = req.query.agentToken;

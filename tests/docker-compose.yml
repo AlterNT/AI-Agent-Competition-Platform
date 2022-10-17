@@ -2,9 +2,9 @@ version: '3.4'
 
 services:
   neo4j-test:
-    image: neo4j
+    image: neo4j:4.2.2
     ports:
-      - 7475:7474
+      - 7474:7474
       - 7687:7687
     environment:
       - NEO4J_AUTH=neo4j/password
@@ -15,7 +15,7 @@ services:
       context: ../server
       dockerfile: ./Dockerfile.tests
     ports:
-      - 8081:8080
+      - 8080:8080
     depends_on:
       - neo4j-test
     links:
