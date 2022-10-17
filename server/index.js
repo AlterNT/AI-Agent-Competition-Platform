@@ -1,7 +1,6 @@
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import API from './api.js'
-import config from './config.js';
 import Database from './database.js'
 
 
@@ -26,8 +25,6 @@ async function main() {
     })
     .help()
     .argv
-
-    process.env.AI_PLATFORM_SECRET_KEY = config.database.AI_PLATFORM_SECRET_KEY;
 
     console.log('MAKE SURE BATCH QUERIES IS EMPTY IF CLEARING DATABASE')
     await Database.init();

@@ -1,5 +1,6 @@
 import cryptojs from 'crypto-js';
 import process from 'process';
+import config from './config.js';
 
 /**
  * Creates interactive TokenGenerator object
@@ -7,9 +8,9 @@ import process from 'process';
  */
 class TokenGenerator {
     constructor(){
-        this.key = process.env.AI_PLATFORM_SECRET_KEY;
+        this.key = config.database.aiPlatformSecretKey;
         if (!this.key) {
-            console.error(`You must provide a key in the env variable 'AI_PLATFORM_SECRET_KEY'`);
+            console.error('You must have a secret key at config.database.aiPlatformSecretKey')
             process.exit(1);
         }
 

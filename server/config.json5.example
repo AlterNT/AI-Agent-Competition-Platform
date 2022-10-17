@@ -12,6 +12,7 @@
         password: 'password',
         database: 'neo4j',
         defaultAdminToken: 'admin',
+        aiPlatformSecretKey: 'example',
     },
     // Game-specific settings.
     // A game's ID corresponds to it's key in this object.
